@@ -1,0 +1,68 @@
+{
+    "version": "1.0",
+    "applicationName": "E-Commerce Checkout",
+    "states": {
+        "cart": {
+            "description": "Shopping Cart",
+            "actions": [
+                "view_cart",
+                "update_quantity",
+                "remove_item",
+                "proceed_to_checkout"
+            ],
+            "transitions": {
+                "proceed_to_checkout": "shipping",
+                "continue_shopping": "catalog"
+            },
+            "implementation": "loop-same",
+            "lastModified": "2024-01-15T10:00:00Z"
+        },
+        "shipping": {
+            "description": "Shipping Information",
+            "actions": [
+                "enter_address",
+                "select_shipping_method",
+                "continue"
+            ],
+            "transitions": {
+                "continue": "payment",
+                "back": "cart"
+            },
+            "implementation": "loop-different",
+            "lastModified": "2024-01-15T10:00:00Z"
+        },
+        "payment": {
+            "description": "Payment Information",
+            "actions": [
+                "enter_card",
+                "enter_billing",
+                "place_order"
+            ],
+            "transitions": {
+                "place_order": "confirmation",
+                "back": "shipping"
+            },
+            "implementation": "custom",
+            "lastModified": "2024-01-15T10:00:00Z",
+            "changeNotes": "Added support for digital wallets"
+        },
+        "confirmation": {
+            "description": "Order Confirmation",
+            "actions": [
+                "view_order",
+                "print_receipt",
+                "continue_shopping"
+            ],
+            "transitions": {
+                "continue_shopping": "catalog"
+            },
+            "implementation": "loop-same",
+            "lastModified": "2024-01-15T10:00:00Z"
+        }
+    },
+    "metadata": {
+        "team": "Checkout Team",
+        "environment": "production",
+        "generated": "2024-01-15T10:00:00Z"
+    }
+}

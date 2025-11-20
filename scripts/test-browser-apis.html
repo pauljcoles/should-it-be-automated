@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser API Compatibility Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .browser-info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🧪 Browser API Compatibility Test</h1>
+
+    <div class="browser-info">
+        <strong>Browser:</strong> <span id="browser-name"></span><br>
+        <strong>User Agent:</strong> <span id="user-agent"></span>
+    </div>
+
+    <div class="test-section">
+        <h2>localStorage API</h2>
+        <button onclick="testLocalStorage()">Test localStorage</button>
+        <div id="localStorage-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Clipboard API</h2>
+        <button onclick="testClipboard()">Test Clipboard Write</button>
+        <button onclick="testClipboardFallback()">Test Fallback</button>
+        <div id="clipboard-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>File API</h2>
+        <button onclick="testFileDownload()">Test File Download</button>
+        <input type="file" id="file-input" accept=".json" style="display:none">
+        <button onclick="document.getElementById('file-input').click()">Test File Upload</button>
+        <div id="file-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>JSON API</h2>
+        <button onclick="testJSON()">Test JSON Serialization</button>
+        <div id="json-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Blob & URL API</h2>
+        <button onclick="testBlobURL()">Test Blob & URL</button>
+        <div id="blob-result"></div>
+    </div>
+
+    <script>
+        // Display browser info
+        document.getElementById('browser-name').textContent = getBrowserName();
+        document.getElementById('user-agent').textContent = navigator.userAgent;
+
+        function getBrowserName() {
+            const ua = navigator.userAgent;
+            if (ua.includes('Firefox')) return 'Firefox';
+            if (ua.includes('Edg')) return 'Edge (Chromium)';
+            if (ua.includes('Chrome')) return 'Chrome';
+            if (ua.includes('Safari') && !ua.includes('Chrome')) return 'Safari';
+            return 'Unknown';
+        }
+
+        function showResult(elementId, message, type = 'success') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="test-result ${type}">${message}</div>`;
+        }
+
+        // localStorage Test
+        function testLocalStorage() {
+            try {
+                const testKey = '__test_storage__';
+                const testValue = { test: 'data', timestamp: Date.now() };
+
+                // Test write
+                localStorage.setItem(testKey, JSON.stringify(testValue));
+
+                // Test read
+                const retrieved = JSON.parse(localStorage.getItem(testKey));
+
+                // Test delete
+                localStorage.removeItem(testKey);
+
+                // Check if deleted
+                const afterDelete = localStorage.getItem(testKey);
+
+                if (afterDelete === null && retrieved.test === 'data') {
+                    showResult('localStorage-result', '✅ localStorage: PASS - Read, write, and delete operations work correctly', 'success');
+                } else {
+                    showResult('localStorage-result', '❌ localStorage: FAIL - Operations did not complete as expected', 'error');
+                }
+            } catch (error) {
+                showResult('localStorage-result', `❌ localStorage: ERROR - ${error.message}`, 'error');
+            }
+        }
+
+        // Clipboard Test
+        async function testClipboard() {
+            try {
+                if (!navigator.clipboard) {
+                    showResult('clipboard-result', '⚠️ Clipboard API not available - Fallback required', 'info');
+                    return;
+                }
+
+                const testText = 'Test clipboard content: ' + Date.now();
+                await navigator.clipboard.writeText(testText);
+
+                // Try to read back (may fail due to permissions)
+                try {
+                    const readText = await navigator.clipboard.readText();
+                    if (readText === testText) {
+                        showResult('clipboard-result', '✅ Clipboard API: PASS - Write and read operations work', 'success');
+                    } else {
+                        showResult('clipboard-result', '✅ Clipboard API: PARTIAL - Write works, read may be restricted', 'info');
+                    }
+                } catch (readError) {
+                    showResult('clipboard-result', '✅ Clipboard API: PARTIAL - Write works, read requires permission', 'info');
+                }
+            } catch (error) {
+                showResult('clipboard-result', `❌ Clipboard API: ERROR - ${error.message}`, 'error');
+            }
+        }
+
+        // Clipboard Fallback Test
+        function testClipboardFallback() {
+            try {
+                const textArea = document.createElement('textarea');
+                textArea.value = 'Fallback clipboard test: ' + Date.now();
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+
+                if (successful) {
+                    showResult('clipboard-result', '✅ Clipboard Fallback: PASS - execCommand works', 'success');
+                } else {
+                    showResult('clipboard-result', '❌ Clipboard Fallback: FAIL - execCommand not supported', 'error');
+                }
+            } catch (error) {
+                showResult('clipboard-result', `❌ Clipboard Fallback: ERROR - ${error.message}`, 'error');
+            }
+        }
+
+        // File Download Test
+        function testFileDownload() {
+            try {
+                const data = { test: 'data', timestamp: Date.now() };
+                const json = JSON.stringify(data, null, 2);
+                const blob = new Blob([json], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'test-download.json';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+
+                showResult('file-result', '✅ File Download: PASS - File download initiated', 'success');
+            } catch (error) {
+                showResult('file-result', `❌ File Download: ERROR - ${error.message}`, 'error');
+            }
+        }
+
+        // File Upload Test
+        document.getElementById('file-input').addEventListener('change', async (event) => {
+            try {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const text = await file.text();
+                const data = JSON.parse(text);
+
+                showResult('file-result', `✅ File Upload: PASS - Successfully read and parsed ${file.name}`, 'success');
+            } catch (error) {
+                showResult('file-result', `❌ File Upload: ERROR - ${error.message}`, 'error');
+            }
+        });
+
+        // JSON Test
+        function testJSON() {
+            try {
+                const testData = {
+                    string: 'test',
+                    number: 42,
+                    boolean: true,
+                    null: null,
+                    array: [1, 2, 3],
+                    nested: { key: 'value' },
+                    unicode: '🎉 émoji 中文',
+                    special: 'quotes "test" and \\backslash\\'
+                };
+
+                const json = JSON.stringify(testData);
+                const parsed = JSON.parse(json);
+
+                const matches = JSON.stringify(testData) === JSON.stringify(parsed);
+
+                if (matches) {
+                    showResult('json-result', '✅ JSON API: PASS - Serialization and parsing work correctly', 'success');
+                } else {
+                    showResult('json-result', '❌ JSON API: FAIL - Round-trip failed', 'error');
+                }
+            } catch (error) {
+                showResult('json-result', `❌ JSON API: ERROR - ${error.message}`, 'error');
+            }
+        }
+
+        // Blob & URL Test
+        function testBlobURL() {
+            try {
+                const blob = new Blob(['test content'], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+
+                if (url && url.startsWith('blob:')) {
+                    URL.revokeObjectURL(url);
+                    showResult('blob-result', '✅ Blob & URL API: PASS - Blob creation and URL generation work', 'success');
+                } else {
+                    showResult('blob-result', '❌ Blob & URL API: FAIL - URL generation failed', 'error');
+                }
+            } catch (error) {
+                showResult('blob-result', `❌ Blob & URL API: ERROR - ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-run all tests on load
+        window.addEventListener('load', () => {
+            console.log('Browser API Compatibility Test loaded');
+            console.log('Click buttons to test individual APIs');
+        });
+    </script>
+</body>
+
+</html>
