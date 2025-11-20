@@ -54,10 +54,10 @@ npm run preview
 
 ## Documentation
 
-- **[User Guide](USER_GUIDE.md)**: Complete guide for using the application
-- **[Developer Guide](DEVELOPER_GUIDE.md)**: Technical documentation for developers
-- **[Deployment Guide](DEPLOYMENT.md)**: Instructions for deploying to production
-- **[Deployment Checklist](DEPLOYMENT_CHECKLIST.md)**: Pre and post-deployment verification
+- **[User Guide](docs/USER_GUIDE.md)**: Complete guide for using the application
+- **[Developer Guide](docs/DEVELOPER_GUIDE.md)**: Technical documentation for developers
+- **[Deployment Guide](docs/DEPLOYMENT.md)**: Instructions for deploying to production
+- **[Deployment Checklist](docs/DEPLOYMENT_CHECKLIST.md)**: Pre and post-deployment verification
 
 ## Deployment
 
@@ -86,7 +86,7 @@ npm install -g vercel
 vercel --prod
 ```
 
-See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions.
+See [DEPLOYMENT.md](docs/DEPLOYMENT.md) for detailed instructions.
 
 ## Technology Stack
 
@@ -133,7 +133,7 @@ src/
 7. Push to branch: `git push origin feature/my-feature`
 8. Create a pull request
 
-See [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) for detailed development instructions.
+See [DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md) for detailed development instructions.
 
 ## License
 
@@ -142,8 +142,8 @@ See [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) for detailed development instructio
 ## Support
 
 For questions or issues:
-- Review the [User Guide](USER_GUIDE.md)
-- Check the [Developer Guide](DEVELOPER_GUIDE.md)
+- Review the [User Guide](docs/USER_GUIDE.md)
+- Check the [Developer Guide](docs/DEVELOPER_GUIDE.md)
 - Open an issue on the repository
 
 ---
