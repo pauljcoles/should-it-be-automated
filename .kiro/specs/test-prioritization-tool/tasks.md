@@ -484,27 +484,27 @@
     - Share URL with team
 
 
-- [ ] 22. Add Initial Judgment (Gut Feel) feature
-  - [ ] 22.1 Add initialJudgment field to TestCase model
+- [-] 22. Add Initial Judgment (Gut Feel) feature
+  - [x] 22.1 Add initialJudgment field to TestCase model
     - Add optional field: 'definitely-automate' | 'probably-automate' | 'unsure' | 'probably-skip' | 'definitely-skip'
     - Update TypeScript interfaces in types/models.ts
     - _Requirements: New feature for bias detection and learning_
 
-  - [ ] 22.2 Add Initial Judgment input to TestCaseRow
+  - [x] 22.2 Add Initial Judgment input to TestCaseRow
     - Add dropdown/radio buttons for initial judgment selection
     - Position before scoring fields (to capture instinct first)
     - Make it optional/skippable
     - Add tooltip explaining the purpose
     - _Requirements: New feature_
 
-  - [ ] 22.3 Add judgment comparison display
+  - [x] 22.3 Add judgment comparison display
     - Show comparison after score is calculated
     - Display warning icon when gut feel doesn't match recommendation
     - Add explanation of why the judgment differed
     - Track accuracy over time (optional)
     - _Requirements: New feature_
 
-  - [ ] 22.4 Add collapsible/hideable option for experienced users
+  - [x] 22.4 Add collapsible/hideable option for experienced users
     - Add setting to hide initial judgment column
     - Store preference in localStorage
     - Allow quick toggle in settings
@@ -516,7 +516,7 @@
     - Test localStorage persistence of preference
     - _Requirements: New feature_
 
-  - [ ] 22.6 Update documentation
+  - [x] 22.6 Update documentation
     - Add section to USER_GUIDE.md explaining gut feel feature
     - Include examples of when gut feel was wrong
     - Explain the learning value
@@ -724,3 +724,278 @@
     - Add troubleshooting section
     - Include video/screenshot tutorials
     - _Requirements: Documentation accuracy_
+
+
+- [-] 26. UI/UX Improvements and Scoring Model Refinement
+  - [x] 26.1 Move Initial Judgment (Gut Feel) column to be first
+    - Reorder table columns so Gut Feel appears immediately after Test Name
+    - Update column header order in TestCaseTable
+    - Update cell order in TestCaseRow
+    - Update mobile card view to show Gut Feel near the top
+    - Rationale: Capture instinct before seeing any other fields
+    - _Requirements: UX improvement for bias detection_
+
+  - [ ] 26.2 Apply Neo-Brutalist design to desktop test case rows
+    - Add bold black borders (border-brutal) to table cells
+    - Increase border thickness between rows (border-4)
+    - Add shadow effects to input fields (shadow-brutal)
+    - Use high-contrast colors for better visual hierarchy
+    - Add subtle hover effects with border emphasis
+    - Ensure consistency with existing Neo-Brutalist header design
+    - Test on various screen sizes to ensure readability
+    - _Requirements: Design consistency and visual appeal_
+
+  - [x] 26.3 Replace Implementation Type with Angie's Effort Model
+    - Remove "Implementation Type" dropdown field from TestCase model
+    - Add two new fields to TestCase interface:
+      - `easyToAutomate: number` (1-5 slider)
+      - `quickToAutomate: number` (1-5 slider)
+    - Update ScoreCalculator to use new effort calculation:
+      - `effortScore = easyToAutomate × quickToAutomate` (0-25)
+    - Update TestCaseRow component:
+      - Replace Implementation Type dropdown with two sliders
+      - Add labels: "Easy to Automate?" and "Quick to Automate?"
+      - Add tooltips explaining the scale (1=very difficult/slow, 5=very easy/fast)
+    - Update all existing test cases to migrate from implementationType to effort scores
+    - _Requirements: Align with Angie Jones' actual methodology_
+
+  - [ ] 26.4 Update field labels and terminology for clarity
+    - Rename "User Frequency" to "Usage Frequency" or "How Often Used?"
+    - Rename "Business Impact" to "Impact if Broken"
+    - Rename "Affected Areas" to "Connected Components"
+    - Add helper text/tooltips for each field explaining what to consider
+    - Update all documentation to reflect new terminology
+    - _Requirements: Reduce confusion and improve usability_
+
+  - [ ] 26.5 Update score calculation display
+    - Rename "Ease Score" to "Effort Score" in UI
+    - Update score tooltips to explain new calculation
+    - Update HelpModal scoring guide with new effort model
+    - Add examples showing how to rate easy/quick values
+    - _Requirements: Clarity and alignment with Angie's model_
+
+  - [ ] 26.6 Create migration utility for existing data
+    - Write function to convert old implementationType to effort scores:
+      - 'standard-components' → easy: 5, quick: 5
+      - 'new-pattern' → easy: 3, quick: 3
+      - 'custom-implementation' → easy: 1, quick: 2
+      - 'hybrid' → easy: 2, quick: 3
+    - Add migration on app load if old format detected
+    - Show notification to user about data migration
+    - _Requirements: Backward compatibility_
+
+  - [ ]* 26.7 Update tests for new effort model
+    - Update ScoreCalculator tests for new effort calculation
+    - Update TestCase interface tests
+    - Update component tests for new slider inputs
+    - Update property-based tests if needed
+    - _Requirements: Test coverage_
+
+  - [ ] 26.8 Update documentation for new scoring model
+    - Update USER_GUIDE.md with new effort model explanation
+    - Update HelpModal with examples of easy/quick ratings
+    - Add FAQ about the change from implementation types
+    - Update design.md specification
+    - Include examples: "TV-first modal" scenario
+    - _Requirements: User education_
+
+
+
+- [ ] 27. Implement "Did Code Change?" field and Organisational Pressure with Real Talk teaching
+  - [ ] 27.1 Replace Change Type with "Did Code Change?" field
+    - Remove existing `changeType` field from TestCase model
+    - Add new field: `codeChange: 'new' | 'modified' | 'ui-only' | 'unchanged'`
+    - Update TestCaseRow component to replace dropdown with new options:
+      - "Yes - New (never existed before)"
+      - "Yes - Modified (behaviour/logic changed)"
+      - "Yes - UI only (styling/layout changed)"
+      - "No - Unchanged (works the same way)"
+    - Add prominent help text: "💡 If unchanged, you probably don't need to test it again!"
+    - Auto-set distinctness based on code change:
+      - new → 5 (maximum new information)
+      - modified → 4 (significant new information)
+      - ui-only → 2 (some new information)
+      - unchanged → 0 (provides NO new information)
+    - _Requirements: Teaching risk-based testing principle_
+
+  - [ ] 27.2 Add Organisational Pressure field
+    - Add new field to TestCase model: `organisationalPressure: number` (1-5 slider)
+    - Add slider to TestCaseRow component after Legal Requirement
+    - Add label: "Organisational Pressure"
+    - Add tooltip explaining:
+      - 1 = No pressure, team decides
+      - 3 = Some stakeholder anxiety
+      - 5 = High pressure, must show coverage
+    - Store in localStorage with other test case data
+    - _Requirements: Acknowledge organisational reality_
+
+  - [ ] 27.3 Update scoring to separate Technical and Organisational recommendations
+    - Keep existing Technical Score calculation (0-100)
+    - Technical Score = Risk + Value + Effort + History + Legal
+    - Technical Recommendation (always shown):
+      - 67-100: ✅ AUTOMATE (Green)
+      - 34-66: ⚠️ MAYBE (Yellow)
+      - 0-33: ❌ DON'T AUTOMATE (Red)
+    - Add Organisational Recommendation logic (conditional):
+      - Only shown when organisationalPressure ≥ 3
+      - Logic:
+        - High Pressure (≥3) + Low Technical Score (<34) + Unchanged → Show Real Talk (ONE SMOKE TEST)
+        - High Pressure (≥3) + High Technical Score (≥67) → Show "AUTOMATE - COMPREHENSIVE ✅"
+        - High Pressure (≥3) + Medium Score (34-66) → Show "MAYBE - evaluate stakeholder needs ⚠️"
+      - Display as separate section below Technical Recommendation
+    - Update ScoreCalculator service with new logic
+    - _Requirements: Honest technical scoring + pragmatic guidance_
+
+  - [ ] 27.4 Add "Unchanged Code" warning
+    - When user selects codeChange = 'unchanged', show inline warning:
+      ```
+      ⚠️ UNCHANGED CODE DETECTED
+      
+      This functionality hasn't changed. Consider:
+      - Do existing tests already cover this?
+      - Is this truly NEW risk?
+      - Are you duplicating coverage unnecessarily?
+      
+      💡 Risk-based testing means: Test what CHANGED, not what's 
+         reachable via a new route.
+      ```
+    - Display below the "Did Code Change?" field
+    - Use warning color (yellow/amber)
+    - Make dismissible but show by default
+    - _Requirements: Active teaching at point of decision_
+
+  - [ ] 27.5 Implement "Real Talk" teaching section
+    - Create RealTalkSection component
+    - Display when ALL conditions met:
+      - Technical Score < 34 (DON'T AUTOMATE)
+      - organisationalPressure ≥ 3 (stakeholder anxiety)
+      - codeChange === 'unchanged' OR (codeChange === 'ui-only' AND technicalScore < 34)
+    - Show distinctive "💭 REAL TALK" header
+    - Display message:
+      ```
+      Technically, you don't need this test. The [feature name] code didn't change.
+      
+      But we know how organisations work. Sometimes you need to show "the new thing 
+      works end-to-end" even when that's not where the risk is.
+      
+      Our advice:
+      ✓ Write ONE smoke test as organisational insurance
+      ✗ Don't write comprehensive coverage for unchanged code
+      
+      Then spend your time on what matters: [list high-scoring tests from session]
+      ```
+    - Dynamically fill in:
+      - [feature name] = test name from current row
+      - [list high-scoring tests] = other tests in session with score ≥67
+    - Make section always visible (not collapsible) - this is the teaching moment
+    - Style with distinct background colour to draw attention
+    - _Requirements: Teaching pragmatic risk-based testing_
+
+  - [ ] 27.6 Update Summary Stats to show teaching insights
+    - Add new summary section showing:
+      - Total tests scored
+      - ✅ Automate: X tests (list names)
+      - ⚠️ Maybe/Smoke: X tests (organisational compromises)
+      - ❌ Don't: X tests (unchanged code)
+    - Add teaching message:
+      ```
+      💡 Only X need automation! The other Y test unchanged code - 
+         you already have coverage. Focus effort on what actually changed.
+      
+      ⚠️ Z tests triggered "Real Talk" - organisational pressure on unchanged code.
+         Remember: One smoke test for stakeholder confidence, not comprehensive coverage.
+      ```
+    - Show breakdown of code change types:
+      - New: X tests
+      - Modified: X tests
+      - UI only: X tests
+      - Unchanged: X tests
+    - Track and display Real Talk occurrences
+    - _Requirements: Session-level teaching and reflection_
+
+  - [ ] 27.7 Add Gut Feel comparison with Real Talk
+    - When Gut Feel says "automate" but Real Talk appears, show:
+      ```
+      🤔 YOUR GUT vs REALITY
+      
+      Your instinct: Definitely/Probably automate
+      Technical reality: Don't automate (unchanged code)
+      Organisational reality: One smoke test for stakeholder confidence
+      
+      This is a common pattern - we feel we should test everything in a 
+      new journey, but risk-based testing says focus on what changed.
+      ```
+    - Display location:
+      - Inline in test row when gut feel conflicts with recommendation
+      - Also in session summary showing overall gut feel accuracy
+    - Help calibrate intuition over time
+    - Track how often gut feel aligns with technical vs organisational recommendation
+    - _Requirements: Teaching calibration_
+
+  - [ ] 27.8 Update ScoreCalculator with new distinctness logic
+    - Remove manual distinctness input
+    - Auto-calculate distinctness from codeChange field:
+      - new → 5
+      - modified → 4
+      - ui-only → 2
+      - unchanged → 0
+    - Update calculateValueScore to use auto-set distinctness
+    - Update all score explanations to reference code change
+    - _Requirements: Simplify input, enforce teaching_
+
+  - [ ] 27.9 Integrate state diagram with "Did Code Change?" auto-detection
+    - When importing state diagram with diff:
+      - States with lastModified changed → pre-select "Yes - Modified"
+      - States with new transitions/actions → pre-select "Yes - Modified"
+      - New states not in previous diagram → pre-select "Yes - New"
+      - States unchanged in diff → pre-select "No - Unchanged"
+    - User can override auto-selection after import
+    - Show diff summary explaining auto-selections
+    - Update StateDiagramService to detect change types
+    - Update generateTestCases to set codeChange field
+    - _Requirements: Automated change detection from state diagrams_
+
+  - [ ] 27.10 Create example scenarios in HelpModal
+    - Add "Real Talk Examples" tab to HelpModal
+    - Show three scenarios:
+      1. Unchanged functionality with high pressure (TV journey customer details)
+      2. Actually changed code with high pressure (BB modal selection)
+      3. Unchanged with low pressure (postcode validation)
+    - Include full scoring breakdown and recommendations for each
+    - Show what Real Talk section would display
+    - Add examples of what counts as "unchanged" vs "modified"
+    - Add organisational pressure explanation
+    - _Requirements: Concrete teaching examples_
+
+  - [ ] 27.11 Update data migration for new fields
+    - Migrate existing changeType to codeChange:
+      - 'new-functionality' → 'new'
+      - 'modified-functionality' → 'modified'
+      - 'ui-change' → 'ui-only'
+      - 'refactoring' → 'unchanged'
+    - Add default organisationalPressure = 1 for existing tests
+    - Recalculate distinctness based on new codeChange values
+    - Show migration notification to user
+    - _Requirements: Backward compatibility_
+
+  - [ ]* 27.12 Write tests for new teaching features
+    - Test Real Talk section display conditions
+    - Test distinctness auto-calculation from codeChange
+    - Test organisational recommendation logic
+    - Test summary stats calculations
+    - Test gut feel comparison display
+    - Test state diagram auto-detection of code changes
+    - Test data migration
+    - _Requirements: Test coverage_
+
+  - [ ] 27.13 Update all documentation
+    - Update USER_GUIDE.md with:
+      - "Did Code Change?" field explanation
+      - Organisational Pressure concept
+      - Real Talk section purpose
+      - Example scenarios
+    - Update HelpModal with new fields and logic
+    - Update design.md specification
+    - Add FAQ about technical vs organisational recommendations
+    - Include Angie Jones' "don't test what didn't change" principle
+    - _Requirements: User education and onboarding_

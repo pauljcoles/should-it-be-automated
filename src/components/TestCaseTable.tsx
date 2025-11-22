@@ -11,7 +11,7 @@ import { SummaryStats } from './SummaryStats';
 import type { TestCase, SortConfig } from '../types/models';
 
 export function TestCaseTable() {
-  const { appState, filters, sortConfig, toggleSort } = useAppContext();
+  const { appState, filters, sortConfig, toggleSort, userPreferences } = useAppContext();
 
   // ========================================================================
   // Filter and Sort Logic
@@ -104,7 +104,7 @@ export function TestCaseTable() {
     return (
       <th
         onClick={() => toggleSort(column)}
-        className={`px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none touch-manipulation ${className}`}
+        className={`px-2 sm:px-4 py-3 text-left text-base font-medium text-gray-700 cursor-pointer hover:bg-gray-100 select-none touch-manipulation ${className}`}
       >
         <div className="flex items-center gap-1">
           <span>{label}</span>
@@ -132,40 +132,70 @@ export function TestCaseTable() {
       {/* Filters */}
       <TableFilters />
 
-      {/* Table Container - Horizontal scroll on tablet/mobile, fixed headers */}
-      <div className="flex-1 overflow-x-auto overflow-y-auto">
-        {/* Touch-friendly scrolling with momentum */}
-        <div className="min-w-full" style={{ WebkitOverflowScrolling: 'touch' }}>
-          <table className="min-w-full divide-y divide-gray-200">
+      {/* Table Container - Table on desktop, cards on mobile */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="w-full">
+          {/* Desktop Table - hidden on mobile */}
+          <table className="hidden lg:table w-full table-auto divide-y divide-gray-200">
             <thead className="bg-gray-50 sticky top-0 z-10">
               <tr>
-                {/* Responsive column widths: smaller on mobile */}
-                <ColumnHeader column="testName" label="Test Name" className="min-w-[150px] sm:min-w-[200px]" />
-                <ColumnHeader column="changeType" label="Change Type" className="min-w-[120px] sm:min-w-[150px]" />
-                <ColumnHeader column="implementationType" label="Implementation" className="min-w-[120px] sm:min-w-[150px]" />
-                <ColumnHeader column="userFrequency" label="Frequency" className="min-w-[90px] sm:min-w-[100px]" />
-                <ColumnHeader column="businessImpact" label="Impact" className="min-w-[90px] sm:min-w-[100px]" />
-                <ColumnHeader column="affectedAreas" label="Areas" className="min-w-[80px] sm:min-w-[100px]" />
-                <ColumnHeader column="isLegal" label="Legal" className="min-w-[70px] sm:min-w-[80px]" />
-                <ColumnHeader column="scores.risk" label="Risk" className="min-w-[70px] sm:min-w-[80px]" />
-                <ColumnHeader column="scores.value" label="Value" className="min-w-[70px] sm:min-w-[80px]" />
-                <ColumnHeader column="scores.ease" label="Ease" className="min-w-[70px] sm:min-w-[80px]" />
-                <ColumnHeader column="scores.history" label="History" className="min-w-[70px] sm:min-w-[80px]" />
-                <ColumnHeader column="scores.legal" label="Legal" className="min-w-[70px] sm:min-w-[80px]" />
-                <ColumnHeader column="scores.total" label="Total" className="min-w-[70px] sm:min-w-[80px]" />
-                <ColumnHeader column="recommendation" label="Recommendation" className="min-w-[120px] sm:min-w-[140px]" />
-                <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider min-w-[150px] sm:min-w-[200px]">
-                  Notes
+                <ColumnHeader column="testName" label="Test Name" className="min-w-[200px]" />
+                {userPreferences.showInitialJudgment && (
+                  <th className="px-2 py-2 text-left text-base font-medium text-gray-700 min-w-[160px]">
+                    <div className="flex items-center gap-1">
+                      <span>Gut Feel</span>
+                      <span 
+                        className="cursor-help text-blue-500" 
+                        title="Your initial judgment before seeing the calculated score. Helps identify biases and learn from scoring patterns."
+                      >
+                        ℹ️
+                      </span>
+                    </div>
+                  </th>
+                )}
+                <th className="px-2 py-2 text-left text-base font-medium text-gray-700 min-w-[180px]">
+                  <div className="flex items-center gap-1">
+                    <span>New or Changed?</span>
+                    <span 
+                      className="cursor-help text-blue-500" 
+                      title="Does this test verify something new or changed?"
+                    >
+                      ℹ️
+                    </span>
+                  </div>
                 </th>
-                <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider min-w-[100px] sm:min-w-[120px]">
-                  Actions
+                <th className="px-2 py-2 text-left text-base font-medium text-gray-700 min-w-[140px]">
+                  <div className="flex items-center gap-1">
+                    <span>Easy?</span>
+                    <span 
+                      className="cursor-help text-blue-500" 
+                      title="How easy is it to automate? (1=very difficult, 5=very easy)"
+                    >
+                      ℹ️
+                    </span>
+                  </div>
                 </th>
+                <th className="px-2 py-2 text-left text-base font-medium text-gray-700 min-w-[140px]">
+                  <div className="flex items-center gap-1">
+                    <span>Quick?</span>
+                    <span 
+                      className="cursor-help text-blue-500" 
+                      title="How quick is it to automate? (1=very slow, 5=very fast)"
+                    >
+                      ℹ️
+                    </span>
+                  </div>
+                </th>
+                <ColumnHeader column="userFrequency" label="Freq" className="w-16" />
+                <ColumnHeader column="businessImpact" label="Impact" className="w-16" />
+                <ColumnHeader column="affectedAreas" label="Areas" className="w-16" />
+                <ColumnHeader column="isLegal" label="Legal" className="w-16" />
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredAndSortedTestCases.length === 0 ? (
                 <tr>
-                  <td colSpan={16} className="px-2 sm:px-4 py-8 text-center text-gray-500">
+                  <td colSpan={userPreferences.showInitialJudgment ? 9 : 8} className="px-2 sm:px-4 py-8 text-center text-gray-500">
                     {appState.testCases.length === 0 ? (
                       <div>
                         <p className="text-base sm:text-lg font-medium mb-2">No test cases yet</p>
@@ -186,6 +216,29 @@ export function TestCaseTable() {
               )}
             </tbody>
           </table>
+
+          {/* Mobile Cards - hidden on desktop */}
+          <div className="lg:hidden space-y-3 p-2">
+            {filteredAndSortedTestCases.length === 0 ? (
+              <div className="px-4 py-8 text-center text-gray-500">
+                {appState.testCases.length === 0 ? (
+                  <div>
+                    <p className="text-lg font-medium mb-2">No test cases yet</p>
+                    <p className="text-sm">Click "Add Row" to create your first test case</p>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-lg font-medium mb-2">No matching test cases</p>
+                    <p className="text-sm">Try adjusting your filters</p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              filteredAndSortedTestCases.map(testCase => (
+                <TestCaseRow key={testCase.id} testCase={testCase} isMobile />
+              ))
+            )}
+          </div>
         </div>
       </div>
 

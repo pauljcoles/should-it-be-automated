@@ -81,6 +81,56 @@ Each test case has the following fields:
 | **Notes** | Text | Additional context or rationale |
 | **Scenario ID** | Text | Link to external scenario tool |
 | **Jira Ticket** | Text | Associated Jira ticket number |
+| **Initial Judgment (Gut Feel)** | Dropdown | Your instinctive decision before seeing scores (optional) |
+
+### Initial Judgment (Gut Feel) Feature
+
+The Initial Judgment feature helps you identify biases and learn from the scoring system by capturing your instinctive decision before seeing the calculated scores.
+
+#### How It Works
+
+1. **Before Scoring**: When creating a new test case, select your gut feel from the dropdown:
+   - ✓✓ **Definitely Automate**: You're confident this should be automated
+   - ✓ **Probably Automate**: You think automation makes sense
+   - ? **Unsure**: You're not sure either way
+   - ✗ **Probably Skip**: You think manual testing is better
+   - ✗✗ **Definitely Skip**: You're confident this shouldn't be automated
+
+2. **After Scoring**: Once you fill in the risk factors, the tool calculates the recommendation and compares it to your gut feel
+
+3. **Mismatch Warning**: If your gut feel doesn't match the calculated recommendation, you'll see a ⚠️ warning icon with an explanation
+
+#### Why Use This Feature?
+
+**Learning Value**: Over time, you'll notice patterns in when your gut feel matches or differs from the calculated scores. This helps you:
+- Understand which factors you naturally overweight or underweight
+- Identify biases in your decision-making
+- Learn to make better instinctive decisions
+- Trust the scoring system more as you see it catch things you missed
+
+**Common Mismatches**:
+
+| Your Gut Feel | Calculated Rec | Why This Happens |
+|---------------|----------------|------------------|
+| Definitely Automate | Don't Automate | You may be overestimating user frequency or underestimating implementation complexity |
+| Definitely Skip | Automate | You may be missing the business impact or not considering how easy standard components are to test |
+| Unsure | Automate/Don't Automate | You need more context about risk factors - the scoring helps clarify |
+
+**Example: When Gut Feel Was Wrong**
+
+*Scenario*: Testing a new admin dashboard feature
+- **Your Gut Feel**: "Definitely Skip" - it's admin-only, low user frequency
+- **Calculated Recommendation**: "Automate" (Score: 72)
+- **Why**: While user frequency is low (2), business impact is critical (5), it uses standard components (ease: 25), and it's legally required (legal: 20)
+- **Learning**: Legal requirements and ease of implementation can outweigh low frequency
+
+#### Hiding the Column
+
+Experienced users who no longer need this learning aid can hide the column:
+1. Click the **"HIDE GUT FEEL"** button in the header (eye icon)
+2. The column disappears from both desktop and mobile views
+3. Click **"SHOW GUT FEEL"** to bring it back
+4. Your preference is saved automatically
 
 ### Calculated Scores
 

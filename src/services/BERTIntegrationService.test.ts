@@ -148,7 +148,7 @@ describe('BERTIntegrationService', () => {
 
             expect(testCase.scores.risk).toBe(9); // 3 * 3
             expect(testCase.scores.value).toBe(15); // 5 * 3 (new with businessImpact 3)
-            expect(testCase.scores.ease).toBe(25); // 5 * 5 (loop-same)
+            expect(testCase.scores.effort).toBe(25); // 5 * 5 (standard-components)
             expect(testCase.scores.history).toBe(3); // min(3, 5)
             expect(testCase.scores.legal).toBe(0); // not legal
             expect(testCase.scores.total).toBe(52); // sum of all
@@ -192,7 +192,7 @@ describe('BERTIntegrationService', () => {
             expect(formatted).toContain('MAYBE');
             expect(formatted).toContain('Risk Score:    20/25');
             expect(formatted).toContain('Value Score:   25/25');
-            expect(formatted).toContain('Ease Score:    5/25');
+            expect(formatted).toContain('Effort Score:  5/25');
             expect(formatted).toContain('History Score: 3/5');
             expect(formatted).toContain('Legal Score:   0/20');
             expect(formatted).toContain('Important test case');

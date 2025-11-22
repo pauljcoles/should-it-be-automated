@@ -71,75 +71,73 @@ export function SummaryStats({ testCases }: SummaryStatsProps) {
   }, [testCases]);
 
   return (
-    <div className="bg-white border-t border-gray-200 px-2 sm:px-4 py-3 sm:py-4">
-      {/* Responsive grid: 2 columns on mobile, 3 on tablet, 6 on desktop */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
+    <div className="bg-white border-t-2 border-black px-2 py-2">
+      {/* Compact single row on mobile, grid on desktop */}
+      <div className="flex lg:grid lg:grid-cols-6 gap-1 lg:gap-3 overflow-x-auto lg:overflow-visible text-xs">
         {/* Total Count */}
-        <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
-          <div className="text-xs text-gray-600 font-medium mb-1">Total Tests</div>
-          <div className="text-xl sm:text-2xl font-bold text-gray-900">{stats.totalCount}</div>
+        <div className="bg-gray-50 rounded px-2 py-1 min-w-[60px] text-center">
+          <div className="text-gray-600 font-medium">Total</div>
+          <div className="text-lg font-bold text-gray-900">{stats.totalCount}</div>
         </div>
 
         {/* Automate Count */}
-        <div className="bg-green-50 rounded-lg p-2 sm:p-3">
-          <div className="text-xs text-green-700 font-medium mb-1">Automate</div>
-          <div className="text-xl sm:text-2xl font-bold text-green-800">
+        <div className="bg-green-50 rounded px-2 py-1 min-w-[60px] text-center">
+          <div className="text-green-700 font-medium">Auto</div>
+          <div className="text-lg font-bold text-green-800">
             {stats.recommendationCounts[Recommendation.AUTOMATE]}
           </div>
         </div>
 
         {/* Maybe Count */}
-        <div className="bg-yellow-50 rounded-lg p-2 sm:p-3">
-          <div className="text-xs text-yellow-700 font-medium mb-1">Maybe</div>
-          <div className="text-xl sm:text-2xl font-bold text-yellow-800">
+        <div className="bg-yellow-50 rounded px-2 py-1 min-w-[60px] text-center">
+          <div className="text-yellow-700 font-medium">Maybe</div>
+          <div className="text-lg font-bold text-yellow-800">
             {stats.recommendationCounts[Recommendation.MAYBE]}
           </div>
         </div>
 
         {/* Don't Automate Count */}
-        <div className="bg-red-50 rounded-lg p-2 sm:p-3">
-          <div className="text-xs text-red-700 font-medium mb-1">Don't Automate</div>
-          <div className="text-xl sm:text-2xl font-bold text-red-800">
+        <div className="bg-red-50 rounded px-2 py-1 min-w-[60px] text-center">
+          <div className="text-red-700 font-medium">No</div>
+          <div className="text-lg font-bold text-red-800">
             {stats.recommendationCounts[Recommendation.DONT_AUTOMATE]}
           </div>
         </div>
 
         {/* Average Score */}
-        <div className="bg-blue-50 rounded-lg p-2 sm:p-3">
-          <div className="text-xs text-blue-700 font-medium mb-1">Avg Score</div>
-          <div className="text-xl sm:text-2xl font-bold text-blue-800">
+        <div className="bg-blue-50 rounded px-2 py-1 min-w-[60px] text-center">
+          <div className="text-blue-700 font-medium">Avg</div>
+          <div className="text-lg font-bold text-blue-800">
             {stats.averageScore}
-            <span className="text-xs sm:text-sm font-normal text-blue-600">/100</span>
+            <span className="text-xs font-normal text-blue-600">/100</span>
           </div>
         </div>
 
         {/* Legal Count */}
-        <div className="bg-purple-50 rounded-lg p-2 sm:p-3">
-          <div className="text-xs text-purple-700 font-medium mb-1">Legal Required</div>
-          <div className="text-xl sm:text-2xl font-bold text-purple-800">{stats.legalCount}</div>
+        <div className="bg-purple-50 rounded px-2 py-1 min-w-[60px] text-center">
+          <div className="text-purple-700 font-medium">Legal</div>
+          <div className="text-lg font-bold text-purple-800">{stats.legalCount}</div>
         </div>
       </div>
 
-      {/* Change Type Breakdown - Responsive layout */}
-      <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200">
-        <div className="text-xs text-gray-600 font-medium mb-2">Change Type Distribution</div>
-        {/* Stack on mobile, flex on larger screens */}
-        <div className="flex flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm">
+      {/* Change Type Breakdown - Only show on desktop */}
+      <div className="hidden lg:block mt-2 pt-2 border-t border-gray-200">
+        <div className="flex flex-wrap gap-3 text-xs">
           <div>
             <span className="text-gray-600">New:</span>{' '}
-            <span className="font-semibold text-gray-900">{stats.changeTypeCounts[ChangeType.NEW]}</span>
+            <span className="font-semibold">{stats.changeTypeCounts[ChangeType.NEW]}</span>
           </div>
           <div>
             <span className="text-gray-600">Modified Behavior:</span>{' '}
-            <span className="font-semibold text-gray-900">{stats.changeTypeCounts[ChangeType.MODIFIED_BEHAVIOR]}</span>
+            <span className="font-semibold">{stats.changeTypeCounts[ChangeType.MODIFIED_BEHAVIOR]}</span>
           </div>
           <div>
             <span className="text-gray-600">Modified UI:</span>{' '}
-            <span className="font-semibold text-gray-900">{stats.changeTypeCounts[ChangeType.MODIFIED_UI]}</span>
+            <span className="font-semibold">{stats.changeTypeCounts[ChangeType.MODIFIED_UI]}</span>
           </div>
           <div>
             <span className="text-gray-600">Unchanged:</span>{' '}
-            <span className="font-semibold text-gray-900">{stats.changeTypeCounts[ChangeType.UNCHANGED]}</span>
+            <span className="font-semibold">{stats.changeTypeCounts[ChangeType.UNCHANGED]}</span>
           </div>
         </div>
       </div>

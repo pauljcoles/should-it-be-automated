@@ -43,6 +43,19 @@ export const Recommendation = {
 export type Recommendation = typeof Recommendation[keyof typeof Recommendation];
 
 /**
+ * Initial judgment (gut feel) before scoring
+ */
+export const InitialJudgment = {
+    DEFINITELY_AUTOMATE: 'definitely-automate',
+    PROBABLY_AUTOMATE: 'probably-automate',
+    UNSURE: 'unsure',
+    PROBABLY_SKIP: 'probably-skip',
+    DEFINITELY_SKIP: 'definitely-skip'
+} as const;
+
+export type InitialJudgment = typeof InitialJudgment[keyof typeof InitialJudgment];
+
+/**
  * Status of existing functionality
  */
 export const FunctionalityStatus = {
@@ -78,8 +91,8 @@ export interface Scores {
     /** Value score: distinctness × induction to action (0-25) */
     value: number;
 
-    /** Ease score: implementationRisk × 5 (0-25) */
-    ease: number;
+    /** Effort score: easyToAutomate × quickToAutomate (0-25) */
+    effort?: number;
 
     /** History score: min(affectedAreas, 5) (0-5) */
     history: number;
@@ -89,6 +102,9 @@ export interface Scores {
 
     /** Total score: sum of all individual scores (0-100) */
     total: number;
+
+    /** @deprecated Legacy field - use effort instead */
+    ease?: number;
 }
 
 // ============================================================================
@@ -108,8 +124,11 @@ export interface TestCase {
     /** How the functionality has changed */
     changeType: ChangeType;
 
-    /** Technical implementation approach */
-    implementationType: ImplementationType;
+    /** How easy is it to automate this test? (1=very difficult, 5=very easy) */
+    easyToAutomate?: number;
+
+    /** How quick is it to automate this test? (1=very slow, 5=very fast) */
+    quickToAutomate?: number;
 
     /** Whether this is a legal/compliance requirement */
     isLegal: boolean;
@@ -143,6 +162,12 @@ export interface TestCase {
 
     /** Link to state diagram state ID */
     stateId?: string;
+
+    /** Initial judgment (gut feel) before scoring - for bias detection and learning */
+    initialJudgment?: InitialJudgment;
+
+    /** @deprecated Legacy field - use easyToAutomate and quickToAutomate instead */
+    implementationType?: ImplementationType;
 }
 
 // ============================================================================
@@ -331,7 +356,7 @@ export interface FilterState {
  */
 export interface SortConfig {
     /** Column to sort by */
-    column: keyof TestCase | 'scores.total' | 'scores.risk' | 'scores.value' | 'scores.ease' | 'scores.history' | 'scores.legal';
+    column: keyof TestCase | 'scores.total' | 'scores.risk' | 'scores.value' | 'scores.effort' | 'scores.ease' | 'scores.history' | 'scores.legal';
 
     /** Sort direction */
     direction: 'asc' | 'desc';

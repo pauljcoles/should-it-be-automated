@@ -158,7 +158,7 @@ describe('ScoreCalculator', () => {
             expect(explanation).toContain('Score Breakdown:');
             expect(explanation).toContain('Risk Score: 25/25');
             expect(explanation).toContain('Value Score: 25/25');
-            expect(explanation).toContain('Ease Score: 25/25');
+            expect(explanation).toContain('Effort Score: 25/25');
             expect(explanation).toContain('History Score: 3/5');
             expect(explanation).toContain('Legal Score: 20/20');
             expect(explanation).toContain('Total Score: 98/100');

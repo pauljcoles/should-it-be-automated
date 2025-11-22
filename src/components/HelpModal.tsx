@@ -488,6 +488,27 @@ function FAQTab() {
 
       <div className="space-y-4">
         <div className="border-brutal bg-white p-6">
+          <h3 className="font-black text-lg mb-3">What is the "Gut Feel" column and should I use it?</h3>
+          <p className="text-gray-700 mb-3">
+            The Initial Judgment (Gut Feel) feature helps you learn from the scoring system by capturing
+            your instinctive decision before seeing the calculated scores. It's optional but valuable for:
+          </p>
+          <ul className="text-gray-700 list-disc list-inside space-y-1 ml-4 mb-3">
+            <li><strong>Learning:</strong> See when your gut feel matches or differs from objective scores</li>
+            <li><strong>Identifying Biases:</strong> Discover which factors you naturally overweight or underweight</li>
+            <li><strong>Building Trust:</strong> Gain confidence in the scoring system as you see it catch things you missed</li>
+          </ul>
+          <p className="text-gray-700 mb-3">
+            When your gut feel doesn't match the calculated recommendation, you'll see a ⚠️ warning with an
+            explanation. This is a learning opportunity, not an error!
+          </p>
+          <p className="text-gray-700">
+            <strong>For experienced users:</strong> Once you're comfortable with the scoring system, you can hide
+            this column using the "HIDE GUT FEEL" button in the header.
+          </p>
+        </div>
+
+        <div className="border-brutal bg-white p-6">
           <h3 className="font-black text-lg mb-3">What if my test scores in the "MAYBE" range?</h3>
           <p className="text-gray-700">
             Tests in the 34-66 range require judgment. Consider your team's capacity, the test's

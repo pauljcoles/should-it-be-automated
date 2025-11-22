@@ -327,20 +327,33 @@ export class StateDiagramService {
         const businessImpact = 3;
         const isLegal = false;
 
+        // Map legacy implementation type to effort scores
+        // This maintains backward compatibility with state diagrams that have implementation field
+        const implementationToEffort: Record<string, { easy: number; quick: number }> = {
+            'standard-components': { easy: 5, quick: 5 },
+            'new-pattern': { easy: 3, quick: 5 },
+            'custom-implementation': { easy: 1, quick: 5 },
+            'hybrid': { easy: 2, quick: 5 }
+        };
+        const effort = implementationToEffort[implementationType] || { easy: 3, quick: 3 };
+        const easyToAutomate = effort.easy;
+        const quickToAutomate = effort.quick;
+
         // Calculate scores
         const risk = ScoreCalculator.calculateRiskScore(userFrequency, businessImpact);
         const value = ScoreCalculator.calculateValueScore(changeType, businessImpact);
-        const ease = ScoreCalculator.calculateEaseScore(implementationType);
+        const effortScore = ScoreCalculator.calculateEffortScore(easyToAutomate, quickToAutomate);
         const history = ScoreCalculator.calculateHistoryScore(affectedAreas);
         const legal = ScoreCalculator.calculateLegalScore(isLegal);
-        const total = ScoreCalculator.calculateTotalScore({ risk, value, ease, history, legal });
+        const total = ScoreCalculator.calculateTotalScore({ risk, value, effort: effortScore, history, legal });
         const recommendation = ScoreCalculator.getRecommendation(total);
 
         return {
             id: this.generateUUID(),
             testName: state.description || stateId,
             changeType,
-            implementationType,
+            easyToAutomate,
+            quickToAutomate,
             isLegal,
             userFrequency,
             businessImpact,
@@ -348,7 +361,8 @@ export class StateDiagramService {
             notes: state.changeNotes || notes,
             source: DataSource.STATE_DIAGRAM,
             stateId,
-            scores: { risk, value, ease, history, legal, total },
+            implementationType, // Keep for backward compatibility
+            scores: { risk, value, effort: effortScore, history, legal, total },
             recommendation
         };
     }

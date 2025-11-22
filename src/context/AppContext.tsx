@@ -27,6 +27,14 @@ import { StorageService } from '../services/StorageService';
 // ============================================================================
 
 /**
+ * User preferences persisted to localStorage
+ */
+interface UserPreferences {
+    /** Whether to show the initial judgment (gut feel) column */
+    showInitialJudgment: boolean;
+}
+
+/**
  * UI-specific state not persisted to localStorage
  */
 interface UIState {
@@ -59,6 +67,8 @@ interface AppContextState {
     uiState: UIState;
     /** State diagram version history */
     stateDiagramHistory: StateDiagram[];
+    /** User preferences */
+    userPreferences: UserPreferences;
 }
 
 /**
@@ -104,6 +114,9 @@ interface AppContextActions {
     setStorageErrorModalOpen: (isOpen: boolean) => void;
     showNotification: (message: string, type: 'success' | 'error' | 'info') => void;
     clearNotification: () => void;
+    
+    // Preferences Actions
+    setShowInitialJudgment: (show: boolean) => void;
 }
 
 type AppContextValue = AppContextState & AppContextActions;
@@ -151,10 +164,22 @@ function calculateTestCaseScores(testCase: Omit<TestCase, 'id' | 'scores' | 'rec
     scores: TestCase['scores'];
     recommendation: TestCase['recommendation'];
 } {
+    // Calculate effort score using new fields if available, otherwise fall back to legacy
+    let effortScore: number;
+    if (testCase.easyToAutomate !== undefined && testCase.quickToAutomate !== undefined) {
+        effortScore = ScoreCalculator.calculateEffortScore(testCase.easyToAutomate, testCase.quickToAutomate);
+    } else if (testCase.implementationType) {
+        // Legacy calculation for backward compatibility
+        effortScore = ScoreCalculator.calculateEaseScore(testCase.implementationType);
+    } else {
+        // Default values if neither is provided
+        effortScore = ScoreCalculator.calculateEffortScore(3, 3); // Default to middle values
+    }
+
     const scores = {
         risk: ScoreCalculator.calculateRiskScore(testCase.userFrequency, testCase.businessImpact),
         value: ScoreCalculator.calculateValueScore(testCase.changeType, testCase.businessImpact),
-        ease: ScoreCalculator.calculateEaseScore(testCase.implementationType),
+        effort: effortScore,
         history: ScoreCalculator.calculateHistoryScore(testCase.affectedAreas),
         legal: ScoreCalculator.calculateLegalScore(testCase.isLegal),
         total: 0 // Will be calculated next
@@ -206,6 +231,28 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
     });
     const [stateDiagramHistory, setStateDiagramHistory] = useState<StateDiagram[]>([]);
     const [storageAvailable, setStorageAvailable] = useState<boolean>(true);
+    
+    // Load user preferences from localStorage
+    const [userPreferences, setUserPreferences] = useState<UserPreferences>(() => {
+        try {
+            const saved = localStorage.getItem('test-prioritizer-preferences');
+            if (saved) {
+                return JSON.parse(saved);
+            }
+        } catch (error) {
+            console.error('Failed to load preferences:', error);
+        }
+        return { showInitialJudgment: true }; // Default to showing the column
+    });
+    
+    // Save preferences to localStorage when they change
+    useEffect(() => {
+        try {
+            localStorage.setItem('test-prioritizer-preferences', JSON.stringify(userPreferences));
+        } catch (error) {
+            console.error('Failed to save preferences:', error);
+        }
+    }, [userPreferences]);
 
     // ========================================================================
     // Persistence Effect
@@ -296,6 +343,8 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
                     updates.userFrequency !== undefined ||
                     updates.businessImpact !== undefined ||
                     updates.changeType !== undefined ||
+                    updates.easyToAutomate !== undefined ||
+                    updates.quickToAutomate !== undefined ||
                     updates.implementationType !== undefined ||
                     updates.affectedAreas !== undefined ||
                     updates.isLegal !== undefined
@@ -494,6 +543,14 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
     }, []);
     
     // ========================================================================
+    // Preferences Actions
+    // ========================================================================
+    
+    const setShowInitialJudgment = useCallback((show: boolean) => {
+        setUserPreferences(prev => ({ ...prev, showInitialJudgment: show }));
+    }, []);
+    
+    // ========================================================================
     // Context Value
     // ========================================================================
     
@@ -504,6 +561,7 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
         sortConfig,
         uiState,
         stateDiagramHistory,
+        userPreferences,
         
         // Test Case Actions
         addTestCase,
@@ -543,7 +601,10 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
         setStateDiagramHistoryModalOpen,
         setStorageErrorModalOpen,
         showNotification,
-        clearNotification
+        clearNotification,
+        
+        // Preferences Actions
+        setShowInitialJudgment
     };
     
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -123,12 +123,53 @@ export class StorageService {
                 return null;
             }
 
+            // Migrate legacy test cases from implementationType to effort fields
+            state.testCases = state.testCases.map(tc => this.migrateTestCase(tc));
+
             return state;
 
         } catch (error) {
             console.error('Failed to load application state:', error);
             return null;
         }
+    }
+
+    /**
+     * Migrate a test case from legacy implementationType to new effort fields
+     * Maps implementation types to effort scores based on their original risk values
+     * 
+     * @param testCase - The test case to migrate
+     * @returns The migrated test case
+     */
+    private static migrateTestCase(testCase: any): any {
+        // If already has effort fields, no migration needed
+        if (testCase.easyToAutomate !== undefined && testCase.quickToAutomate !== undefined) {
+            return testCase;
+        }
+
+        // If has legacy implementationType, migrate it
+        if (testCase.implementationType) {
+            // Map implementation types to effort scores
+            // Original: LOOP_SAME=5, LOOP_DIFFERENT=3, CUSTOM=1, MIX=2
+            // These were multiplied by 5 to get ease score (0-25)
+            // We need to reverse engineer to get two 1-5 values that multiply to the same result
+            const implementationToEffort: Record<string, { easy: number; quick: number }> = {
+                'standard-components': { easy: 5, quick: 5 },  // 5*5=25 (was 5*5=25)
+                'new-pattern': { easy: 3, quick: 5 },          // 3*5=15 (was 3*5=15)
+                'custom-implementation': { easy: 1, quick: 5 }, // 1*5=5 (was 1*5=5)
+                'hybrid': { easy: 2, quick: 5 }                // 2*5=10 (was 2*5=10)
+            };
+
+            const effort = implementationToEffort[testCase.implementationType] || { easy: 3, quick: 3 };
+            testCase.easyToAutomate = effort.easy;
+            testCase.quickToAutomate = effort.quick;
+        } else {
+            // Default values if no implementationType
+            testCase.easyToAutomate = 3;
+            testCase.quickToAutomate = 3;
+        }
+
+        return testCase;
     }
 
     /**

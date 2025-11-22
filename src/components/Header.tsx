@@ -7,7 +7,7 @@ import { useRef, useState } from 'react';
 import { useAppContext } from '../context';
 import type { AppState, StateDiagram, StateDiff } from '../types/models';
 import { Button } from './ui/button';
-import { Upload, Download, Plus, HelpCircle, Clipboard, History } from 'lucide-react';
+import { Upload, Download, Plus, HelpCircle, Clipboard, History, Eye, EyeOff } from 'lucide-react';
 import { StateDiagramService } from '../services/StateDiagramService';
 import { StorageService } from '../services/StorageService';
 import { BERTIntegrationService } from '../services/BERTIntegrationService';
@@ -24,7 +24,9 @@ export function Header() {
     addStateDiagram,
     setStateDiagramDiffModalOpen,
     setStateDiagramHistoryModalOpen,
-    addExistingFunctionality
+    addExistingFunctionality,
+    userPreferences,
+    setShowInitialJudgment
   } = useAppContext();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -246,7 +248,8 @@ export function Header() {
     addTestCase({
       testName: '',
       changeType: 'new',
-      implementationType: 'custom-implementation',
+      easyToAutomate: 3,
+      quickToAutomate: 3,
       isLegal: false,
       userFrequency: 3,
       businessImpact: 3,
@@ -419,6 +422,24 @@ export function Header() {
               >
                 <Plus className="w-4 h-4" />
                 <span className="hidden sm:inline">ADD ROW</span>
+              </Button>
+
+              {/* Toggle Gut Feel Column Button - Hidden on mobile */}
+              <Button
+                onClick={() => setShowInitialJudgment(!userPreferences.showInitialJudgment)}
+                variant="outline"
+                className="gap-2 hidden md:flex"
+                size="sm"
+                title={userPreferences.showInitialJudgment ? "Hide Gut Feel column" : "Show Gut Feel column"}
+              >
+                {userPreferences.showInitialJudgment ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+                <span className="hidden lg:inline">
+                  {userPreferences.showInitialJudgment ? 'HIDE' : 'SHOW'} GUT FEEL
+                </span>
               </Button>
 
               {/* Help Button */}

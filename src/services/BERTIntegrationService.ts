@@ -119,17 +119,28 @@ export class BERTIntegrationService {
         const implementationType = bertScenario.detectedImplementation || ImplementationTypeEnum.CUSTOM;
         const isLegal = false;
 
+        // Map legacy implementation type to effort scores
+        const implementationToEffort: Record<string, { easy: number; quick: number }> = {
+            'standard-components': { easy: 5, quick: 5 },
+            'new-pattern': { easy: 3, quick: 5 },
+            'custom-implementation': { easy: 1, quick: 5 },
+            'hybrid': { easy: 2, quick: 5 }
+        };
+        const effort = implementationToEffort[implementationType] || { easy: 3, quick: 3 };
+        const easyToAutomate = effort.easy;
+        const quickToAutomate = effort.quick;
+
         // Calculate scores
         const riskScore = ScoreCalculator.calculateRiskScore(userFrequency, businessImpact);
         const valueScore = ScoreCalculator.calculateValueScore(changeType, businessImpact);
-        const easeScore = ScoreCalculator.calculateEaseScore(implementationType);
+        const effortScore = ScoreCalculator.calculateEffortScore(easyToAutomate, quickToAutomate);
         const historyScore = ScoreCalculator.calculateHistoryScore(affectedAreas);
         const legalScore = ScoreCalculator.calculateLegalScore(isLegal);
 
         const scores = {
             risk: riskScore,
             value: valueScore,
-            ease: easeScore,
+            effort: effortScore,
             history: historyScore,
             legal: legalScore,
             total: 0
@@ -158,7 +169,8 @@ export class BERTIntegrationService {
             id: this.generateUUID(),
             testName: bertScenario.scenarioTitle,
             changeType,
-            implementationType,
+            easyToAutomate,
+            quickToAutomate,
             isLegal,
             userFrequency,
             businessImpact,
@@ -168,7 +180,8 @@ export class BERTIntegrationService {
             jiraTicket: bertScenario.jiraTicket,
             scores,
             recommendation,
-            source: 'bert'
+            source: 'bert',
+            implementationType // Keep for backward compatibility
         };
 
         return testCase;
@@ -212,7 +225,14 @@ export class BERTIntegrationService {
         lines.push('-'.repeat(60));
         lines.push(`Risk Score:    ${testCase.scores.risk}/25  (Frequency: ${testCase.userFrequency}, Impact: ${testCase.businessImpact})`);
         lines.push(`Value Score:   ${testCase.scores.value}/25  (Change: ${testCase.changeType})`);
-        lines.push(`Ease Score:    ${testCase.scores.ease}/25  (Implementation: ${testCase.implementationType})`);
+        const effortScore = testCase.scores.effort ?? testCase.scores.ease ?? 0;
+        if (testCase.easyToAutomate !== undefined && testCase.quickToAutomate !== undefined) {
+            lines.push(`Effort Score:  ${effortScore}/25  (Easy: ${testCase.easyToAutomate}, Quick: ${testCase.quickToAutomate})`);
+        } else if (testCase.implementationType) {
+            lines.push(`Effort Score:  ${effortScore}/25  (Implementation: ${testCase.implementationType})`);
+        } else {
+            lines.push(`Effort Score:  ${effortScore}/25`);
+        }
         lines.push(`History Score: ${testCase.scores.history}/5   (Affected Areas: ${testCase.affectedAreas})`);
         lines.push(`Legal Score:   ${testCase.scores.legal}/20  (Legal Requirement: ${testCase.isLegal ? 'Yes' : 'No'})`);
         lines.push('');

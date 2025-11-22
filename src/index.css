@@ -62,6 +62,29 @@ html, body, #root {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Force textarea text wrapping */
+textarea {
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-all !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+/* Table cell wrapping */
+table td {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  overflow: visible;
+}
+
+/* Specific styling for text input cells */
+table td textarea {
+  display: block !important;
+  box-sizing: border-box !important;
+}
+
 /* Smooth scrolling for touch devices */
 @media (hover: none) and (pointer: coarse) {
   * {

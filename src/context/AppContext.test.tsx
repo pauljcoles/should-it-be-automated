@@ -19,7 +19,8 @@ describe('AppContext', () => {
                 result.current.addTestCase({
                     testName: 'Test Login',
                     changeType: ChangeType.NEW,
-                    implementationType: ImplementationType.CUSTOM,
+                    easyToAutomate: 3,
+                    quickToAutomate: 3,
                     isLegal: false,
                     userFrequency: 5,
                     businessImpact: 5,

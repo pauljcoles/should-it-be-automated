@@ -52,6 +52,19 @@ export class ScoreCalculator {
     }
 
     /**
+     * Calculate effort score based on ease and speed of automation
+     * Formula: easyToAutomate × quickToAutomate
+     * 
+     * @param easyToAutomate - How easy is it to automate? (1-5)
+     * @param quickToAutomate - How quick is it to automate? (1-5)
+     * @returns Effort score (0-25)
+     */
+    static calculateEffortScore(easyToAutomate: number, quickToAutomate: number): number {
+        return easyToAutomate * quickToAutomate;
+    }
+
+    /**
+     * @deprecated Use calculateEffortScore instead
      * Calculate ease score based on implementation type
      * Formula: implementationRisk × 5
      * 
@@ -94,11 +107,12 @@ export class ScoreCalculator {
     /**
      * Calculate total score as sum of all individual scores
      * 
-     * @param scores - Individual scores (risk, value, ease, history, legal)
+     * @param scores - Individual scores (risk, value, effort, history, legal)
      * @returns Total score (0-100)
      */
     static calculateTotalScore(scores: Omit<import('../types/models').Scores, 'total'>): number {
-        return scores.risk + scores.value + scores.ease + scores.history + scores.legal;
+        const effortScore = scores.effort ?? scores.ease ?? 0;
+        return scores.risk + scores.value + effortScore + scores.history + scores.legal;
     }
 
     /**
@@ -143,11 +157,17 @@ export class ScoreCalculator {
         lines.push(`  Change Type: ${testCase.changeType}`);
         lines.push('');
 
-        // Ease Score
-        lines.push(`Ease Score: ${testCase.scores.ease}/25`);
-        const implRisk = this.getImplementationRiskValue(testCase.implementationType);
-        lines.push(`  = Implementation Risk (${implRisk}) × 5`);
-        lines.push(`  Implementation: ${testCase.implementationType}`);
+        // Effort Score
+        const effortScore = testCase.scores.effort ?? testCase.scores.ease ?? 0;
+        lines.push(`Effort Score: ${effortScore}/25`);
+        if (testCase.easyToAutomate !== undefined && testCase.quickToAutomate !== undefined) {
+            lines.push(`  = Easy to Automate (${testCase.easyToAutomate}) × Quick to Automate (${testCase.quickToAutomate})`);
+        } else if (testCase.implementationType) {
+            // Legacy calculation
+            const implRisk = this.getImplementationRiskValue(testCase.implementationType);
+            lines.push(`  = Implementation Risk (${implRisk}) × 5 [Legacy]`);
+            lines.push(`  Implementation: ${testCase.implementationType}`);
+        }
         lines.push('');
 
         // History Score
