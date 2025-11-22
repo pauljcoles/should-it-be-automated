@@ -74,9 +74,9 @@ For each new or modified state, the tool generates a test case with:
   - `modified-behavior` for states with action/transition changes
   - `modified-ui` for states with only implementation changes
 - **Implementation Type**: From the state's `implementation` field
-- **Affected Areas**: Count of incoming + outgoing transitions (capped at 5)
+- **Connected Components**: Count of incoming + outgoing transitions (capped at 5)
 - **Notes**: Change details or `changeNotes` from the state
-- **Default Values**: User frequency (3), business impact (3), not legal
+- **Default Values**: Usage frequency (3), impact if broken (3), not legal
 
 You can then adjust these values based on your specific context.
 

@@ -29,7 +29,7 @@ describe('ScoreCalculator', () => {
             expect(ScoreCalculator.calculateValueScore(ChangeType.MODIFIED_BEHAVIOR, 3)).toBe(20);
         });
 
-        it('should calculate value score for new with business impact', () => {
+        it('should calculate value score for new with impact if broken', () => {
             expect(ScoreCalculator.calculateValueScore(ChangeType.NEW, 3)).toBe(15);
             expect(ScoreCalculator.calculateValueScore(ChangeType.NEW, 5)).toBe(25);
         });
@@ -54,13 +54,13 @@ describe('ScoreCalculator', () => {
     });
 
     describe('calculateHistoryScore', () => {
-        it('should return affected areas when <= 5', () => {
+        it('should return connected components when <= 5', () => {
             expect(ScoreCalculator.calculateHistoryScore(1)).toBe(1);
             expect(ScoreCalculator.calculateHistoryScore(3)).toBe(3);
             expect(ScoreCalculator.calculateHistoryScore(5)).toBe(5);
         });
 
-        it('should cap at 5 when affected areas > 5', () => {
+        it('should cap at 5 when connected components > 5', () => {
             expect(ScoreCalculator.calculateHistoryScore(6)).toBe(5);
             expect(ScoreCalculator.calculateHistoryScore(10)).toBe(5);
         });
@@ -171,7 +171,7 @@ describe('ScoreCalculator', () => {
          * Feature: test-prioritization-tool, Property 5: Risk score calculation correctness
          * Validates: Requirements 2.1
          * 
-         * Property: For any user frequency value (1-5) and business impact value (1-5),
+         * Property: For any usage frequency value (1-5) and impact if broken value (1-5),
          * the risk score should equal their product.
          */
         it('risk score equals frequency times impact for all valid inputs', () => {

@@ -759,7 +759,7 @@
     - Update all existing test cases to migrate from implementationType to effort scores
     - _Requirements: Align with Angie Jones' actual methodology_
 
-  - [ ] 26.4 Update field labels and terminology for clarity
+  - [x] 26.4 Update field labels and terminology for clarity
     - Rename "User Frequency" to "Usage Frequency" or "How Often Used?"
     - Rename "Business Impact" to "Impact if Broken"
     - Rename "Affected Areas" to "Connected Components"
@@ -767,7 +767,7 @@
     - Update all documentation to reflect new terminology
     - _Requirements: Reduce confusion and improve usability_
 
-  - [ ] 26.5 Update score calculation display
+  - [x] 26.5 Update score calculation display
     - Rename "Ease Score" to "Effort Score" in UI
     - Update score tooltips to explain new calculation
     - Update HelpModal scoring guide with new effort model
@@ -801,7 +801,7 @@
 
 
 
-- [ ] 27. Implement "Did Code Change?" field and Organisational Pressure with Real Talk teaching
+- [-] 27. Implement "Did Code Change?" field and Organisational Pressure with Real Talk teaching
   - [ ] 27.1 Replace Change Type with "Did Code Change?" field
     - Remove existing `changeType` field from TestCase model
     - Add new field: `codeChange: 'new' | 'modified' | 'ui-only' | 'unchanged'`
@@ -943,19 +943,386 @@
     - Update all score explanations to reference code change
     - _Requirements: Simplify input, enforce teaching_
 
-  - [ ] 27.9 Integrate state diagram with "Did Code Change?" auto-detection
-    - When importing state diagram with diff:
-      - States with lastModified changed → pre-select "Yes - Modified"
-      - States with new transitions/actions → pre-select "Yes - Modified"
-      - New states not in previous diagram → pre-select "Yes - New"
-      - States unchanged in diff → pre-select "No - Unchanged"
-    - User can override auto-selection after import
-    - Show diff summary explaining auto-selections
-    - Update StateDiagramService to detect change types
-    - Update generateTestCases to set codeChange field
-    - _Requirements: Automated change detection from state diagrams_
+  - [ ] 27.9 Integrate state diagram with confirmation testing strategy
+    - [ ] 27.9.1 Enhanced state diagram import and diff
+      - When importing state diagram JSON:
+        - Parse states, transitions, metadata, lastModified dates
+        - If previous state diagram exists, calculate comprehensive diff
+        - Store both current and previous diagrams for comparison
+        - Update StateDiagramService with diff calculation logic
+      - Diff detection logic:
+        - NEW: States in current but not in previous diagram
+        - MODIFIED: States where lastModified changed OR transitions changed OR actions changed
+        - UNCHANGED: States with identical lastModified and structure
+        - REMOVED: States in previous but not in current (flag for review)
+      - _Requirements: Accurate change detection from state diagrams_
 
-  - [ ] 27.10 Create example scenarios in HelpModal
+    - [ ] 27.9.2 Integration point detection
+      - Analyse transitions to identify integration points:
+        - Find transitions from CHANGED states to UNCHANGED states
+        - Find transitions from UNCHANGED states to CHANGED states
+        - Find transitions between CHANGED states
+      - Calculate integration complexity:
+        - Count incoming and outgoing transitions per state
+        - Identify states that are integration hubs (many transitions)
+        - Flag high-risk integration points (changed → unchanged with high traffic)
+      - Auto-set "Affected Areas" based on:
+        - Number of outgoing transitions (what this state affects)
+        - Number of incoming transitions (what affects this state)
+        - Whether state is an integration point
+      - _Requirements: Identify where changed and unchanged code meet_
+
+    - [ ] 27.9.3 Visual diff display with confirmation strategy
+      - Create StateDiagramDiff component showing:
+        ```
+        State Diagram Changes - [Application Name] - [Sprint/Version]
+        
+        CHANGED (needs confirmation testing): X states
+        ⚠️  state_name (modified YYYY-MM-DD)
+            → Transitions to: state_a, state_b
+            → Integration point: connects to N unchanged states
+            → Auto-generated test: [test name]
+        
+        UNCHANGED (already confirmed): X states
+        ✅ state_name (last modified YYYY-MM-DD)
+            → No new confirmation testing needed
+            → Existing coverage applies
+        
+        INTEGRATION POINTS TO CONFIRM: X points
+        🔗 changed_state → unchanged_state
+            Risk: Changed behaviour needs to confirm handoff works
+            Recommendation: Test integration, not full unchanged flow
+        
+        REMOVED STATES: X states (needs review)
+        ❌ old_state_name
+            → Tests for this state may need deletion/archival
+        
+        CONFIRMATION TESTING STRATEGY:
+        ✓ Confirm: X changed states + X integration points = X tests
+        ✗ Don't re-test: X unchanged states = skip
+        🔍 Exploratory: X unchanged states accessed via new route
+        
+        Estimated testing effort: [calculated based on complexity]
+        ```
+      - Show diff summary before importing
+      - Allow user to review before auto-generating tests
+      - Highlight integration points visually (different colour)
+      - _Requirements: Clear visualisation of what needs confirmation_
+
+    - [ ] 27.9.4 Auto-generate test cases from diff
+      - For each CHANGED state:
+        - Create test case with pre-filled fields:
+          - Test Name: "[State description] - [Change type]"
+          - Did Code Change?: Auto-set based on diff
+            - NEW states → "Yes - New"
+            - MODIFIED states → "Yes - Modified"
+            - If only lastModified changed → check if transitions/actions changed:
+              - Changed → "Yes - Modified"
+              - Unchanged → "Yes - UI only"
+          - Affected Areas: Auto-set from transition count
+          - Notes: Auto-populate from state.changeNotes if present
+      - For each INTEGRATION POINT:
+        - Create test case:
+          - Test Name: "[Changed state] → [Unchanged state] integration"
+          - Did Code Change?: "Yes - Modified" (integration changed)
+          - Notes: "Confirms [changed] works with [unchanged]. Test the handoff, not full unchanged flow."
+          - Organisational Pressure: Default to 3 (integration tests often get stakeholder attention)
+      - For each UNCHANGED state accessed via new route:
+        - Create test case with:
+          - Did Code Change?: "No - Unchanged"
+          - Notes: "Accessed via new route but code unchanged. Consider exploratory testing instead of automation."
+          - Show "Real Talk" guidance automatically
+      - User can review and delete unwanted auto-generated tests before finalising
+      - _Requirements: Intelligent test case generation from state changes_
+
+    - [ ] 27.9.5 Show confirmation testing context in each row
+      - For test cases generated from state diagram:
+        - Add badge: "From State: [state_id]"
+        - Add link to view state in diagram diff
+        - Show related states (what this integrates with)
+        - Show if this is an integration point test
+        - Add "View State Diagram" button that:
+          - Opens diff view modal
+          - Highlights the state this test relates to
+          - Shows transitions and integration points
+      - _Requirements: Maintain context link between tests and state diagram_
+
+    - [ ] 27.9.6 Integration point scoring adjustments
+      - Enhance scoring for integration point tests:
+        - Integration tests have higher value (they test the seam)
+        - Auto-set distinctness:
+          - Changed → Unchanged integration: 4 (high value, testing new handoff)
+          - Changed → Changed integration: 5 (testing new interaction)
+          - Unchanged → Unchanged: 0 (already tested)
+        - Add integration complexity to Affected Areas calculation
+        - Show in score breakdown:
+          ```
+          Risk: 25 (high frequency × high impact)
+          Value: 20 (integration point - tests changed/unchanged seam)
+          Effort: 15
+          History: 3 (multiple connected states)
+          Total: 63 - MAYBE/AUTOMATE
+          
+          💡 This is an integration point test.
+             It confirms [changed state] works with [unchanged state].
+             Higher value than testing unchanged code alone.
+          ```
+      - _Requirements: Recognise integration tests are more valuable_
+
+    - [ ] 27.9.7 Confirmation testing summary from state diagram
+      - Add summary section showing confirmation strategy:
+        ```
+        CONFIRMATION TESTING STRATEGY
+        Based on: [state diagram name] - Sprint [X]
+        
+        States Changed: X
+        Integration Points: X
+        Unchanged States: X
+        
+        Recommended Tests:
+        ✅ Automate: X tests (changed states + critical integrations)
+        ⚠️  Maybe: X tests (integration points)
+        ❌ Don't Automate: X tests (unchanged, no new risk)
+        🔍 Exploratory: X areas (unchanged, accessed via new route)
+        
+        Efficiency Gain:
+        If you tested everything: X tests
+        Risk-based confirmation: X tests
+        Time saved: X%
+        ```
+      - Show comparison: "You could have created X tests, risk-based approach suggests X"
+      - _Requirements: Show the value of risk-based confirmation testing_
+
+    - [ ] 27.9.8 Handle multiple state diagrams (different journeys)
+      - Support importing multiple state diagrams:
+        - "BB Journey", "TV Journey", "Mobile Journey"
+        - Each with its own diff and change detection
+        - Tag generated tests with journey name
+        - Filter view: "Show tests for TV Journey only"
+      - Calculate integration points BETWEEN journeys:
+        - Where do journeys share states?
+        - Do changes in one journey affect another?
+      - _Requirements: Handle complex multi-journey systems_
+
+    - [ ] 27.9.9 Export confirmation testing report
+      - Generate markdown/PDF report from state diagram analysis:
+        ```
+        # Confirmation Testing Strategy
+        ## Sprint 45 - TV Journey Addition
+        
+        ### Changes Detected
+        - 2 new states (tv_selection, tv_packages)
+        - 1 modified state (bb_modal - moved to modal)
+        - 15 unchanged states
+        
+        ### Integration Points
+        1. tv_selection → checkout (CHANGED → UNCHANGED)
+           - Risk: New product type entering checkout
+           - Recommendation: Confirm checkout accepts TV products
+        
+        2. bb_modal → checkout (CHANGED → UNCHANGED)
+           - Risk: Modal interaction may affect checkout data
+           - Recommendation: Confirm modal data flows correctly
+        
+        ### Testing Strategy
+        ✅ Automate: 4 tests
+        - TV selection flow
+        - BB modal interaction
+        - TV → Checkout integration
+        - BB modal → Checkout integration
+        
+        🔍 Exploratory: 15 areas
+        - Checkout validation (unchanged)
+        - Customer details (unchanged)
+        - Direct debit (unchanged)
+        [etc.]
+        
+        ### Why This Approach
+        Traditional: Test entire TV journey end-to-end (20+ tests)
+        Confirmation: Test what changed + integrations (4 tests)
+        
+        Unchanged code is already confirmed by existing tests.
+        New tests focus on confirming changes didn't break related areas.
+        ```
+      - Export as markdown for team review
+      - Export as PDF for stakeholder communication
+      - Include visual state diagram with changes highlighted
+      - _Requirements: Communicate strategy to team and stakeholders_
+
+  - [ ] 27.10 Add "Testing Strategy" guidance for each recommendation
+    - For each recommendation tier, show WHAT TO DO:
+    - ✅ AUTOMATE (67-100):
+      ```
+      Testing Strategy: Automated Regression + Exploratory
+      • Create automated tests for changed behaviour
+      • Also do exploratory testing to find edge cases
+      • Focus automation on critical paths and integration points
+      ```
+    - ⚠️ MAYBE (34-66):
+      ```
+      Testing Strategy: Exploratory First, Automate If Valuable
+      • Start with exploratory testing
+      • Automate only if you find frequent issues
+      • Consider one smoke test for confidence
+      • Re-evaluate after first release
+      ```
+    - ❌ DON'T AUTOMATE (0-33):
+      ```
+      Testing Strategy: Exploratory Testing
+      • Manual exploration of functionality
+      • Focus on integration with changed areas
+      • Time-box: 30-60 minutes
+      • Look for unexpected interactions, not regressions
+      ```
+    - Make it clear: "Don't automate" means "test differently", not "don't test"
+    - Especially important for unchanged code (distinctness = 0)
+    - Add to both individual row display and summary stats
+    - Emphasise: "You still test everything, just smarter"
+    - Display testing strategy below recommendation badge in each row
+    - Include in summary stats to show overall testing approach
+    - _Requirements: Clarify that all code gets tested, just with different strategies_
+
+  - [ ] 27.11 Add "Regression Suite Reality Check" and Coverage Duvet teaching
+    - Add optional "Bug History" field to each test:
+      - "Has this test caught a real bug?"
+      - Options: Yes-production / Yes-regression / No-never / Unknown
+      - Helps teams realise which tests provide value
+    - Add "Regression Suite Calculator" section:
+      - User enters current regression suite stats:
+        - Total tests: [number]
+        - Runtime: [minutes]
+        - Tests that caught bugs last sprint: [number]
+        - Tests that fail for env/stub issues: [number]
+    - Tool shows comparison:
+      ```
+      YOUR CURRENT SUITE:
+      • 260 tests
+      • 120 minutes runtime
+      • 4 parallel workers = 480 worker-minutes
+      • Bug detection: 2 bugs / 260 tests = 0.7%
+      • Noise: 15 env failures / 260 = 5.7% false positive rate
+      
+      RISK-BASED ALTERNATIVE (based on your scores):
+      • 12 tests on changed code
+      • 15 minutes runtime
+      • 1 parallel worker = 15 worker-minutes
+      • 32x faster feedback
+      • Focused on actual changes = higher signal, lower noise
+      
+      💡 You still test checkout. Just not with 259 automated
+         tests that have never found a checkout bug.
+      ```
+    - Add "Coverage Duvet" teaching section:
+      ```
+      ⚠️ THE COVERAGE DUVET PROBLEM
+      
+      260 tests feels safe. But ask:
+      • Which tests would fail if we broke checkout?
+      • Which tests have EVER caught a checkout bug?
+      • Which tests just verify stubs work?
+      
+      Coverage is comfortable. Risk-based testing is effective.
+      
+      Your legal text test (30 seconds) > 259 E2E tests (2 hours)
+      Because it tested what CHANGED, not what felt comprehensive.
+      ```
+    - Add real case study to teaching:
+      ```
+      📖 REAL CASE STUDY: The Legal Text Bug
+      
+      What happened:
+      • Someone deleted required legal text
+      • 259 E2E tests through checkout: All passed ✅
+      • 1 focused test on legal requirement: Failed ❌
+      
+      Why did 259 tests miss it?
+      They were testing "checkout works end-to-end"
+      not "legal text displays correctly"
+      
+      The lesson:
+      Comprehensive coverage ≠ Effective testing
+      One targeted test > 259 unfocused tests
+      ```
+    - Add to summary stats:
+      ```
+      🎯 FOCUS COMPARISON
+      
+      If you automated all 20 proposed tests:
+      • 2 hours runtime (same as current)
+      • Testing unchanged code (low value)
+      • Likely to find: stub issues, env flakes
+      
+      If you follow risk-based recommendations:
+      • 15 minutes runtime (8x faster)
+      • Testing changed code (high value)
+      • Likely to find: actual bugs
+      
+      Plus exploratory testing on unchanged areas gives
+      you BETTER coverage than automated regression.
+      ```
+    - _Requirements: Teach the difference between coverage theatre and effective testing_
+
+  - [ ] 27.12 Teach what regression testing actually is (not a comfort duvet)
+    - Keep "regression testing" terminology but teach the correct definition
+    - Update recommendation text for unchanged code:
+      ```
+      Recommendation: DON'T RE-TEST UNCHANGED CODE ❌
+      
+      Regression testing = Confirm changes didn't break related functionality
+      NOT: Re-run everything to feel safe
+      
+      ✅ DO: Confirm checkout works with TV products (integration)
+      ❌ DON'T: Re-test all checkout validation logic (unchanged)
+      
+      Your existing checkout tests already confirm that logic works.
+      Regression testing means: test what the changes could have broken.
+      ```
+    - Add "What is Regression Testing?" to HelpModal:
+      ```
+      💡 WHAT REGRESSION TESTING ACTUALLY IS
+      
+      Regression testing = Confirm your changes didn't break
+      related functionality.
+      
+      NOT: Run all 260 tests regardless of what changed
+      NOT: A duvet of coverage to make you feel safe
+      BUT: Targeted tests based on what changed
+      
+      Changed TV journey? Test:
+      ✓ TV selection works (new code)
+      ✓ BB modal works (changed code)
+      ✓ Basket totals correct (related code)
+      ✓ Checkout accepts TV products (integration point)
+      
+      Don't re-test unchanged validation logic.
+      That's not regression testing, that's testing 260 lots of nothing.
+      ```
+    - Add teaching section:
+      ```
+      ⚠️ REGRESSION TESTING ≠ COMFORT BLANKET
+      
+      Most teams think regression testing means:
+      "Run all our tests so we feel confident nothing broke"
+      
+      Actual regression testing means:
+      "Test what the changes could realistically have broken"
+      
+      Your 260-test suite isn't regression testing.
+      It's a duvet of coverage that makes you feel happy
+      while missing actual bugs (like the legal text).
+      
+      Real regression testing:
+      • Targets changed code + integration points
+      • Fast feedback (minutes, not hours)
+      • High signal (finds real bugs)
+      • Low noise (doesn't fail for stub issues)
+      ```
+    - Update Testing Strategy language to emphasise targeted regression:
+      - "Automated Regression (Targeted)" not "Automated Regression (Everything)"
+      - Clarify: Regression = test what changed + related areas
+    - _Requirements: Teach correct definition of regression testing vs coverage theatre_
+
+  - [ ] 27.13 Create example scenarios in HelpModal
     - Add "Real Talk Examples" tab to HelpModal
     - Show three scenarios:
       1. Unchanged functionality with high pressure (TV journey customer details)
@@ -965,37 +1332,53 @@
     - Show what Real Talk section would display
     - Add examples of what counts as "unchanged" vs "modified"
     - Add organisational pressure explanation
+    - Include testing strategy for each scenario
+    - Include "Coverage Duvet" example for unchanged code
+    - Show legal text bug case study
     - _Requirements: Concrete teaching examples_
 
-  - [ ] 27.11 Update data migration for new fields
+  - [ ] 27.14 Update data migration for new fields
     - Migrate existing changeType to codeChange:
       - 'new-functionality' → 'new'
       - 'modified-functionality' → 'modified'
       - 'ui-change' → 'ui-only'
       - 'refactoring' → 'unchanged'
     - Add default organisationalPressure = 1 for existing tests
+    - Add default bugHistory = 'unknown' for existing tests
     - Recalculate distinctness based on new codeChange values
     - Show migration notification to user
     - _Requirements: Backward compatibility_
 
-  - [ ]* 27.12 Write tests for new teaching features
+  - [ ]* 27.15 Write tests for new teaching features
     - Test Real Talk section display conditions
     - Test distinctness auto-calculation from codeChange
     - Test organisational recommendation logic
+    - Test testing strategy display for each tier
+    - Test Regression Suite Calculator
+    - Test Coverage Duvet teaching display
+    - Test confirmation testing language
     - Test summary stats calculations
     - Test gut feel comparison display
     - Test state diagram auto-detection of code changes
     - Test data migration
     - _Requirements: Test coverage_
 
-  - [ ] 27.13 Update all documentation
+  - [ ] 27.16 Update all documentation
     - Update USER_GUIDE.md with:
       - "Did Code Change?" field explanation
       - Organisational Pressure concept
       - Real Talk section purpose
+      - Testing Strategy guidance for each recommendation tier
+      - Confirmation Testing vs Regression Testing explanation
+      - Coverage Duvet problem
+      - Legal text bug case study
+      - Regression Suite Reality Check feature
       - Example scenarios
     - Update HelpModal with new fields and logic
     - Update design.md specification
     - Add FAQ about technical vs organisational recommendations
+    - Add FAQ: "Does 'Don't Automate' mean don't test?" → "No, use exploratory confirmation"
+    - Add FAQ: "What is confirmation testing?" → Targeted verification based on changes
+    - Add FAQ: "Why did my 260 tests miss the bug?" → Coverage ≠ Effectiveness
     - Include Angie Jones' "don't test what didn't change" principle
     - _Requirements: User education and onboarding_

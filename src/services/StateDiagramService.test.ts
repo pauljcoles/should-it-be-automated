@@ -310,7 +310,7 @@ describe('StateDiagramService', () => {
             expect(affected).toBe(2); // 0 outgoing, 2 incoming
         });
 
-        it('should cap affected areas at 5', () => {
+        it('should cap connected components at 5', () => {
             const diagram = createStateDiagram({
                 state1: createState({
                     transitions: {

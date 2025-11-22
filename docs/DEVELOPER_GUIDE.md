@@ -278,21 +278,24 @@ inductionToAction = {
 valueScore = distinctness * inductionToAction
 ```
 
-**Ease Score**:
+**Effort Score**:
 ```typescript
+// New model (v2.0+)
+effortScore = easyToAutomate * quickToAutomate
+
+// Legacy model (deprecated)
 implementationRisk = {
   'standard-components': 5,
   'new-pattern': 3,
   'custom-implementation': 1,
   'hybrid': 2
 }
-
 easeScore = implementationRisk * 5
 ```
 
 **Total Score**:
 ```typescript
-totalScore = riskScore + valueScore + easeScore + historyScore + legalScore
+totalScore = riskScore + valueScore + effortScore + historyScore + legalScore
 ```
 
 ## Component Guide
@@ -406,7 +409,7 @@ class StateDiagramService {
     diagram: StateDiagram
   ): TestCase[];
   
-  // Calculate affected areas for a state
+  // Calculate connected components for a state
   static calculateAffectedAreas(
     stateId: string,
     diagram: StateDiagram

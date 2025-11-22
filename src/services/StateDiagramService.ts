@@ -368,11 +368,11 @@ export class StateDiagramService {
     }
 
     /**
-     * Calculate affected areas based on incoming and outgoing transitions
+     * Calculate connected components based on incoming and outgoing transitions
      * 
      * @param stateId - State identifier
      * @param diagram - Complete state diagram
-     * @returns Number of affected areas (capped at 5)
+     * @returns Number of connected components (capped at 5)
      */
     static calculateAffectedAreas(stateId: string, diagram: StateDiagram): number {
         const state = diagram.states[stateId];
@@ -389,7 +389,7 @@ export class StateDiagramService {
             Object.values(s.transitions || {}).includes(stateId)
         ).length;
 
-        // Total affected areas (capped at 5)
+        // Total connected components (capped at 5)
         return Math.min(outgoing + incoming, 5);
     }
 

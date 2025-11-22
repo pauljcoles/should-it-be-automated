@@ -134,9 +134,10 @@ export interface TestCase {
     isLegal: boolean;
 
     /** How frequently users interact with this feature (1-5) */
+    /** Usage frequency: How often users interact with this feature (1-5) */
     userFrequency: number;
 
-    /** Business impact if this feature fails (1-5) */
+    /** Impact if broken: What happens if this feature fails (1-5) */
     businessImpact: number;
 
     /** Number of areas affected by this functionality (1-5) */

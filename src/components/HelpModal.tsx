@@ -114,8 +114,8 @@ function QuickStartTab() {
           <ul className="list-disc list-inside space-y-1 text-gray-700">
             <li><span className="font-bold">Test Name:</span> A descriptive name for the test</li>
             <li><span className="font-bold">Change Type:</span> How the functionality changed (new, modified, unchanged)</li>
-            <li><span className="font-bold">Implementation Type:</span> Technical approach (standard components, new pattern, custom, hybrid)</li>
-            <li><span className="font-bold">Risk Factors:</span> User frequency, business impact, affected areas</li>
+            <li><span className="font-bold">Effort Factors:</span> How easy and quick it is to automate (1-5 for each)</li>
+            <li><span className="font-bold">Risk Factors:</span> Usage frequency, impact if broken, connected components</li>
             <li><span className="font-bold">Legal Requirement:</span> Check if this is a compliance/regulatory test</li>
           </ul>
         </div>
@@ -175,7 +175,7 @@ function ScoringGuideTab() {
           Risk Score
         </h3>
         <div className="bg-gray-50 border-brutal p-4 mb-4 font-mono text-sm">
-          Risk Score = User Frequency × Business Impact
+          Risk Score = Usage Frequency × Impact if Broken
         </div>
         <p className="text-gray-700 mb-3">
           Measures how critical this functionality is based on usage and business value.
@@ -183,7 +183,7 @@ function ScoringGuideTab() {
         <div className="bg-blue-50 border-brutal p-4">
           <p className="font-bold text-sm mb-2">Example:</p>
           <p className="text-sm text-gray-700">
-            Login functionality: User Frequency = 5 (used constantly), Business Impact = 5 (critical)
+            Login functionality: Usage Frequency = 5 (used constantly), Impact if Broken = 5 (critical)
             <br />
             <span className="font-bold">Risk Score = 5 × 5 = 25 points</span>
           </p>
@@ -238,38 +238,50 @@ function ScoringGuideTab() {
         </div>
       </div>
 
-      {/* Ease Score */}
+      {/* Effort Score */}
       <div className="border-brutal bg-white p-6">
         <h3 className="font-black text-lg mb-3 flex items-center gap-2">
           <span className="bg-green-100 text-green-700 px-3 py-1 text-sm">0-25 points</span>
-          Ease Score
+          Effort Score
         </h3>
         <div className="bg-gray-50 border-brutal p-4 mb-4 font-mono text-sm">
-          Ease Score = Implementation Risk × 5
+          Effort Score = Easy to Automate × Quick to Automate
         </div>
         <p className="text-gray-700 mb-3">
-          Measures how easy it is to automate based on the technical implementation.
+          Measures the effort required to automate based on two factors: how easy it is (technical complexity) and how quick it is (time investment).
         </p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-3">
           <div className="bg-green-50 border-brutal p-4">
-            <p className="font-bold text-sm mb-1">Design pattern library (Same)</p>
-            <p className="text-xs text-gray-600 mb-2">Reuses existing pattern</p>
-            <p className="text-sm font-bold text-green-700">Risk = 5 → 25 points</p>
+            <p className="font-bold text-sm mb-2">Easy to Automate (1-5):</p>
+            <ul className="text-xs text-gray-700 space-y-1 ml-4 list-disc">
+              <li><strong>5 - Very Easy:</strong> Standard components, clear selectors, stable UI</li>
+              <li><strong>4 - Easy:</strong> Mostly standard with minor customization</li>
+              <li><strong>3 - Moderate:</strong> Mix of standard and custom elements</li>
+              <li><strong>2 - Difficult:</strong> Complex custom implementation, dynamic content</li>
+              <li><strong>1 - Very Difficult:</strong> Highly complex, unstable, or inaccessible elements</li>
+            </ul>
           </div>
           <div className="bg-blue-50 border-brutal p-4">
-            <p className="font-bold text-sm mb-1">Design pattern library (Different)</p>
-            <p className="text-xs text-gray-600 mb-2">Similar but adapted</p>
-            <p className="text-sm font-bold text-blue-700">Risk = 3 → 15 points</p>
+            <p className="font-bold text-sm mb-2">Quick to Automate (1-5):</p>
+            <ul className="text-xs text-gray-700 space-y-1 ml-4 list-disc">
+              <li><strong>5 - Very Quick:</strong> Can automate in under 1 hour</li>
+              <li><strong>4 - Quick:</strong> 1-2 hours of work</li>
+              <li><strong>3 - Moderate:</strong> Half day of work</li>
+              <li><strong>2 - Slow:</strong> Full day or more</li>
+              <li><strong>1 - Very Slow:</strong> Multiple days, requires research or new infrastructure</li>
+            </ul>
           </div>
-          <div className="bg-yellow-50 border-brutal p-4">
-            <p className="font-bold text-sm mb-1">Mix</p>
-            <p className="text-xs text-gray-600 mb-2">Combination approach</p>
-            <p className="text-sm font-bold text-yellow-700">Risk = 2 → 10 points</p>
-          </div>
-          <div className="bg-red-50 border-brutal p-4">
-            <p className="font-bold text-sm mb-1">Custom</p>
-            <p className="text-xs text-gray-600 mb-2">Built from scratch</p>
-            <p className="text-sm font-bold text-red-700">Risk = 1 → 5 points</p>
+          <div className="bg-purple-50 border-brutal p-4">
+            <p className="font-bold text-sm mb-2">Examples:</p>
+            <p className="text-xs text-gray-700 mb-1">
+              <strong>Login form (standard):</strong> Easy = 5, Quick = 5 → Effort = 25 points
+            </p>
+            <p className="text-xs text-gray-700 mb-1">
+              <strong>Complex data table with filters:</strong> Easy = 3, Quick = 2 → Effort = 6 points
+            </p>
+            <p className="text-xs text-gray-700">
+              <strong>Custom canvas visualization:</strong> Easy = 1, Quick = 1 → Effort = 1 point
+            </p>
           </div>
         </div>
       </div>
@@ -281,10 +293,10 @@ function ScoringGuideTab() {
           History Score
         </h3>
         <div className="bg-gray-50 border-brutal p-4 mb-4 font-mono text-sm">
-          History Score = min(Affected Areas, 5)
+          History Score = min(Connected Components, 5)
         </div>
         <p className="text-gray-700 mb-3">
-          Measures how many parts of the system are affected by this change.
+          Measures how many parts of the system are connected to this feature.
         </p>
         <div className="bg-purple-50 border-brutal p-4">
           <p className="font-bold text-sm mb-2">Example:</p>
@@ -323,7 +335,7 @@ function ScoringGuideTab() {
       <div className="border-brutal bg-gradient-to-r from-green-100 to-yellow-100 p-6">
         <h3 className="font-black text-xl mb-3">Total Score & Recommendation</h3>
         <div className="bg-white border-brutal p-4 mb-4 font-mono text-sm">
-          Total = Risk + Value + Ease + History + Legal (0-100)
+          Total = Risk + Value + Effort + History + Legal (0-100)
         </div>
         <div className="grid grid-cols-3 gap-3">
           <div className="bg-green-200 border-brutal p-4">
@@ -391,16 +403,15 @@ function BestPracticesTab() {
         </div>
 
         <div className="border-brutal bg-green-50 p-6">
-          <h3 className="font-black text-lg mb-3 text-green-800">✓ DO: Leverage Design pattern librarys</h3>
+          <h3 className="font-black text-lg mb-3 text-green-800">✓ DO: Prioritize Easy & Quick Tests</h3>
           <p className="text-gray-700 mb-3">
-            When functionality uses existing UI patterns (Design pattern librarys), automation is easier
-            and faster. These tests have lower maintenance costs.
+            When functionality uses standard components and clear patterns, automation is both easier
+            and quicker. Rate these highly on both effort factors (5 for easy, 5 for quick = 25 points).
           </p>
           <div className="bg-white border-brutal p-4 text-sm">
-            <p className="font-bold mb-2">Smart Suggestion:</p>
+            <p className="font-bold mb-2">Example:</p>
             <p className="text-gray-700">
-              The tool will warn you if a Design pattern library test scores low - consider if the
-              maintenance cost is worth it.
+              Standard login form with clear selectors → Easy = 5, Quick = 5 → Effort Score = 25 points
             </p>
           </div>
         </div>
@@ -536,7 +547,7 @@ function FAQTab() {
         </div>
 
         <div className="border-brutal bg-white p-6">
-          <h3 className="font-black text-lg mb-3">How do I determine "User Frequency"?</h3>
+          <h3 className="font-black text-lg mb-3">How do I determine "Usage Frequency"?</h3>
           <p className="text-gray-700 mb-3">
             Use this scale:
           </p>
@@ -550,7 +561,7 @@ function FAQTab() {
         </div>
 
         <div className="border-brutal bg-white p-6">
-          <h3 className="font-black text-lg mb-3">How do I determine "Business Impact"?</h3>
+          <h3 className="font-black text-lg mb-3">How do I determine "Impact if Broken"?</h3>
           <p className="text-gray-700 mb-3">
             Consider what happens if this functionality breaks:
           </p>
@@ -604,6 +615,35 @@ function FAQTab() {
             <li><span className="font-bold">Custom Implementation:</span> Unique implementation built from scratch - highest effort</li>
             <li><span className="font-bold">Hybrid:</span> Combination of standard components and custom elements - moderate effort</li>
           </ul>
+        </div>
+
+        <div className="border-brutal bg-white p-6">
+          <h3 className="font-black text-lg mb-3">How do I rate "Easy to Automate" and "Quick to Automate"?</h3>
+          <p className="text-gray-700 mb-3">
+            These two factors combine to create your Effort Score (0-25 points). Think of them separately:
+          </p>
+          <div className="space-y-3">
+            <div className="bg-green-50 border-brutal p-3">
+              <p className="font-bold text-sm text-green-800 mb-2">Easy to Automate (Technical Complexity)</p>
+              <ul className="text-sm text-gray-700 space-y-1 ml-4 list-disc">
+                <li><strong>5:</strong> Standard components, clear selectors, stable UI</li>
+                <li><strong>3:</strong> Mix of standard and custom, some dynamic content</li>
+                <li><strong>1:</strong> Complex custom implementation, inaccessible elements</li>
+              </ul>
+            </div>
+            <div className="bg-blue-50 border-brutal p-3">
+              <p className="font-bold text-sm text-blue-800 mb-2">Quick to Automate (Time Investment)</p>
+              <ul className="text-sm text-gray-700 space-y-1 ml-4 list-disc">
+                <li><strong>5:</strong> Under 1 hour (simple form, button click)</li>
+                <li><strong>3:</strong> Half day (moderate workflow, some setup)</li>
+                <li><strong>1:</strong> Multiple days (requires new infrastructure, research)</li>
+              </ul>
+            </div>
+          </div>
+          <p className="text-gray-700 mt-3">
+            <strong>Example:</strong> A standard login form might be Easy = 5 and Quick = 5 (25 points), 
+            while a complex data visualization might be Easy = 2 and Quick = 1 (2 points).
+          </p>
         </div>
 
         <div className="border-brutal bg-white p-6">

@@ -186,9 +186,9 @@ export function TestCaseTable() {
                     </span>
                   </div>
                 </th>
-                <ColumnHeader column="userFrequency" label="Freq" className="w-16" />
-                <ColumnHeader column="businessImpact" label="Impact" className="w-16" />
-                <ColumnHeader column="affectedAreas" label="Areas" className="w-16" />
+                <ColumnHeader column="userFrequency" label="Usage Freq" className="w-16" />
+                <ColumnHeader column="businessImpact" label="Impact if Broken" className="w-16" />
+                <ColumnHeader column="affectedAreas" label="Connected" className="w-16" />
                 <ColumnHeader column="isLegal" label="Legal" className="w-16" />
               </tr>
             </thead>

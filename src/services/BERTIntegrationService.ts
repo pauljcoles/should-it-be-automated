@@ -233,7 +233,7 @@ export class BERTIntegrationService {
         } else {
             lines.push(`Effort Score:  ${effortScore}/25`);
         }
-        lines.push(`History Score: ${testCase.scores.history}/5   (Affected Areas: ${testCase.affectedAreas})`);
+        lines.push(`History Score: ${testCase.scores.history}/5   (Connected Components: ${testCase.affectedAreas})`);
         lines.push(`Legal Score:   ${testCase.scores.legal}/20  (Legal Requirement: ${testCase.isLegal ? 'Yes' : 'No'})`);
         lines.push('');
 

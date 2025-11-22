@@ -12,11 +12,11 @@ import { ChangeType, ImplementationType, Recommendation, type TestCase } from '.
  */
 export class ScoreCalculator {
     /**
-     * Calculate risk score based on user frequency and business impact
+     * Calculate risk score based on usage frequency and impact if broken
      * Formula: userFrequency × businessImpact
      * 
-     * @param userFrequency - How frequently users interact with this feature (1-5)
-     * @param businessImpact - Business impact if this feature fails (1-5)
+     * @param userFrequency - Usage frequency: How often users interact with this feature (1-5)
+     * @param businessImpact - Impact if broken: What happens if this feature fails (1-5)
      * @returns Risk score (0-25)
      */
     static calculateRiskScore(userFrequency: number, businessImpact: number): number {
@@ -24,11 +24,11 @@ export class ScoreCalculator {
     }
 
     /**
-     * Calculate value score based on change type and business impact
+     * Calculate value score based on change type and impact if broken
      * Formula: distinctness × induction to action
      * 
      * @param changeType - How the functionality has changed
-     * @param businessImpact - Business impact if this feature fails (1-5)
+     * @param businessImpact - Impact if broken: What happens if this feature fails (1-5)
      * @returns Value score (0-25)
      */
     static calculateValueScore(changeType: ChangeType, businessImpact: number): number {
@@ -84,7 +84,7 @@ export class ScoreCalculator {
     }
 
     /**
-     * Calculate history score based on affected areas
+     * Calculate history score based on connected components
      * Formula: min(affectedAreas, 5)
      * 
      * @param affectedAreas - Number of areas affected by this functionality (1-5)
@@ -146,7 +146,7 @@ export class ScoreCalculator {
 
         // Risk Score
         lines.push(`Risk Score: ${testCase.scores.risk}/25`);
-        lines.push(`  = User Frequency (${testCase.userFrequency}) × Business Impact (${testCase.businessImpact})`);
+        lines.push(`  = Usage Frequency (${testCase.userFrequency}) × Impact if Broken (${testCase.businessImpact})`);
         lines.push('');
 
         // Value Score
@@ -172,7 +172,7 @@ export class ScoreCalculator {
 
         // History Score
         lines.push(`History Score: ${testCase.scores.history}/5`);
-        lines.push(`  = min(Affected Areas (${testCase.affectedAreas}), 5)`);
+        lines.push(`  = min(Connected Components (${testCase.affectedAreas}), 5)`);
         lines.push('');
 
         // Legal Score

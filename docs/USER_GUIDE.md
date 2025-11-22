@@ -74,9 +74,9 @@ Each test case has the following fields:
 | **Test Name** | Text | Descriptive name for the test (required) |
 | **Change Type** | Dropdown | How functionality changed: new, modified-behavior, modified-ui, unchanged |
 | **Implementation Type** | Dropdown | Technical approach: standard-components, new-pattern, custom-implementation, hybrid |
-| **User Frequency** | Number (1-5) | How often users interact with this feature |
-| **Business Impact** | Number (1-5) | Impact if this feature breaks |
-| **Affected Areas** | Number (1-5) | Number of related components affected |
+| **Usage Frequency** | Number (1-5) | How often users interact with this feature |
+| **Impact if Broken** | Number (1-5) | Impact if this feature breaks |
+| **Connected Components** | Number (1-5) | Number of related components connected to this feature |
 | **Legal Requirement** | Checkbox | Whether this is legally/compliance required |
 | **Notes** | Text | Additional context or rationale |
 | **Scenario ID** | Text | Link to external scenario tool |
@@ -112,16 +112,16 @@ The Initial Judgment feature helps you identify biases and learn from the scorin
 
 | Your Gut Feel | Calculated Rec | Why This Happens |
 |---------------|----------------|------------------|
-| Definitely Automate | Don't Automate | You may be overestimating user frequency or underestimating implementation complexity |
-| Definitely Skip | Automate | You may be missing the business impact or not considering how easy standard components are to test |
+| Definitely Automate | Don't Automate | You may be overestimating usage frequency or underestimating implementation complexity |
+| Definitely Skip | Automate | You may be missing the impact if broken or not considering how easy standard components are to test |
 | Unsure | Automate/Don't Automate | You need more context about risk factors - the scoring helps clarify |
 
 **Example: When Gut Feel Was Wrong**
 
 *Scenario*: Testing a new admin dashboard feature
-- **Your Gut Feel**: "Definitely Skip" - it's admin-only, low user frequency
+- **Your Gut Feel**: "Definitely Skip" - it's admin-only, low usage frequency
 - **Calculated Recommendation**: "Automate" (Score: 72)
-- **Why**: While user frequency is low (2), business impact is critical (5), it uses standard components (ease: 25), and it's legally required (legal: 20)
+- **Why**: While usage frequency is low (2), impact if broken is critical (5), it uses standard components (ease: 25), and it's legally required (legal: 20)
 - **Learning**: Legal requirements and ease of implementation can outweigh low frequency
 
 #### Hiding the Column
@@ -136,10 +136,10 @@ Experienced users who no longer need this learning aid can hide the column:
 
 The tool automatically calculates five scores:
 
-1. **Risk Score** (0-25): User Frequency × Business Impact
+1. **Risk Score** (0-25): Usage Frequency × Impact if Broken
 2. **Value Score** (0-25): Based on change type and business impact
-3. **Ease Score** (0-25): Based on implementation complexity
-4. **History Score** (0-5): Based on affected areas
+3. **Effort Score** (0-25): Easy to Automate × Quick to Automate
+4. **History Score** (0-5): Based on connected components
 5. **Legal Score** (0 or 20): Binary score for legal requirements
 
 **Total Score** (0-100): Sum of all individual scores
@@ -222,8 +222,8 @@ For each new or modified state, the tool creates a test case with:
 - Notes describing the changes
 
 You still need to manually set:
-- User frequency
-- Business impact
+- Usage frequency
+- Impact if broken
 - Legal requirement status
 
 ### Scenario Tool Integration
@@ -262,7 +262,7 @@ Alternative field names are supported: `id`, `bertScenarioId`, `title`, `name`, 
 
 #### Risk Score (0-25)
 ```
-Risk Score = User Frequency × Business Impact
+Risk Score = Usage Frequency × Impact if Broken
 ```
 
 **Example**: If users interact with a feature frequently (5) and it has high business impact (5):
@@ -287,24 +287,36 @@ Based on two factors:
 Value Score = Distinctness × Induction to Action
 ```
 
-#### Ease Score (0-25)
+#### Effort Score (0-25)
 
-Based on implementation complexity:
-
-| Implementation Type | Risk Factor | Ease Score |
-|---------------------|-------------|------------|
-| Standard Components | 5 | 25 |
-| New Pattern | 3 | 15 |
-| Hybrid | 2 | 10 |
-| Custom Implementation | 1 | 5 |
+Based on two independent factors:
 
 ```
-Ease Score = Implementation Risk × 5
+Effort Score = Easy to Automate × Quick to Automate
 ```
+
+**Easy to Automate (1-5)** - Technical complexity:
+- **5**: Standard components, clear selectors, stable UI
+- **4**: Mostly standard with minor customization
+- **3**: Mix of standard and custom elements
+- **2**: Complex custom implementation, dynamic content
+- **1**: Highly complex, unstable, or inaccessible elements
+
+**Quick to Automate (1-5)** - Time investment:
+- **5**: Under 1 hour (simple form, button click)
+- **4**: 1-2 hours of work
+- **3**: Half day of work
+- **2**: Full day or more
+- **1**: Multiple days, requires research or new infrastructure
+
+**Examples**:
+- Standard login form: Easy = 5, Quick = 5 → Effort = 25 points
+- Complex data table: Easy = 3, Quick = 2 → Effort = 6 points
+- Custom canvas visualization: Easy = 1, Quick = 1 → Effort = 1 point
 
 #### History Score (0-5)
 ```
-History Score = min(Affected Areas, 5)
+History Score = min(Connected Components, 5)
 ```
 
 #### Legal Score (0 or 20)
@@ -315,7 +327,7 @@ Legal Score = Legal Requirement ? 20 : 0
 ### Interpreting Scores
 
 **High Priority for Automation** (67-100):
-- High user frequency and business impact
+- High usage frequency and impact if broken
 - New or significantly modified functionality
 - Easy to implement (standard components)
 - Affects multiple areas
@@ -327,7 +339,7 @@ Legal Score = Legal Requirement ? 20 : 0
 - Balance automation cost vs. benefit
 
 **Low Priority** (0-33):
-- Low user frequency or business impact
+- Low usage frequency or impact if broken
 - Unchanged functionality
 - Complex custom implementation
 - Consider exploratory or manual testing
@@ -359,7 +371,7 @@ For teams using model-based testing.
 3. Review the diff showing changes since last import
 4. Click **"Confirm Import"**
 5. Test cases are auto-generated for new/modified states
-6. Adjust user frequency and business impact for each
+6. Adjust usage frequency and impact if broken for each
 7. Review recommendations
 8. Export decisions
 
@@ -394,14 +406,14 @@ For QA leads planning automation work.
 
 ### Scoring Guidelines
 
-**User Frequency**:
+**Usage Frequency**:
 - 5: Multiple times per day
 - 4: Daily
 - 3: Weekly
 - 2: Monthly
 - 1: Rarely
 
-**Business Impact**:
+**Impact if Broken**:
 - 5: Critical (revenue loss, data corruption, security breach)
 - 4: High (major feature broken, poor user experience)
 - 3: Medium (feature partially broken, workaround exists)
@@ -419,12 +431,12 @@ For QA leads planning automation work.
 - Legal/compliance requirements (regardless of score)
 - High-frequency, high-impact features
 - Regression-prone areas
-- Features with many affected areas
+- Features with many connected components
 
 **Consider Carefully**:
 - Unchanged functionality with low frequency
 - Complex custom implementations with low value
-- UI-only changes with low business impact
+- UI-only changes with low impact if broken
 
 **Avoid Automating**:
 - One-time tests

@@ -24,9 +24,9 @@ export function FieldTooltip({ field }: FieldTooltipProps) {
     testName: 'A descriptive name for this test case. Keep it clear and concise (max 100 characters).',
     changeType: 'How has this functionality changed? New = brand new feature, Modified Behavior = logic changed, Modified UI = visual only, Unchanged = no changes.',
     implementationType: 'Technical implementation approach. Loop Same = reuses existing pattern exactly, Loop Different = similar pattern with variations, Custom = built from scratch, Mix = combination.',
-    userFrequency: 'How often do users interact with this functionality? Scale: 1 (rarely) to 5 (constantly, every session).',
-    businessImpact: 'What happens if this breaks? Scale: 1 (minimal impact) to 5 (critical, revenue/data loss).',
-    affectedAreas: 'How many parts of the system are affected by this change? Count pages, components, or modules impacted.',
+    userFrequency: 'Usage Frequency: How often do users interact with this feature? Consider: 1 (rarely/monthly), 2 (weekly), 3 (few times/week), 4 (daily), 5 (multiple times/day). Think about typical user behavior, not edge cases.',
+    businessImpact: 'Impact if Broken: What happens if this feature fails? Consider: 1 (cosmetic issue), 2 (minor inconvenience), 3 (workaround exists), 4 (major feature broken), 5 (critical - revenue loss, data corruption, security breach).',
+    affectedAreas: 'Connected Components: How many parts of the system connect to or depend on this feature? Count: pages that use it, components that integrate with it, APIs it calls, data it touches. Range: 1 (isolated) to 5 (highly connected hub).',
     isLegal: 'Check this if the test is required for legal, compliance, or regulatory reasons (GDPR, accessibility, audit trails, etc.). Adds 20 points to the score.',
     notes: 'Additional context, edge cases, or special considerations for this test.',
     bertScenarioId: 'Optional: Link to the BERT scenario ID if this test was generated from BERT.',
@@ -69,7 +69,7 @@ export function ScoreTooltip({
         return (
           <div>
             <p className="font-bold mb-1">Risk Score (0-25)</p>
-            <p className="text-xs mb-2">Formula: User Frequency × Business Impact</p>
+            <p className="text-xs mb-2">Formula: Usage Frequency × Impact if Broken</p>
             {userFrequency !== undefined && businessImpact !== undefined && (
               <p className="text-xs bg-gray-100 p-1 rounded">
                 {userFrequency} × {businessImpact} = {userFrequency * businessImpact}
@@ -114,14 +114,14 @@ export function ScoreTooltip({
         };
         return (
           <div>
-            <p className="font-bold mb-1">Ease Score (0-25)</p>
-            <p className="text-xs mb-2">Formula: Implementation Risk × 5</p>
+            <p className="font-bold mb-1">Effort Score (0-25)</p>
+            <p className="text-xs mb-2">Formula: Easy to Automate × Quick to Automate</p>
             {implementationType && (
               <p className="text-xs bg-gray-100 p-1 rounded mb-2">
-                {riskMap[implementationType]} × 5 = {riskMap[implementationType] * 5}
+                Legacy: {riskMap[implementationType]} × 5 = {riskMap[implementationType] * 5}
               </p>
             )}
-            <p className="text-xs">Measures how easy it is to automate based on technical implementation.</p>
+            <p className="text-xs">Measures the effort required to automate based on technical complexity and time investment.</p>
           </div>
         );
       
@@ -129,13 +129,13 @@ export function ScoreTooltip({
         return (
           <div>
             <p className="font-bold mb-1">History Score (0-5)</p>
-            <p className="text-xs mb-2">Formula: min(Affected Areas, 5)</p>
+            <p className="text-xs mb-2">Formula: min(Connected Components, 5)</p>
             {affectedAreas !== undefined && (
               <p className="text-xs bg-gray-100 p-1 rounded mb-2">
                 min({affectedAreas}, 5) = {Math.min(affectedAreas, 5)}
               </p>
             )}
-            <p className="text-xs">Measures how many parts of the system are affected by this change.</p>
+            <p className="text-xs">Measures how many parts of the system are connected to this feature.</p>
           </div>
         );
       
@@ -157,7 +157,7 @@ export function ScoreTooltip({
         return (
           <div>
             <p className="font-bold mb-1">Total Score (0-100)</p>
-            <p className="text-xs mb-2">Formula: Risk + Value + Ease + History + Legal</p>
+            <p className="text-xs mb-2">Formula: Risk + Value + Effort + History + Legal</p>
             <p className="text-xs">Sum of all component scores. Determines the automation recommendation.</p>
           </div>
         );

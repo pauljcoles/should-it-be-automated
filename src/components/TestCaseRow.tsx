@@ -293,15 +293,15 @@ function TestCaseRowComponent({ testCase, isMobile = false }: TestCaseRowProps) 
 
         <div className="grid grid-cols-4 gap-2">
           <div>
-            <div className="text-xs font-medium text-slate-600 mb-1">Freq</div>
+            <div className="text-xs font-medium text-slate-600 mb-1">Usage Freq</div>
             <input type="number" min="1" max="5" value={testCase.userFrequency} onChange={handleNumberChange('userFrequency', 1, 5)} className="w-full px-2 py-2 text-base border border-slate-300 rounded-md text-center bg-white focus:outline-none focus:ring-2 focus:ring-blue-400" />
           </div>
           <div>
-            <div className="text-xs font-medium text-slate-600 mb-1">Impact</div>
+            <div className="text-xs font-medium text-slate-600 mb-1">Impact if Broken</div>
             <input type="number" min="1" max="5" value={testCase.businessImpact} onChange={handleNumberChange('businessImpact', 1, 5)} className="w-full px-2 py-2 text-base border border-slate-300 rounded-md text-center bg-white focus:outline-none focus:ring-2 focus:ring-blue-400" />
           </div>
           <div>
-            <div className="text-xs font-medium text-slate-600 mb-1">Areas</div>
+            <div className="text-xs font-medium text-slate-600 mb-1">Connected</div>
             <input type="number" min="1" max="5" value={testCase.affectedAreas} onChange={handleNumberChange('affectedAreas', 1, 5)} className="w-full px-2 py-2 text-base border border-slate-300 rounded-md text-center bg-white focus:outline-none focus:ring-2 focus:ring-blue-400" />
           </div>
           <div className="flex flex-col items-center justify-end">
