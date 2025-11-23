@@ -5,7 +5,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { BERTIntegrationService } from './BERTIntegrationService';
-import { ChangeType, ImplementationType, Recommendation } from '../types/models';
+import { CodeChange, ImplementationType, Recommendation } from '../types/models';
 
 describe('BERTIntegrationService', () => {
     describe('parseBERTJSON', () => {
@@ -14,7 +14,7 @@ describe('BERTIntegrationService', () => {
                 bertScenarioId: 'BERT-123',
                 scenarioTitle: 'User Login Test',
                 jiraTicket: 'JIRA-456',
-                detectedChangeType: 'new',
+                detectedCodeChange: 'new',
                 detectedImplementation: 'custom-implementation',
                 context: 'Testing user authentication flow'
             });
@@ -26,7 +26,7 @@ describe('BERTIntegrationService', () => {
             expect(result.data?.bertScenarioId).toBe('BERT-123');
             expect(result.data?.scenarioTitle).toBe('User Login Test');
             expect(result.data?.jiraTicket).toBe('JIRA-456');
-            expect(result.data?.detectedChangeType).toBe(ChangeType.NEW);
+            expect(result.data?.detectedCodeChange).toBe(CodeChange.NEW);
             expect(result.data?.detectedImplementation).toBe(ImplementationType.CUSTOM);
             expect(result.data?.context).toBe('Testing user authentication flow');
         });
@@ -37,6 +37,7 @@ describe('BERTIntegrationService', () => {
                 title: 'Payment Processing',
                 ticket: 'JIRA-101',
                 changeType: 'modified-behavior',
+                organisationalPressure: 1,
                 implementation: 'standard-components'
             });
 
@@ -46,7 +47,7 @@ describe('BERTIntegrationService', () => {
             expect(result.data?.bertScenarioId).toBe('BERT-789');
             expect(result.data?.scenarioTitle).toBe('Payment Processing');
             expect(result.data?.jiraTicket).toBe('JIRA-101');
-            expect(result.data?.detectedChangeType).toBe(ChangeType.MODIFIED_BEHAVIOR);
+            expect(result.data?.detectedCodeChange).toBe(CodeChange.MODIFIED);
             expect(result.data?.detectedImplementation).toBe(ImplementationType.LOOP_SAME);
         });
 
@@ -101,7 +102,7 @@ describe('BERTIntegrationService', () => {
                 bertScenarioId: 'BERT-123',
                 scenarioTitle: 'User Login Test',
                 jiraTicket: 'JIRA-456',
-                detectedChangeType: ChangeType.NEW,
+                detectedCodeChange: CodeChange.NEW,
                 detectedImplementation: ImplementationType.CUSTOM,
                 context: 'Testing user authentication'
             };
@@ -112,7 +113,7 @@ describe('BERTIntegrationService', () => {
             expect(testCase.testName).toBe('User Login Test');
             expect(testCase.bertScenarioId).toBe('BERT-123');
             expect(testCase.jiraTicket).toBe('JIRA-456');
-            expect(testCase.changeType).toBe(ChangeType.NEW);
+            expect(testCase.codeChange).toBe(CodeChange.NEW);
             expect(testCase.implementationType).toBe(ImplementationType.CUSTOM);
             expect(testCase.source).toBe('bert');
             expect(testCase.notes).toContain('BERT Context');
@@ -128,7 +129,7 @@ describe('BERTIntegrationService', () => {
             const testCase = BERTIntegrationService.mapBERTFieldsToTestCase(bertScenario);
 
             expect(testCase.testName).toBe('Minimal Test');
-            expect(testCase.changeType).toBe(ChangeType.NEW);
+            expect(testCase.codeChange).toBe(CodeChange.NEW);
             expect(testCase.implementationType).toBe(ImplementationType.CUSTOM);
             expect(testCase.userFrequency).toBe(3);
             expect(testCase.businessImpact).toBe(3);
@@ -140,7 +141,7 @@ describe('BERTIntegrationService', () => {
             const bertScenario = {
                 bertScenarioId: 'BERT-123',
                 scenarioTitle: 'Test',
-                detectedChangeType: ChangeType.NEW,
+                detectedCodeChange: CodeChange.NEW,
                 detectedImplementation: ImplementationType.LOOP_SAME
             };
 
@@ -163,7 +164,8 @@ describe('BERTIntegrationService', () => {
                 testName: 'User Login Test',
                 bertScenarioId: 'BERT-123',
                 jiraTicket: 'JIRA-456',
-                changeType: ChangeType.NEW,
+                codeChange: CodeChange.NEW,
+                organisationalPressure: 1,
                 implementationType: ImplementationType.CUSTOM,
                 isLegal: false,
                 userFrequency: 4,
@@ -202,7 +204,8 @@ describe('BERTIntegrationService', () => {
             const testCase = {
                 id: '123',
                 testName: 'High Priority Test',
-                changeType: ChangeType.NEW,
+                codeChange: CodeChange.NEW,
+                organisationalPressure: 1,
                 implementationType: ImplementationType.LOOP_SAME,
                 isLegal: false,
                 userFrequency: 5,
@@ -230,7 +233,8 @@ describe('BERTIntegrationService', () => {
             const testCase = {
                 id: '123',
                 testName: 'Low Priority Test',
-                changeType: ChangeType.UNCHANGED,
+                codeChange: CodeChange.UNCHANGED,
+                organisationalPressure: 1,
                 implementationType: ImplementationType.CUSTOM,
                 isLegal: false,
                 userFrequency: 1,

@@ -37,6 +37,84 @@ The application consists of four main areas:
 3. **Test Case Table** (center): Main workspace for evaluating test cases
 4. **Summary Statistics** (bottom): Aggregate metrics across all test cases
 
+## Application Modes
+
+The tool offers two modes to suit different team needs:
+
+### Normal Mode (Default)
+
+**Best for**: Experienced teams who want a fast, simple calculator
+
+- Uses Angie Jones' exact 7-field scoring model
+- 0-80 point scale (Customer Risk + Value + Cost + History)
+- Clean 2x2 grid layout for quick data entry
+- No teaching elements or guidance
+- Fastest workflow for experienced users
+
+**Fields**:
+- **Customer Risk** (0-25): Impact × Probability of Use
+- **Value of Test** (0-25): Distinctness × Fix Probability
+- **Cost Efficiency** (0-25): Easy to Write × Quick to Write
+- **History** (0-5): MAX(Similarity, Break Frequency)
+
+**Recommendation Thresholds** (0-80 scale):
+- 54-80 → AUTOMATE
+- 27-53 → MAYBE
+- 0-26 → DON'T AUTOMATE (Exploratory Testing)
+
+### Teaching Mode
+
+**Best for**: Learning teams who want educational guidance
+
+- Uses same 7-field model as Normal Mode
+- 0-100 point scale (0-80 base + 20 legal bonus)
+- Includes Legal Requirement checkbox (+20 points)
+- Includes Organizational Pressure slider (triggers teaching)
+- Shows "Real Talk" section when appropriate
+- Explains coverage vs. effectiveness
+
+**Additional Fields**:
+- **Legal Requirement**: Checkbox that adds +20 to total score
+- **Organizational Pressure** (1-5): Captures pressure to show coverage
+  - 1 = No pressure, team decides
+  - 2 = Slight pressure
+  - 3 = Moderate pressure (some stakeholder anxiety)
+  - 4 = High pressure
+  - 5 = Must show coverage
+
+**Recommendation Thresholds** (0-100 scale):
+- 67-100 → AUTOMATE
+- 34-66 → MAYBE
+- 0-33 → DON'T AUTOMATE (Exploratory Testing)
+
+### Real Talk Section (Teaching Mode Only)
+
+The Real Talk section appears when:
+- Technical score < 34 (base 0-80 score, before legal bonus)
+- OR Organizational Pressure ≥ 3
+
+**What It Teaches**:
+
+1. **Low Score + High Pressure**: Warns about "coverage theater" - automating tests just to show coverage numbers rather than catch bugs
+2. **Low Score + Low Pressure**: Suggests focusing automation efforts on higher-value tests
+3. **High Score + High Pressure**: Confirms that pressure is justified by technical value
+4. **Legal Requirement**: Explains that compliance testing is mandatory regardless of technical score
+
+### The Coverage Duvet
+
+A key teaching concept in Teaching Mode:
+
+> "High test coverage doesn't equal effective testing. It's like a duvet that looks warm but has holes - you might have 90% coverage but miss the critical 10% that matters."
+
+**Focus on**: Tests that catch real bugs, not tests that make the coverage number go up.
+
+### Switching Modes
+
+1. Click the **Mode Toggle** button in the header
+2. Choose **Normal** or **Teaching**
+3. Your preference is saved automatically
+4. Existing test cases work in both modes
+
 ## Core Features
 
 ### Managing Test Cases

@@ -6,7 +6,7 @@
 import { describe, it, expect } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { AppProvider, useAppContext } from './AppContext';
-import { ChangeType, ImplementationType, DataSource, FunctionalityStatus, Recommendation } from '../types/models';
+import { CodeChange, ImplementationType, DataSource, FunctionalityStatus, Recommendation } from '../types/models';
 
 describe('AppContext', () => {
     describe('Test Case Management', () => {
@@ -18,10 +18,19 @@ describe('AppContext', () => {
             act(() => {
                 result.current.addTestCase({
                     testName: 'Test Login',
-                    changeType: ChangeType.NEW,
-                    easyToAutomate: 3,
-                    quickToAutomate: 3,
+                    codeChange: CodeChange.NEW,
+                    organisationalPressure: 1,
                     isLegal: false,
+                    // Normal mode uses Angie's fields
+                    impact: 5,
+                    probOfUse: 5,
+                    distinctness: 3,
+                    fixProbability: 3,
+                    easyToWrite: 3,
+                    quickToWrite: 3,
+                    similarity: 1,
+                    breakFreq: 1,
+                    // Legacy fields for compatibility
                     userFrequency: 5,
                     businessImpact: 5,
                     affectedAreas: 3
@@ -30,7 +39,8 @@ describe('AppContext', () => {
 
             expect(result.current.appState.testCases).toHaveLength(1);
             expect(result.current.appState.testCases[0].testName).toBe('Test Login');
-            expect(result.current.appState.testCases[0].scores.risk).toBe(25); // 5 * 5
+            // In Normal mode (default), uses customerRisk instead of risk
+            expect(result.current.appState.testCases[0].scores.customerRisk).toBe(25); // 5 * 5
             expect(result.current.appState.testCases[0].id).toBeDefined();
         });
 
@@ -42,9 +52,20 @@ describe('AppContext', () => {
             act(() => {
                 result.current.addTestCase({
                     testName: 'Test Login',
-                    changeType: ChangeType.NEW,
+                    codeChange: CodeChange.NEW,
+                    organisationalPressure: 1,
                     implementationType: ImplementationType.CUSTOM,
                     isLegal: false,
+                    // Normal mode uses Angie's fields
+                    impact: 3,
+                    probOfUse: 3,
+                    distinctness: 3,
+                    fixProbability: 3,
+                    easyToWrite: 3,
+                    quickToWrite: 3,
+                    similarity: 1,
+                    breakFreq: 1,
+                    // Legacy fields for compatibility
                     userFrequency: 3,
                     businessImpact: 3,
                     affectedAreas: 2
@@ -56,6 +77,8 @@ describe('AppContext', () => {
 
             act(() => {
                 result.current.updateTestCase(testCaseId, {
+                    impact: 5,
+                    probOfUse: 5,
                     userFrequency: 5,
                     businessImpact: 5
                 });
@@ -64,7 +87,8 @@ describe('AppContext', () => {
             const updatedTestCase = result.current.appState.testCases[0];
             expect(updatedTestCase.userFrequency).toBe(5);
             expect(updatedTestCase.businessImpact).toBe(5);
-            expect(updatedTestCase.scores.risk).toBe(25); // 5 * 5
+            // In Normal mode (default), uses customerRisk instead of risk
+            expect(updatedTestCase.scores.customerRisk).toBe(25); // 5 * 5
             expect(updatedTestCase.scores.total).toBeGreaterThan(originalScore);
         });
 
@@ -76,7 +100,8 @@ describe('AppContext', () => {
             act(() => {
                 result.current.addTestCase({
                     testName: 'Test Login',
-                    changeType: ChangeType.NEW,
+                    codeChange: CodeChange.NEW,
+                    organisationalPressure: 1,  
                     implementationType: ImplementationType.CUSTOM,
                     isLegal: false,
                     userFrequency: 3,
@@ -103,7 +128,8 @@ describe('AppContext', () => {
             act(() => {
                 result.current.addTestCase({
                     testName: 'Test Login',
-                    changeType: ChangeType.NEW,
+                    codeChange: CodeChange.NEW,
+                    organisationalPressure: 1,
                     implementationType: ImplementationType.CUSTOM,
                     isLegal: false,
                     userFrequency: 3,
@@ -228,12 +254,12 @@ describe('AppContext', () => {
             act(() => {
                 result.current.setRecommendationFilter(Recommendation.AUTOMATE);
                 result.current.setSearchTerm('login');
-                result.current.setChangeTypeFilter(ChangeType.NEW);
+                result.current.setCodeChangeFilter(CodeChange.NEW);
             });
 
             expect(result.current.filters.recommendation).toBe(Recommendation.AUTOMATE);
             expect(result.current.filters.searchTerm).toBe('login');
-            expect(result.current.filters.changeType).toBe(ChangeType.NEW);
+            expect(result.current.filters.codeChange).toBe(CodeChange.NEW);
 
             act(() => {
                 result.current.clearFilters();
@@ -328,7 +354,8 @@ describe('AppContext', () => {
             act(() => {
                 result.current.addTestCase({
                     testName: 'Test Login',
-                    changeType: ChangeType.NEW,
+                    codeChange: CodeChange.NEW,
+                    organisationalPressure: 1,
                     implementationType: ImplementationType.CUSTOM,
                     isLegal: false,
                     userFrequency: 3,
@@ -351,7 +378,8 @@ describe('AppContext', () => {
             act(() => {
                 result.current.addTestCase({
                     testName: 'Test Login',
-                    changeType: ChangeType.NEW,
+                    codeChange: CodeChange.NEW,
+                    organisationalPressure: 1,
                     implementationType: ImplementationType.CUSTOM,
                     isLegal: false,
                     userFrequency: 3,

@@ -10,7 +10,7 @@ import {
     type StateDiagram,
     type ValidationResult,
     type ValidationWarning,
-    ChangeType,
+    CodeChange,
     ImplementationType
 } from '../types/models';
 
@@ -47,11 +47,11 @@ export class ValidationService {
         }
 
         // Smart suggestion: unchanged high-frequency tests
-        if (testCase.changeType === ChangeType.UNCHANGED && testCase.userFrequency > 3) {
+        if (testCase.codeChange === CodeChange.UNCHANGED && testCase.userFrequency > 3) {
             warnings.push({
                 level: 'warning',
                 message: '⚠️ Unchanged code typically scores low. Consider exploratory testing instead.',
-                field: 'changeType'
+                field: 'codeChange'
             });
         }
 

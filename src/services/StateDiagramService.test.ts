@@ -7,9 +7,9 @@
 import { describe, it, expect } from 'vitest';
 import { StateDiagramService } from './StateDiagramService';
 import {
+    CodeChange,
     type StateDiagram,
     type State,
-    ChangeType,
     ImplementationType,
     DataSource
 } from '../types/models';
@@ -362,7 +362,7 @@ describe('StateDiagramService', () => {
 
             const changeType = StateDiagramService.detectChangeType(modification);
 
-            expect(changeType).toBe(ChangeType.MODIFIED_BEHAVIOR);
+            expect(changeType).toBe(CodeChange.MODIFIED);
         });
 
         it('should detect behavior change for removed actions', () => {
@@ -375,7 +375,7 @@ describe('StateDiagramService', () => {
 
             const changeType = StateDiagramService.detectChangeType(modification);
 
-            expect(changeType).toBe(ChangeType.MODIFIED_BEHAVIOR);
+            expect(changeType).toBe(CodeChange.MODIFIED);
         });
 
         it('should detect behavior change for transition changes', () => {
@@ -388,7 +388,7 @@ describe('StateDiagramService', () => {
 
             const changeType = StateDiagramService.detectChangeType(modification);
 
-            expect(changeType).toBe(ChangeType.MODIFIED_BEHAVIOR);
+            expect(changeType).toBe(CodeChange.MODIFIED);
         });
 
         it('should detect UI change for implementation change', () => {
@@ -404,7 +404,7 @@ describe('StateDiagramService', () => {
 
             const changeType = StateDiagramService.detectChangeType(modification);
 
-            expect(changeType).toBe(ChangeType.MODIFIED_UI);
+            expect(changeType).toBe(CodeChange.UI_ONLY);
         });
 
         it('should detect UI change for lastModified only', () => {
@@ -420,7 +420,7 @@ describe('StateDiagramService', () => {
 
             const changeType = StateDiagramService.detectChangeType(modification);
 
-            expect(changeType).toBe(ChangeType.MODIFIED_UI);
+            expect(changeType).toBe(CodeChange.UI_ONLY);
         });
     });
 
@@ -440,7 +440,7 @@ describe('StateDiagramService', () => {
 
             expect(testCases).toHaveLength(1);
             expect(testCases[0].testName).toBe('New State');
-            expect(testCases[0].changeType).toBe(ChangeType.NEW);
+            expect(testCases[0].codeChange).toBe(CodeChange.NEW);
             expect(testCases[0].source).toBe(DataSource.STATE_DIAGRAM);
             expect(testCases[0].stateId).toBe('state1');
         });
@@ -465,7 +465,7 @@ describe('StateDiagramService', () => {
 
             expect(testCases).toHaveLength(1);
             expect(testCases[0].testName).toBe('Modified State');
-            expect(testCases[0].changeType).toBe(ChangeType.MODIFIED_BEHAVIOR);
+            expect(testCases[0].codeChange).toBe(CodeChange.MODIFIED);
             expect(testCases[0].notes).toContain('Actions added');
         });
 

@@ -7,7 +7,7 @@
 
 import { Info } from 'lucide-react';
 import { Tooltip } from './ui/tooltip';
-import type { Recommendation, ChangeType, ImplementationType } from '../types/models';
+import type { Recommendation, CodeChange, ImplementationType } from '../types/models';
 
 // ============================================================================
 // Field Label Tooltips
@@ -48,7 +48,7 @@ interface ScoreTooltipProps {
   scoreType: 'risk' | 'value' | 'ease' | 'history' | 'legal' | 'total';
   userFrequency?: number;
   businessImpact?: number;
-  changeType?: ChangeType;
+  changeType?: CodeChange;
   implementationType?: ImplementationType;
   affectedAreas?: number;
   isLegal?: boolean;
@@ -80,16 +80,16 @@ export function ScoreTooltip({
         );
       
       case 'value':
-        const distinctnessMap: Record<ChangeType, number> = {
+        const distinctnessMap: Record<CodeChange, number> = {
           'unchanged': 0,
-          'modified-ui': 2,
-          'modified-behavior': 4,
+          'ui-only': 2,
+          'modified': 4,
           'new': 5
         };
-        const inductionMap: Record<ChangeType, string> = {
+        const inductionMap: Record<CodeChange, string> = {
           'unchanged': '1',
-          'modified-ui': '2',
-          'modified-behavior': '5',
+          'ui-only': '2',
+          'modified': '5',
           'new': `${businessImpact || 'BI'}`
         };
         return (
@@ -242,11 +242,11 @@ export function RecommendationTooltip({ recommendation, totalScore }: Recommenda
 // Change Type Tooltips (for dropdowns)
 // ============================================================================
 
-export function getChangeTypeTooltip(changeType: ChangeType): string {
-  const tooltips: Record<ChangeType, string> = {
+export function getCodeChangeTooltip(changeType: CodeChange): string {
+  const tooltips: Record<CodeChange, string> = {
     'new': 'Brand new functionality that didn\'t exist before. Highest risk of bugs.',
-    'modified-behavior': 'Existing functionality with changed logic or workflow. High risk of regressions.',
-    'modified-ui': 'Visual changes only, logic unchanged. Lower risk but still worth testing.',
+    'modified': 'Existing functionality with changed logic or workflow. High risk of regressions.',
+    'ui-only': 'Visual changes only, logic unchanged. Lower risk but still worth testing.',
     'unchanged': 'No changes to this functionality. Lowest priority for automation.'
   };
   return tooltips[changeType];

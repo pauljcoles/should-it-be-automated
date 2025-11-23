@@ -4,7 +4,7 @@
  */
 
 import { useAppContext } from '../context';
-import { Recommendation, ChangeType, ImplementationType } from '../types/models';
+import { Recommendation, CodeChange, ImplementationType } from '../types/models';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { X } from 'lucide-react';
@@ -14,7 +14,7 @@ export function TableFilters() {
     filters,
     setRecommendationFilter,
     setSearchTerm,
-    setChangeTypeFilter,
+    setCodeChangeFilter,
     setImplementationTypeFilter,
     setLegalFilter,
     clearFilters
@@ -23,7 +23,7 @@ export function TableFilters() {
   const hasActiveFilters = !!(
     filters.recommendation ||
     filters.searchTerm ||
-    filters.changeType ||
+    filters.codeChange ||
     filters.implementationType ||
     filters.isLegal !== undefined
   );
@@ -57,18 +57,18 @@ export function TableFilters() {
           </select>
         </div>
 
-        {/* Change Type Filter - Touch-friendly */}
+        {/* Code Change Filter - Touch-friendly */}
         <div className="w-full lg:w-auto">
           <select
-            value={filters.changeType || ''}
-            onChange={(e) => setChangeTypeFilter(e.target.value as ChangeType || undefined)}
+            value={filters.codeChange || ''}
+            onChange={(e) => setCodeChangeFilter(e.target.value as CodeChange || undefined)}
             className="w-full h-10 px-3 py-2 border-brutal bg-white text-sm font-bold shadow-brutal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black touch-manipulation"
           >
-            <option value="">All Change Types</option>
-            <option value={ChangeType.NEW}>New</option>
-            <option value={ChangeType.MODIFIED_BEHAVIOR}>Modified Behavior</option>
-            <option value={ChangeType.MODIFIED_UI}>Modified UI</option>
-            <option value={ChangeType.UNCHANGED}>Unchanged</option>
+            <option value="">All Code Changes</option>
+            <option value={CodeChange.NEW}>New</option>
+            <option value={CodeChange.MODIFIED}>Modified</option>
+            <option value={CodeChange.UI_ONLY}>UI Only</option>
+            <option value={CodeChange.UNCHANGED}>Unchanged</option>
           </select>
         </div>
 

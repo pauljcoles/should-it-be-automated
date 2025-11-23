@@ -1,2 +1,2 @@
-// Utility functions will be added here
-export { };
+// Utility functions
+export * from './scaleLabels';

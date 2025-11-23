@@ -91,7 +91,8 @@ describe('Header', () => {
           {
             id: '1',
             testName: 'Test 1',
-            changeType: 'new',
+            codeChange: 'new',
+            organisationalPressure: 1,
             implementationType: 'custom-implementation',
             isLegal: false,
             userFrequency: 3,

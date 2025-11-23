@@ -62,7 +62,7 @@ describe('ValidationDisplay', () => {
       {
         level: 'warning',
         message: 'Warning 1',
-        field: 'changeType'
+        field: 'codeChange'
       }
     ];
 

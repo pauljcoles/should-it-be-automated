@@ -8,8 +8,8 @@
  * - Handle clipboard operations for BERT workflow
  */
 
-import type { BERTScenario, TestCase, ChangeType, ImplementationType } from '../types/models';
-import { ChangeType as ChangeTypeEnum, ImplementationType as ImplementationTypeEnum, Recommendation } from '../types/models';
+import type { BERTScenario, TestCase, CodeChange, ImplementationType } from '../types/models';
+import { CodeChange as CodeChangeEnum, ImplementationType as ImplementationTypeEnum, Recommendation } from '../types/models';
 import { ScoreCalculator } from './ScoreCalculator';
 
 // ============================================================================
@@ -83,7 +83,7 @@ export class BERTIntegrationService {
                 bertScenarioId: data.bertScenarioId || data.scenarioId || data.id,
                 scenarioTitle: data.scenarioTitle || data.title || data.name,
                 jiraTicket: data.jiraTicket || data.jira || data.ticket,
-                detectedChangeType: this.normalizeChangeType(data.detectedChangeType || data.changeType),
+                detectedCodeChange: this.normalizeChangeType(data.detectedCodeChange || data.detectedChangeType || data.changeType),
                 detectedImplementation: this.normalizeImplementationType(data.detectedImplementation || data.implementation),
                 context: data.context || data.notes || data.description
             };
@@ -115,7 +115,7 @@ export class BERTIntegrationService {
         const affectedAreas = 3;
 
         // Use detected values or defaults
-        const changeType = bertScenario.detectedChangeType || ChangeTypeEnum.NEW;
+        const changeType = bertScenario.detectedCodeChange || CodeChangeEnum.NEW;
         const implementationType = bertScenario.detectedImplementation || ImplementationTypeEnum.CUSTOM;
         const isLegal = false;
 
@@ -155,9 +155,9 @@ export class BERTIntegrationService {
         if (bertScenario.context) {
             notes = `BERT Context: ${bertScenario.context}`;
         }
-        if (bertScenario.detectedChangeType) {
+        if (bertScenario.detectedCodeChange) {
             notes += notes ? '\n' : '';
-            notes += `Detected Change: ${bertScenario.detectedChangeType}`;
+            notes += `Detected Code Change: ${bertScenario.detectedCodeChange}`;
         }
         if (bertScenario.detectedImplementation) {
             notes += notes ? '\n' : '';
@@ -168,7 +168,8 @@ export class BERTIntegrationService {
         const testCase: TestCase = {
             id: this.generateUUID(),
             testName: bertScenario.scenarioTitle,
-            changeType,
+            codeChange: changeType,
+            organisationalPressure: 1,
             easyToAutomate,
             quickToAutomate,
             isLegal,
@@ -224,7 +225,7 @@ export class BERTIntegrationService {
         lines.push('SCORE BREAKDOWN');
         lines.push('-'.repeat(60));
         lines.push(`Risk Score:    ${testCase.scores.risk}/25  (Frequency: ${testCase.userFrequency}, Impact: ${testCase.businessImpact})`);
-        lines.push(`Value Score:   ${testCase.scores.value}/25  (Change: ${testCase.changeType})`);
+        lines.push(`Value Score:   ${testCase.scores.value}/25  (Code Change: ${testCase.codeChange})`);
         const effortScore = testCase.scores.effort ?? testCase.scores.ease ?? 0;
         if (testCase.easyToAutomate !== undefined && testCase.quickToAutomate !== undefined) {
             lines.push(`Effort Score:  ${effortScore}/25  (Easy: ${testCase.easyToAutomate}, Quick: ${testCase.quickToAutomate})`);
@@ -312,12 +313,12 @@ export class BERTIntegrationService {
     // ========================================================================
 
     /**
-     * Normalize change type from various BERT formats
+     * Normalize code change from various BERT formats
      * 
-     * @param value - The change type value from BERT
-     * @returns Normalized ChangeType or undefined
+     * @param value - The code change value from BERT
+     * @returns Normalized CodeChange or undefined
      */
-    private static normalizeChangeType(value: any): ChangeType | undefined {
+    private static normalizeChangeType(value: any): CodeChange | undefined {
         if (!value || typeof value !== 'string') {
             return undefined;
         }
@@ -326,19 +327,21 @@ export class BERTIntegrationService {
 
         switch (normalized) {
             case 'new':
-                return ChangeTypeEnum.NEW;
+                return CodeChangeEnum.NEW;
             case 'modified-behavior':
             case 'modifiedbehavior':
             case 'behavior':
-                return ChangeTypeEnum.MODIFIED_BEHAVIOR;
+            case 'modified':
+                return CodeChangeEnum.MODIFIED;
             case 'modified-ui':
             case 'modifiedui':
             case 'ui':
-                return ChangeTypeEnum.MODIFIED_UI;
+            case 'ui-only':
+                return CodeChangeEnum.UI_ONLY;
             case 'unchanged':
             case 'no-change':
             case 'nochange':
-                return ChangeTypeEnum.UNCHANGED;
+                return CodeChangeEnum.UNCHANGED;
             default:
                 return undefined;
         }

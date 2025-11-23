@@ -4,14 +4,18 @@
  */
 
 import { useMemo } from 'react';
+import { useAppContext } from '../context';
 import type { TestCase, SummaryStats as SummaryStatsType } from '../types/models';
-import { Recommendation, ChangeType } from '../types/models';
+import { Recommendation, CodeChange, AppMode } from '../types/models';
 
 interface SummaryStatsProps {
   testCases: TestCase[];
 }
 
 export function SummaryStats({ testCases }: SummaryStatsProps) {
+  const { userPreferences } = useAppContext();
+  const isNormalMode = userPreferences.appMode === AppMode.NORMAL;
+  
   const stats = useMemo((): SummaryStatsType => {
     const totalCount = testCases.length;
     
@@ -25,11 +29,11 @@ export function SummaryStats({ testCases }: SummaryStatsProps) {
         },
         averageScore: 0,
         legalCount: 0,
-        changeTypeCounts: {
-          [ChangeType.NEW]: 0,
-          [ChangeType.MODIFIED_BEHAVIOR]: 0,
-          [ChangeType.MODIFIED_UI]: 0,
-          [ChangeType.UNCHANGED]: 0
+        codeChangeCounts: {
+          [CodeChange.NEW]: 0,
+          [CodeChange.MODIFIED]: 0,
+          [CodeChange.UI_ONLY]: 0,
+          [CodeChange.UNCHANGED]: 0
         }
       };
     }
@@ -41,12 +45,12 @@ export function SummaryStats({ testCases }: SummaryStatsProps) {
       [Recommendation.DONT_AUTOMATE]: 0
     };
 
-    // Calculate change type counts
-    const changeTypeCounts = {
-      [ChangeType.NEW]: 0,
-      [ChangeType.MODIFIED_BEHAVIOR]: 0,
-      [ChangeType.MODIFIED_UI]: 0,
-      [ChangeType.UNCHANGED]: 0
+    // Calculate code change counts
+    const codeChangeCounts = {
+      [CodeChange.NEW]: 0,
+      [CodeChange.MODIFIED]: 0,
+      [CodeChange.UI_ONLY]: 0,
+      [CodeChange.UNCHANGED]: 0
     };
 
     let totalScore = 0;
@@ -54,7 +58,7 @@ export function SummaryStats({ testCases }: SummaryStatsProps) {
 
     testCases.forEach(tc => {
       recommendationCounts[tc.recommendation]++;
-      changeTypeCounts[tc.changeType]++;
+      codeChangeCounts[tc.codeChange]++;
       totalScore += tc.scores.total;
       if (tc.isLegal) legalCount++;
     });
@@ -66,10 +70,62 @@ export function SummaryStats({ testCases }: SummaryStatsProps) {
       recommendationCounts,
       averageScore,
       legalCount,
-      changeTypeCounts
+      codeChangeCounts
     };
   }, [testCases]);
 
+  if (isNormalMode) {
+    // Normal Mode - Simple stats, no teaching
+    return (
+      <div className="bg-white border-t-2 border-black px-2 py-2">
+        <div className="flex lg:grid lg:grid-cols-5 gap-1 lg:gap-3 overflow-x-auto lg:overflow-visible text-xs">
+          {/* Total Count */}
+          <div className="bg-gray-50 rounded px-2 py-1 min-w-[70px] text-center">
+            <div className="text-gray-600 font-medium">Total tests</div>
+            <div className="text-lg font-bold text-gray-900">{stats.totalCount}</div>
+          </div>
+
+          {/* Automate Count */}
+          <div className="bg-green-50 rounded px-2 py-1 min-w-[90px] text-center">
+            <div className="text-green-700 font-medium">✅ Automate</div>
+            <div className="text-lg font-bold text-green-800">
+              {stats.recommendationCounts[Recommendation.AUTOMATE]}
+              <span className="text-xs font-normal text-green-600 ml-1">(54-80)</span>
+            </div>
+          </div>
+
+          {/* Maybe Count */}
+          <div className="bg-yellow-50 rounded px-2 py-1 min-w-[90px] text-center">
+            <div className="text-yellow-700 font-medium">⚠️ Maybe</div>
+            <div className="text-lg font-bold text-yellow-800">
+              {stats.recommendationCounts[Recommendation.MAYBE]}
+              <span className="text-xs font-normal text-yellow-600 ml-1">(27-53)</span>
+            </div>
+          </div>
+
+          {/* Exploratory Testing Count */}
+          <div className="bg-red-50 rounded px-2 py-1 min-w-[110px] text-center">
+            <div className="text-red-700 font-medium">🔍 Exploratory</div>
+            <div className="text-lg font-bold text-red-800">
+              {stats.recommendationCounts[Recommendation.DONT_AUTOMATE]}
+              <span className="text-xs font-normal text-red-600 ml-1">(0-26)</span>
+            </div>
+          </div>
+
+          {/* Average Score */}
+          <div className="bg-blue-50 rounded px-2 py-1 min-w-[80px] text-center">
+            <div className="text-blue-700 font-medium">Average score</div>
+            <div className="text-lg font-bold text-blue-800">
+              {stats.averageScore}
+              <span className="text-xs font-normal text-blue-600">/80</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Teaching Mode - Full stats with code change breakdown
   return (
     <div className="bg-white border-t-2 border-black px-2 py-2">
       {/* Compact single row on mobile, grid on desktop */}
@@ -120,24 +176,24 @@ export function SummaryStats({ testCases }: SummaryStatsProps) {
         </div>
       </div>
 
-      {/* Change Type Breakdown - Only show on desktop */}
+      {/* Code Change Breakdown - Only show on desktop */}
       <div className="hidden lg:block mt-2 pt-2 border-t border-gray-200">
         <div className="flex flex-wrap gap-3 text-xs">
           <div>
             <span className="text-gray-600">New:</span>{' '}
-            <span className="font-semibold">{stats.changeTypeCounts[ChangeType.NEW]}</span>
+            <span className="font-semibold">{stats.codeChangeCounts[CodeChange.NEW]}</span>
           </div>
           <div>
-            <span className="text-gray-600">Modified Behavior:</span>{' '}
-            <span className="font-semibold">{stats.changeTypeCounts[ChangeType.MODIFIED_BEHAVIOR]}</span>
+            <span className="text-gray-600">Modified:</span>{' '}
+            <span className="font-semibold">{stats.codeChangeCounts[CodeChange.MODIFIED]}</span>
           </div>
           <div>
-            <span className="text-gray-600">Modified UI:</span>{' '}
-            <span className="font-semibold">{stats.changeTypeCounts[ChangeType.MODIFIED_UI]}</span>
+            <span className="text-gray-600">UI Only:</span>{' '}
+            <span className="font-semibold">{stats.codeChangeCounts[CodeChange.UI_ONLY]}</span>
           </div>
           <div>
             <span className="text-gray-600">Unchanged:</span>{' '}
-            <span className="font-semibold">{stats.changeTypeCounts[ChangeType.UNCHANGED]}</span>
+            <span className="font-semibold">{stats.codeChangeCounts[CodeChange.UNCHANGED]}</span>
           </div>
         </div>
       </div>

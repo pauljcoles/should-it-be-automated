@@ -5,7 +5,7 @@
  * Calculates individual scores (risk, value, ease, history, legal) and provides recommendations.
  */
 
-import { ChangeType, ImplementationType, Recommendation, type TestCase } from '../types/models';
+import { CodeChange, ImplementationType, Recommendation, type TestCase } from '../types/models';
 
 /**
  * Service class for calculating test automation priority scores
@@ -24,31 +24,39 @@ export class ScoreCalculator {
     }
 
     /**
-     * Calculate value score based on change type and impact if broken
+     * Calculate value score based on code change
      * Formula: distinctness × induction to action
+     * Distinctness is auto-calculated from codeChange
      * 
-     * @param changeType - How the functionality has changed
+     * @param codeChange - Did the code change?
      * @param businessImpact - Impact if broken: What happens if this feature fails (1-5)
      * @returns Value score (0-25)
      */
-    static calculateValueScore(changeType: ChangeType, businessImpact: number): number {
-        // Distinctness mapping
-        const distinctness: Record<ChangeType, number> = {
-            [ChangeType.UNCHANGED]: 0,
-            [ChangeType.MODIFIED_UI]: 2,
-            [ChangeType.MODIFIED_BEHAVIOR]: 4,
-            [ChangeType.NEW]: 5
+    static calculateValueScore(codeChange: import('../types/models').CodeChange, businessImpact: number): number {
+        const CodeChange = {
+            NEW: 'new',
+            MODIFIED: 'modified',
+            UI_ONLY: 'ui-only',
+            UNCHANGED: 'unchanged'
+        };
+
+        // Auto-set distinctness based on code change
+        const distinctness: Record<string, number> = {
+            [CodeChange.NEW]: 5,        // maximum new information
+            [CodeChange.MODIFIED]: 4,   // significant new information
+            [CodeChange.UI_ONLY]: 2,    // some new information
+            [CodeChange.UNCHANGED]: 0   // provides NO new information
         };
 
         // Induction to action mapping
-        const inductionToAction: Record<ChangeType, number> = {
-            [ChangeType.UNCHANGED]: 1,
-            [ChangeType.MODIFIED_UI]: 2,
-            [ChangeType.MODIFIED_BEHAVIOR]: 5,
-            [ChangeType.NEW]: businessImpact
+        const inductionToAction: Record<string, number> = {
+            [CodeChange.UNCHANGED]: 1,
+            [CodeChange.UI_ONLY]: 2,
+            [CodeChange.MODIFIED]: 5,
+            [CodeChange.NEW]: businessImpact
         };
 
-        return distinctness[changeType] * inductionToAction[changeType];
+        return distinctness[codeChange] * inductionToAction[codeChange];
     }
 
     /**
@@ -151,10 +159,10 @@ export class ScoreCalculator {
 
         // Value Score
         lines.push(`Value Score: ${testCase.scores.value}/25`);
-        const distinctness = this.getDistinctnessValue(testCase.changeType);
-        const induction = this.getInductionValue(testCase.changeType, testCase.businessImpact);
+        const distinctness = this.getDistinctnessValue(testCase.codeChange);
+        const induction = this.getInductionValue(testCase.codeChange, testCase.businessImpact);
         lines.push(`  = Distinctness (${distinctness}) × Induction to Action (${induction})`);
-        lines.push(`  Change Type: ${testCase.changeType}`);
+        lines.push(`  Code Change: ${testCase.codeChange}`);
         lines.push('');
 
         // Effort Score
@@ -190,28 +198,28 @@ export class ScoreCalculator {
     /**
      * Helper method to get distinctness value for explanation
      */
-    private static getDistinctnessValue(changeType: ChangeType): number {
-        const distinctness: Record<ChangeType, number> = {
-            [ChangeType.UNCHANGED]: 0,
-            [ChangeType.MODIFIED_UI]: 2,
-            [ChangeType.MODIFIED_BEHAVIOR]: 4,
-            [ChangeType.NEW]: 5
+    private static getDistinctnessValue(codeChange: CodeChange): number {
+        const distinctness: Record<CodeChange, number> = {
+            [CodeChange.UNCHANGED]: 0,
+            [CodeChange.UI_ONLY]: 2,
+            [CodeChange.MODIFIED]: 4,
+            [CodeChange.NEW]: 5
         };
-        return distinctness[changeType];
+        return distinctness[codeChange];
     }
 
     /**
      * Helper method to get induction to action value for explanation
      */
-    private static getInductionValue(changeType: ChangeType, businessImpact: number): number {
-        const inductionToAction: Record<ChangeType, number | string> = {
-            [ChangeType.UNCHANGED]: 1,
-            [ChangeType.MODIFIED_UI]: 2,
-            [ChangeType.MODIFIED_BEHAVIOR]: 5,
-            [ChangeType.NEW]: businessImpact
+    private static getInductionValue(codeChange: CodeChange, businessImpact: number): number {
+        const inductionToAction: Record<CodeChange, number | string> = {
+            [CodeChange.UNCHANGED]: 1,
+            [CodeChange.UI_ONLY]: 2,
+            [CodeChange.MODIFIED]: 5,
+            [CodeChange.NEW]: businessImpact
         };
-        return typeof inductionToAction[changeType] === 'number'
-            ? inductionToAction[changeType] as number
+        return typeof inductionToAction[codeChange] === 'number'
+            ? inductionToAction[codeChange] as number
             : businessImpact;
     }
 

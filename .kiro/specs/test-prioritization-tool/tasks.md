@@ -801,8 +801,8 @@
 
 
 
-- [-] 27. Implement "Did Code Change?" field and Organisational Pressure with Real Talk teaching
-  - [ ] 27.1 Replace Change Type with "Did Code Change?" field
+- [x] 27. ~~Implement "Did Code Change?" field and Organisational Pressure with Real Talk teaching~~ (OBSOLETE - Superseded by Task 31)
+  - [x] 27.1 Replace Change Type with "Did Code Change?" field
     - Remove existing `changeType` field from TestCase model
     - Add new field: `codeChange: 'new' | 'modified' | 'ui-only' | 'unchanged'`
     - Update TestCaseRow component to replace dropdown with new options:
@@ -818,7 +818,7 @@
       - unchanged → 0 (provides NO new information)
     - _Requirements: Teaching risk-based testing principle_
 
-  - [ ] 27.2 Add Organisational Pressure field
+  - [x] 27.2 Add Organisational Pressure field
     - Add new field to TestCase model: `organisationalPressure: number` (1-5 slider)
     - Add slider to TestCaseRow component after Legal Requirement
     - Add label: "Organisational Pressure"
@@ -1382,3 +1382,735 @@
     - Add FAQ: "Why did my 260 tests miss the bug?" → Coverage ≠ Effectiveness
     - Include Angie Jones' "don't test what didn't change" principle
     - _Requirements: User education and onboarding_
+
+
+- [x] 28. ~~Restore Distinctness as Manual Field (Fix Auto-Calculation Mistake)~~ (OBSOLETE - Task 31 uses manual distinctness from the start)
+  - [ ] 28.1 Add distinctness field back to TestCase model
+    - Add `distinctness: number` (1-5) to TestCase interface
+    - Keep `codeChange` field for teaching/guidance
+    - Update TypeScript interfaces in types/models.ts
+    - _Requirements: Restore Angie's original methodology - user judgment matters_
+    - _Rationale: We incorrectly auto-calculated distinctness, removing user judgment. A UI-only change might still be highly distinct (new pattern). Users need to think about "does this provide new information?"_
+
+  - [ ] 28.2 Update ScoreCalculator to use manual distinctness
+    - Remove auto-calculation of distinctness from codeChange
+    - Use testCase.distinctness directly in calculateValueScore
+    - Keep induction to action calculation based on codeChange
+    - Formula: distinctness (manual) × induction to action (from codeChange)
+    - Update score explanation to show: "Distinctness (5) × Induction (4) = 20"
+    - _Requirements: Use user's judgment, not auto-calculated value_
+
+  - [ ] 28.3 Add Distinctness slider to TestCaseRow
+    - Add slider input (1-5) for distinctness
+    - Position after "Did Code Change?" field
+    - Label: "Distinctness: Does this test provide NEW information?"
+    - Show descriptive labels:
+      - 1 = "No new info (already tested)"
+      - 2 = "Minor new info"
+      - 3 = "Some new info"
+      - 4 = "Significant new info"
+      - 5 = "Completely new info"
+    - Add tooltip explaining distinctness concept
+    - _Requirements: Let users set distinctness manually_
+
+  - [ ] 28.4 Pre-fill distinctness with suggested value based on codeChange
+    - When user selects "Did Code Change?", suggest distinctness:
+      - "Yes - New" → suggests distinctness: 5
+      - "Yes - Modified" → suggests distinctness: 4
+      - "Yes - UI only" → suggests distinctness: 2
+      - "No - Unchanged" → suggests distinctness: 0
+    - Show hint: "💡 Suggested: 5 (because you selected 'New')"
+    - User can override the suggestion if they disagree
+    - Pre-fill on new test cases and when codeChange changes
+    - _Requirements: Provide guidance while preserving user judgment_
+
+  - [ ] 28.5 Add teaching content about distinctness
+    - Add info icon next to Distinctness slider
+    - Tooltip explains:
+      ```
+      Distinctness = Does this test provide NEW information?
+      
+      Ask yourself:
+      • Is this testing a new pattern/approach?
+      • Does this verify something we haven't tested before?
+      • Would this test catch bugs the existing tests wouldn't?
+      
+      Examples:
+      • TV modal selection: UI-only change, but NEW modal pattern → 4
+      • Checkout validation: Unchanged code, already tested → 0-1
+      • New TV journey: Completely new functionality → 5
+      ```
+    - Add to HelpModal "Scoring Guide" tab
+    - Include examples where auto-calculation would be wrong
+    - _Requirements: Teach users to think about distinctness_
+
+  - [ ] 28.6 Update Real Talk section to reference distinctness
+    - For unchanged code with low distinctness (0-1):
+      ```
+      💬 REAL TALK: Unchanged Code
+      
+      You marked this as "No - Unchanged" and distinctness: 0
+      This means the code hasn't changed AND the test provides
+      no new information.
+      
+      Your existing tests already confirm this works.
+      Automating this again is testing 260 lots of nothing.
+      
+      ✅ DO: Exploratory confirmation testing
+      ❌ DON'T: Automate unchanged code
+      ```
+    - For UI-only change with high distinctness:
+      ```
+      💬 REAL TALK: UI Change with New Pattern
+      
+      You marked this as "UI only" but distinctness: 4
+      This suggests it's a new UI pattern worth testing.
+      
+      Example: Modal selection is "UI only" but introduces
+      a new interaction pattern that needs verification.
+      ```
+    - _Requirements: Use distinctness in teaching moments_
+
+  - [ ] 28.7 Update data migration for distinctness field
+    - For existing test cases without distinctness:
+      - Calculate suggested distinctness from codeChange
+      - Set distinctness = suggested value
+      - Show notification: "Distinctness values have been suggested based on 'Did Code Change?'. Please review and adjust if needed."
+    - Allow users to bulk-review and adjust
+    - _Requirements: Backward compatibility_
+
+  - [ ] 28.8 Update state diagram auto-generation to suggest distinctness
+    - When generating test cases from state diagram:
+      - NEW states → suggest distinctness: 5
+      - MODIFIED states → suggest distinctness: 4
+      - UI_ONLY changes → suggest distinctness: 2
+      - UNCHANGED states → suggest distinctness: 0
+    - User can adjust after generation
+    - Show in notes: "Suggested distinctness: 5 (new state)"
+    - _Requirements: Provide smart defaults while allowing override_
+
+  - [ ]* 28.9 Write tests for manual distinctness
+    - Test distinctness field in TestCase model
+    - Test ScoreCalculator uses manual distinctness
+    - Test distinctness slider UI component
+    - Test pre-fill logic when codeChange changes
+    - Test data migration for existing test cases
+    - Test state diagram generation suggests distinctness
+    - _Requirements: Test coverage_
+
+  - [ ] 28.10 Update documentation
+    - Update USER_GUIDE.md:
+      - Explain distinctness concept
+      - Show examples of when to override suggestions
+      - Explain why distinctness is manual (user judgment matters)
+      - Include TV modal example (UI-only but high distinctness)
+    - Update HelpModal with distinctness explanation
+    - Update design.md specification
+    - Add FAQ: "Why isn't distinctness automatic?" → User judgment is essential
+    - Add FAQ: "When should I override the suggested distinctness?" → Examples
+    - _Requirements: User education_
+
+  - [ ] 28.11 Remove auto-calculation references from codebase
+    - Remove getDistinctnessValue helper method
+    - Remove auto-distinctness comments
+    - Update all score explanations to show manual distinctness
+    - Update tooltips to reference manual distinctness
+    - Clean up any remaining auto-calculation logic
+    - _Requirements: Code cleanup_
+
+
+
+- [x] 29. ~~Consolidate All Guidance into Expanded Row Section~~ (OBSOLETE - Task 31 implements Real Talk section differently)
+  - [ ] 29.1 Remove tooltip system from table headers and cells
+    - Remove info icons (ℹ️) from column headers
+    - Remove hover tooltips from score cells
+    - Remove TooltipProvider component usage from table
+    - Keep tooltips only in HelpModal for reference
+    - _Requirements: Reduce cognitive load, consolidate guidance in one place_
+    - _Rationale: Tooltips are hidden by default and require hunting. All guidance should be visible in the expanded row section where users are already looking._
+
+  - [ ] 29.2 Create comprehensive expanded row guidance section
+    - Expand the current "Gut Feel Comparison" section to include ALL guidance
+    - New section structure beneath each row:
+      ```
+      [Expanded Row Content]
+      
+      📊 SCORE BREAKDOWN
+      Risk: 25/25 = User Frequency (5) × Business Impact (5)
+      Value: 20/25 = Distinctness (5) × Induction to Action (4)
+      Effort: 15/25 = Easy to Automate (3) × Quick to Automate (5)
+      History: 3/5 = Connected Components (3)
+      Legal: 0/20 = Not a legal requirement
+      Total: 63/100
+      
+      🎯 GUT FEEL vs RECOMMENDATION
+      Your instinct: "Probably Automate"
+      Calculated: "MAYBE" (63/100)
+      ✓ Close match! Your instinct aligns with the data.
+      
+      💬 REAL TALK: [Context-specific guidance]
+      [Shows relevant teaching based on scores/fields]
+      
+      📖 FIELD EXPLANATIONS
+      [Collapsible sections for each field with full explanation]
+      
+      🧪 TESTING STRATEGY
+      [What to actually do based on recommendation]
+      ```
+    - Make each section collapsible/expandable
+    - Show most relevant sections by default
+    - _Requirements: All guidance in one visible location_
+
+  - [ ] 29.3 Move score breakdown into expanded section
+    - Remove score explanation tooltips from score cells
+    - Show full score breakdown in expanded section
+    - Include formulas and actual values
+    - Show color-coded scores matching the table cells
+    - Add "Why this score?" explanation for each component
+    - Example:
+      ```
+      📊 SCORE BREAKDOWN
+      
+      Risk Score: 25/25 (Very High)
+      = User Frequency (5) × Business Impact (5)
+      Why: High frequency + high impact = must test thoroughly
+      
+      Value Score: 20/25 (High)
+      = Distinctness (5) × Induction to Action (4)
+      Why: Completely new functionality provides maximum new information
+      Code Change: Yes - New
+      
+      Effort Score: 15/25 (Moderate)
+      = Easy to Automate (3) × Quick to Automate (5)
+      Why: Moderately easy but quick to implement
+      
+      History Score: 3/5 (Moderate)
+      = Connected Components (3)
+      Why: Affects 3 other areas of the system
+      
+      Legal Score: 0/20
+      Why: Not a legal requirement
+      
+      Total: 63/100 → MAYBE
+      ```
+    - _Requirements: Make scoring transparent and educational_
+
+  - [ ] 29.4 Move Real Talk section into expanded area
+    - Keep Real Talk section but enhance it
+    - Show context-specific guidance based on:
+      - Code change status (unchanged, new, modified, UI-only)
+      - Organisational pressure level
+      - Gut feel vs recommendation mismatch
+      - Score thresholds
+    - Examples:
+      ```
+      💬 REAL TALK: Unchanged Code with High Pressure
+      
+      You marked this as "No - Unchanged" but organisational
+      pressure is 5 (must show coverage).
+      
+      The code hasn't changed. Your existing tests already
+      confirm this works. But stakeholders want to see it tested.
+      
+      ✅ TECHNICAL RECOMMENDATION: Don't automate (0 distinctness)
+      ⚠️  ORGANISATIONAL REALITY: Automate for stakeholder confidence
+      
+      💡 COMPROMISE: One smoke test (5 min) instead of full suite
+      ```
+    - Show different Real Talk based on scenario
+    - Make it conversational and practical
+    - _Requirements: Context-aware teaching_
+
+  - [ ] 29.5 Add collapsible field explanations section
+    - Add "📖 Field Explanations" section with collapsible items
+    - Each field gets a detailed explanation:
+      ```
+      📖 FIELD EXPLANATIONS
+      
+      ▼ Did Code Change?
+        This field captures whether the code actually changed.
+        
+        • Yes - New: Never existed before
+        • Yes - Modified: Behavior/logic changed
+        • Yes - UI only: Styling/layout changed
+        • No - Unchanged: Works the same way
+        
+        💡 If unchanged, you probably don't need to test it again!
+        Your existing tests already confirm it works.
+      
+      ▼ Distinctness
+        Does this test provide NEW information?
+        
+        Ask yourself:
+        • Is this testing a new pattern/approach?
+        • Does this verify something we haven't tested before?
+        • Would this test catch bugs existing tests wouldn't?
+        
+        Examples:
+        • TV modal: UI-only but new pattern → 4
+        • Checkout: Unchanged, already tested → 0-1
+        • New TV journey: Completely new → 5
+      
+      ▼ Organisational Pressure
+        How much pressure to show test coverage?
+        
+        1 = No pressure, team decides
+        3 = Some stakeholder anxiety
+        5 = Must show coverage
+        
+        💡 This doesn't change technical recommendation,
+        but helps you navigate organisational reality.
+      
+      [etc. for all fields]
+      ```
+    - Collapsed by default, expand on click
+    - Include examples and teaching for each field
+    - _Requirements: Self-documenting interface_
+
+  - [ ] 29.6 Add testing strategy section to expanded area
+    - Show actionable testing strategy based on recommendation:
+      ```
+      🧪 TESTING STRATEGY
+      
+      Recommendation: MAYBE (63/100)
+      
+      What to do:
+      ✓ Start with exploratory testing
+      ✓ Automate if you find frequent issues
+      ✓ Consider one smoke test for confidence
+      ✓ Re-evaluate after first release
+      
+      Time investment:
+      • Exploratory: 30-60 minutes
+      • Automation (if needed): 2-4 hours
+      
+      Why this approach:
+      Moderate score suggests uncertainty. Explore first to
+      understand the risk, then decide on automation.
+      ```
+    - Different strategy for each recommendation tier
+    - Include time estimates
+    - Make it actionable and practical
+    - _Requirements: Tell users what to actually do_
+
+  - [ ] 29.7 Simplify table header to remove info icons
+    - Remove all ℹ️ info icons from column headers
+    - Keep column headers clean and simple
+    - Column names should be self-explanatory:
+      - "Did Code Change?" (clear question)
+      - "Distinctness" (with subtitle: "New info?")
+      - "Easy?" and "Quick?" (short and clear)
+      - "User Freq" and "Impact" (abbreviated but clear)
+      - "Org Pressure" (with subtitle: "Stakeholder anxiety")
+    - All detailed explanations moved to expanded section
+    - _Requirements: Cleaner, less cluttered interface_
+
+  - [ ] 29.8 Update mobile/card view to show expanded guidance
+    - In mobile card view, show expanded section below each card
+    - Make it easy to expand/collapse on mobile
+    - Ensure all guidance is accessible on small screens
+    - Use accordion pattern for collapsible sections
+    - _Requirements: Mobile-friendly guidance_
+
+  - [ ] 29.9 Add "Show/Hide Guidance" toggle
+    - Add toggle button: "Show Guidance" / "Hide Guidance"
+    - Allows users to collapse all expanded sections at once
+    - Useful for experienced users who don't need guidance
+    - Save preference in localStorage
+    - Default: Show guidance for new users
+    - _Requirements: Progressive disclosure for experienced users_
+
+  - [ ] 29.10 Keep HelpModal as comprehensive reference
+    - HelpModal remains as detailed reference documentation
+    - Include all field explanations
+    - Include scoring methodology
+    - Include examples and case studies
+    - Include FAQ
+    - Link from expanded section: "See full documentation →"
+    - _Requirements: Comprehensive reference for deep dives_
+
+  - [ ]* 29.11 Write tests for consolidated guidance
+    - Test expanded section renders correctly
+    - Test score breakdown display
+    - Test Real Talk section shows correct content
+    - Test field explanations expand/collapse
+    - Test testing strategy display
+    - Test show/hide guidance toggle
+    - Test mobile view rendering
+    - _Requirements: Test coverage_
+
+  - [ ] 29.12 Update documentation
+    - Update USER_GUIDE.md to explain expanded guidance section
+    - Remove references to tooltips in table
+    - Update screenshots to show new expanded section
+    - Document show/hide guidance feature
+    - _Requirements: Documentation accuracy_
+
+  - [ ] 29.13 Remove TooltipProvider component (if no longer needed)
+    - Audit codebase for remaining tooltip usage
+    - Remove TooltipProvider if only used in HelpModal
+    - Clean up tooltip-related code
+    - Simplify component structure
+    - _Requirements: Code cleanup_
+
+
+
+- [x] 30. ~~Add "Normal Mode" - Exact Angie Jones Model~~ (OBSOLETE - Task 31 already implements both Normal and Teaching modes correctly)
+  - [x] 30.1 Add Mode Toggle
+    - Add toggle at top of app: "Mode: ○ Normal  ○ Teaching"
+    - Default to Normal mode
+    - Store preference in localStorage
+    - Toggle controls visibility of all teaching elements (Real Talk, warnings, etc.)
+    - _Requirements: Let users choose calculator vs teaching experience_
+
+  - [x] 30.2 Update TestCase model for Angie's exact fields
+    - Remove current simplified fields in Normal mode
+    - Add Angie's exact fields:
+      ```typescript
+      interface TestCaseAngie {
+        // Feature
+        testName: string;
+        gutFeel: 1 | 2 | 3 | 4 | 5;
+        
+        // Customer Risk (max 25)
+        impact: number; // 1-5 slider
+        probOfUse: number; // 1-5 slider
+        customerRiskScore: number; // impact × probOfUse (calculated)
+        
+        // Value of Test (max 25)
+        distinctness: number; // 1-5 slider (MANUAL, not auto-calculated)
+        fixProbability: number; // 1-5 slider
+        valueScore: number; // distinctness × fixProbability (calculated)
+        
+        // Cost Efficiency (max 25)
+        easyToWrite: number; // 1-5 slider
+        quickToWrite: number; // 1-5 slider
+        costScore: number; // easyToWrite × quickToWrite (calculated)
+        
+        // History (max 5)
+        similarity: number; // 1-5 slider
+        breakFreq: number; // 1-5 slider
+        historyScore: number; // MAX(similarity, breakFreq) (calculated, NOT multiply)
+        
+        // Final
+        finalScore: number; // sum of all scores (0-80)
+      }
+      ```
+    - Note: Teaching mode keeps existing fields (codeChange, orgPressure, etc.)
+    - _Requirements: Exact match to Angie's spreadsheet_
+
+  - [x] 30.3 Create Normal Mode UI layout
+    - Update TestCaseRow component to show Angie's layout when mode = "Normal"
+    - Column layout matching Angie's spreadsheet:
+      ```
+      | Test Name | Gut Feel | Impact | Prob of Use | Distinctness | Fix Prob | Easy | Quick | Similarity | Break Freq | Score | Rec |
+      ```
+    - Each scoring category shows:
+      - Two sliders side by side
+      - Calculated score below/beside (greyed out, read-only)
+      - Example for Customer Risk:
+        ```
+        Customer Risk (max 25)
+        Impact: [slider 1-5]  Prob of use: [slider 1-5]
+        Score: 25
+        ```
+    - Final Score column shows total (0-80) and color-coded recommendation
+    - _Requirements: Match Angie's spreadsheet visual structure_
+
+  - [x] 30.4 Implement Angie's exact scoring calculations
+    - Create AngieScoreCalculator service
+    - Customer Risk = impact × probOfUse (max 25)
+    - Value = distinctness × fixProbability (max 25)
+    - Cost Efficiency = easyToWrite × quickToWrite (max 25)
+    - History = MAX(similarity, breakFreq) (max 5, NOT multiply)
+    - Final Score = customerRisk + value + costEfficiency + history (max 80)
+    - _Requirements: Exact calculation matching Angie's model_
+
+  - [x] 30.5 Update recommendation thresholds for 0-80 scale
+    - Angie's scale is 0-80, not 0-100
+    - Adjust thresholds proportionally:
+      - 67-100 (on 100 scale) = 54-80 (on 80 scale) → AUTOMATE ✅
+      - 34-66 (on 100 scale) = 27-53 (on 80 scale) → MAYBE ⚠️
+      - 0-33 (on 100 scale) = 0-26 (on 80 scale) → DON'T AUTOMATE ❌
+    - Or use Angie's actual thresholds if known from her talk
+    - Display recommendation badge based on score
+    - _Requirements: Recommendations aligned with 0-80 scoring_
+
+  - [x] 30.6 Add field tooltips matching Angie's definitions
+    - Impact: "Severity if this breaks for customers"
+    - Prob of use: "How often customers use this feature"
+    - Distinctness: "Does this test provide NEW information? (Not duplicate existing tests)"
+    - Fix probability: "Would dev team prioritize fixing if this test fails?"
+    - Easy to write: "Implementation complexity (1=hard, 5=easy)"
+    - Quick to write: "Time to implement (1=slow, 5=fast)"
+    - Similarity: "Have similar areas broken before?"
+    - Break freq: "How often does this area break?"
+    - _Requirements: Clear explanation of each field_
+
+  - [x] 30.7 Hide all teaching elements in Normal mode
+    - When mode = "Normal", hide:
+      - "Did Code Change?" field
+      - "Organizational Pressure" field
+      - "Unchanged Code" warnings
+      - "Real Talk" sections
+      - "Coverage Duvet" teaching
+      - "Testing Strategy" guidance
+      - All philosophy/teaching text
+    - Show only:
+      - Angie's exact fields
+      - Score calculations
+      - Simple recommendation badge
+    - _Requirements: Clean calculator interface, no philosophy_
+
+  - [x] 30.8 Update Summary Stats for Normal mode
+    - When mode = "Normal", show simple summary:
+      ```
+      Total tests: 20
+      ✅ Automate: 4 tests (54-80 score)
+      ⚠️ Maybe: 8 tests (27-53 score)
+      ❌ Don't: 8 tests (0-26 score)
+      
+      Average score: 42
+      ```
+    - No teaching messages
+    - No "Real Talk" count
+    - No philosophy
+    - Just the numbers
+    - _Requirements: Simple stats, no teaching_
+
+  - [x] 30.9 Teaching Mode keeps all existing functionality
+    - When mode = "Teaching", show:
+      - All fields from tasks 27.1-27.16
+      - All teaching elements
+      - Real Talk sections
+      - Coverage Duvet
+      - Testing strategy guidance
+      - Full philosophy experience
+    - Uses 0-100 scoring scale
+    - Uses current field structure (codeChange, orgPressure, etc.)
+    - _Requirements: Preserve all teaching functionality built in task 27_
+
+  - [ ] 30.10 State diagram integration in both modes
+    - Normal Mode with state diagram:
+      - Auto-fills Angie's fields where possible:
+        - Impact, Prob of use (from state metadata if present)
+        - Distinctness (based on change detection)
+        - Similarity, Break freq (from state history if present)
+      - User adjusts as needed
+      - No teaching messages, just auto-fill
+    - Teaching Mode with state diagram:
+      - Uses existing 27.9 functionality
+      - Full integration points, confirmation testing strategy, etc.
+    - _Requirements: State diagrams work in both modes_
+
+  - [ ] 30.11 Export/Import handling for both modes
+    - JSON export includes mode indicator:
+      ```json
+      {
+        "mode": "normal" | "teaching",
+        "tests": [...],
+        ...
+      }
+      ```
+    - Import detects mode and loads appropriate fields
+    - Allow converting between modes (with data mapping):
+      - Normal → Teaching: Map Angie fields to teaching fields
+      - Teaching → Normal: Extract relevant Angie fields
+    - Warn user if converting and data will be transformed
+    - _Requirements: Preserve work when switching modes_
+
+  - [ ] 30.12 Add "About This Tool" modal explaining modes
+    - Add info button near mode toggle
+    - Explain two modes:
+      ```
+      NORMAL MODE
+      Based on Angie Jones' test prioritization model.
+      Simple calculator: 7 fields → score → recommendation.
+      For teams who understand risk-based testing.
+      
+      TEACHING MODE
+      Adds educational guidance for teams learning risk-based testing.
+      Includes "Real Talk" about organizational pressure, confirmation 
+      testing strategy, and coverage vs. effectiveness.
+      For teams transitioning from coverage-based to risk-based testing.
+      ```
+    - Link to Angie Jones' talk
+    - Link to your blog/docs about the philosophy (if exists)
+    - _Requirements: Users understand what they're choosing_
+
+  - [ ] 30.13 Update data migration to support both modes
+    - Existing data (from task 27) maps to Teaching mode
+    - Add migration path to convert to Normal mode format:
+      - businessImpact → impact
+      - userFrequency → probOfUse
+      - Keep distinctness (it's manual in both)
+      - easyToAutomate → easyToWrite
+      - quickToAutomate → quickToWrite
+      - affectedAreas → similarity (approximate)
+      - Drop: codeChange, orgPressure, legal (Teaching mode only)
+    - Recalculate scores for new mode
+    - _Requirements: Existing users can switch modes_
+
+  - [ ]* 30.14 Update tests for dual-mode functionality
+    - Test Normal mode:
+      - Angie's exact calculations
+      - History uses MAX not multiply
+      - 0-80 scoring scale
+      - Correct thresholds
+      - Teaching elements hidden
+    - Test Teaching mode:
+      - Existing functionality preserved
+      - 0-100 scoring scale
+      - All teaching elements visible
+    - Test mode switching
+    - Test data migration between modes
+    - _Requirements: Both modes work correctly_
+
+  - [ ] 30.15 Update documentation for both modes
+    - Update USER_GUIDE.md:
+      - Explain both modes
+      - When to use each mode
+      - How to switch between modes
+      - Angie Jones model explanation (Normal mode)
+      - Teaching model explanation (Teaching mode)
+    - Add FAQ:
+      - "Which mode should I use?"
+        → Normal if team gets it, Teaching if you need to convince people
+      - "What's the difference?"
+        → Normal = calculator, Teaching = calculator + philosophy
+      - "Can I switch modes?"
+        → Yes, with data migration
+    - Credit both Angie Jones and Dot Graham
+    - _Requirements: Clear documentation of both modes_
+
+  - [ ] 30.16 Polish Normal mode for speed
+    - Normal mode optimized for fast data entry:
+      - Keyboard shortcuts for sliders
+      - Tab order logical (left to right through fields)
+      - Enter key advances to next test
+      - Copy previous test values (common fields)
+      - Bulk edit multiple tests
+    - Goal: Score 20 tests in under 10 minutes
+    - _Requirements: Fast workflow for experienced users_
+
+
+
+- [x] 31. Simplify Teaching Mode to Match Normal Mode Layout
+  - **NOTE: This task supersedes tasks 27-30 with a cleaner, simpler approach**
+  - **Both Normal Mode (0-80 scale) and Teaching Mode (0-100 scale) now use Angie's exact 7-field model**
+  - **Teaching Mode adds: Legal Requirement (+20), Organizational Pressure (triggers Real Talk), and Coverage Duvet teaching**
+  - [x] 31.1 Update Teaching Mode to use Angie's 7-field model
+    - Remove all old Teaching mode fields (codeChange, businessImpact, userFrequency, etc.)
+    - Use exact same 7 fields as Normal mode:
+      - Impact (1-5)
+      - Prob of Use (1-5)
+      - Distinctness (1-5)
+      - Fix Probability (1-5)
+      - Easy to Write (1-5)
+      - Quick to Write (1-5)
+      - Similarity (1-5)
+      - Break Freq (1-5)
+    - Use same 2x2 grid layout as Normal mode
+    - Use same scoring formulas as Normal mode
+    - _Requirements: Teaching mode uses Angie's proven model_
+
+  - [x] 31.2 Add Legal Requirement checkbox to Teaching Mode
+    - Add checkbox field: "Legal Requirement"
+    - When checked: add +20 to total score
+    - Position below the 2x2 grid
+    - Label: "☑ Legal Requirement (+20 points)"
+    - _Requirements: Legal compliance testing support_
+
+  - [x] 31.3 Add Organizational Pressure slider to Teaching Mode
+    - Add slider field: "Organizational Pressure" (1-5)
+    - Position below Legal Requirement checkbox
+    - Label: "Organizational Pressure: How much pressure to show test coverage?"
+    - Descriptive labels:
+      - 1 = "No pressure"
+      - 2 = "Slight pressure"
+      - 3 = "Moderate pressure"
+      - 4 = "High pressure"
+      - 5 = "Must show coverage"
+    - Does NOT affect score calculation
+    - Only used to trigger teaching elements
+    - _Requirements: Capture organizational reality_
+
+  - [x] 31.4 Update Teaching Mode scoring to 0-100 scale
+    - Base score: 0-80 (same as Normal mode)
+    - Legal bonus: +20 if checked
+    - Total: 0-100
+    - Thresholds for 0-100 scale:
+      - 67-100 → AUTOMATE
+      - 34-66 → MAYBE
+      - 0-33 → DON'T AUTOMATE
+    - _Requirements: Accommodate legal requirement bonus_
+
+  - [x] 31.5 Create TeachingScoreCalculator service
+    - Extend AngieScoreCalculator
+    - Add calculateLegalScore method (returns 0 or 20)
+    - Add calculateTotalWithLegal method
+    - Use same formulas as Angie for base score (0-80)
+    - Add legal bonus on top
+    - _Requirements: Separate calculator for Teaching mode_
+
+  - [x] 31.6 Add conditional Real Talk section to Teaching Mode
+    - Show Real Talk when:
+      - Technical score < 34 (base 0-80 score, before legal)
+      - OR Organizational Pressure ≥ 3
+    - Real Talk content based on scenario:
+      - Low technical score + high org pressure
+      - Low technical score + low org pressure
+      - High technical score + high org pressure
+    - Position below the test case row (expandable section)
+    - _Requirements: Context-aware teaching_
+
+  - [x] 31.7 Add Coverage Duvet teaching section
+    - Show when Real Talk is triggered
+    - Explain the difference between coverage and effectiveness
+    - Include case study examples
+    - Position in expandable section below Real Talk
+    - _Requirements: Teach coverage vs effectiveness_
+
+  - [x] 31.8 Update TestCaseRowTeaching component
+    - Copy layout from TestCaseRowNormal
+    - Use same 2x2 grid
+    - Add Legal Requirement checkbox below grid
+    - Add Organizational Pressure slider below checkbox
+    - Add expandable Real Talk section at bottom
+    - Show teaching elements conditionally
+    - _Requirements: Teaching mode UI matches Normal mode + extras_
+
+  - [x] 31.9 Remove old Teaching Mode components and logic
+    - Delete old TestCaseRow component (if separate from Normal)
+    - Remove old ScoreCalculator logic for Teaching mode
+    - Remove codeChange, distinctness auto-calculation
+    - Remove all old Teaching mode fields from types
+    - Clean up unused code
+    - _Requirements: Code cleanup_
+
+  - [x] 31.10 Update data migration for simplified Teaching Mode
+    - Migrate existing Teaching mode data to new format:
+      - Map old fields to Angie's 7 fields (best effort)
+      - Set legal = false by default
+      - Set orgPressure = 1 by default
+      - Recalculate scores
+    - Show migration notification to user
+    - _Requirements: Backward compatibility_
+
+  - [ ]* 31.11 Write tests for simplified Teaching Mode
+    - Test Legal Requirement adds +20
+    - Test Organizational Pressure doesn't affect score
+    - Test Real Talk triggers correctly
+    - Test 0-100 scoring scale
+    - Test thresholds (67, 34)
+    - Test teaching elements show/hide
+    - _Requirements: Test coverage_
+
+  - [x] 31.12 Update documentation for simplified Teaching Mode
+    - Update USER_GUIDE.md:
+      - Teaching Mode = Normal Mode + Legal + Org Pressure
+      - Explain when Real Talk appears
+      - Explain Coverage Duvet teaching
+    - Update HelpModal
+    - Update design.md
+    - _Requirements: Clear documentation_

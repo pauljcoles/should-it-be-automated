@@ -7,11 +7,12 @@ import { useRef, useState } from 'react';
 import { useAppContext } from '../context';
 import type { AppState, StateDiagram, StateDiff } from '../types/models';
 import { Button } from './ui/button';
-import { Upload, Download, Plus, HelpCircle, Clipboard, History, Eye, EyeOff } from 'lucide-react';
+import { Upload, Download, Plus, HelpCircle, Clipboard, History } from 'lucide-react';
 import { StateDiagramService } from '../services/StateDiagramService';
 import { StorageService } from '../services/StorageService';
 import { BERTIntegrationService } from '../services/BERTIntegrationService';
 import { StateDiagramDiffModal } from './StateDiagramDiffModal';
+import { ModeToggle } from './ModeToggle';
 
 export function Header() {
   const {
@@ -25,8 +26,7 @@ export function Header() {
     setStateDiagramDiffModalOpen,
     setStateDiagramHistoryModalOpen,
     addExistingFunctionality,
-    userPreferences,
-    setShowInitialJudgment
+    userPreferences
   } = useAppContext();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -245,17 +245,51 @@ export function Header() {
   // ========================================================================
 
   const handleAddRow = () => {
-    addTestCase({
-      testName: '',
-      changeType: 'new',
-      easyToAutomate: 3,
-      quickToAutomate: 3,
-      isLegal: false,
-      userFrequency: 3,
-      businessImpact: 3,
-      affectedAreas: 2,
-      notes: ''
-    });
+    if (userPreferences.appMode === 'normal') {
+      // Normal mode - Angie Jones fields (0-80 scale)
+      addTestCase({
+        testName: '',
+        gutFeel: 3,
+        impact: 3,
+        probOfUse: 3,
+        distinctness: 3,
+        fixProbability: 3,
+        easyToWrite: 3,
+        quickToWrite: 3,
+        similarity: 1,
+        breakFreq: 1,
+        // Still need these for compatibility
+        codeChange: 'new',
+        organisationalPressure: 1,
+        isLegal: false,
+        userFrequency: 3,
+        businessImpact: 3,
+        affectedAreas: 2,
+        notes: ''
+      });
+    } else {
+      // Teaching mode - Angie Jones fields + Legal + Org Pressure + Gut Feel (0-100 scale)
+      addTestCase({
+        testName: '',
+        gutFeel: 3,
+        impact: 3,
+        probOfUse: 3,
+        distinctness: 3,
+        fixProbability: 3,
+        easyToWrite: 3,
+        quickToWrite: 3,
+        similarity: 1,
+        breakFreq: 1,
+        isLegal: false,
+        organisationalPressure: 1,
+        // Still need these for compatibility
+        codeChange: 'new',
+        userFrequency: 3,
+        businessImpact: 3,
+        affectedAreas: 2,
+        notes: ''
+      });
+    }
     showNotification('New test case added', 'success');
   };
 
@@ -362,6 +396,9 @@ export function Header() {
               </p>
             </div>
 
+            {/* Mode Toggle */}
+            <ModeToggle />
+
             {/* Action Buttons - Responsive layout */}
             <div className="flex items-center gap-2 flex-wrap w-full lg:w-auto justify-end">
               {/* Upload Button - Icon only on mobile */}
@@ -422,24 +459,6 @@ export function Header() {
               >
                 <Plus className="w-4 h-4" />
                 <span className="hidden sm:inline">ADD ROW</span>
-              </Button>
-
-              {/* Toggle Gut Feel Column Button - Hidden on mobile */}
-              <Button
-                onClick={() => setShowInitialJudgment(!userPreferences.showInitialJudgment)}
-                variant="outline"
-                className="gap-2 hidden md:flex"
-                size="sm"
-                title={userPreferences.showInitialJudgment ? "Hide Gut Feel column" : "Show Gut Feel column"}
-              >
-                {userPreferences.showInitialJudgment ? (
-                  <EyeOff className="w-4 h-4" />
-                ) : (
-                  <Eye className="w-4 h-4" />
-                )}
-                <span className="hidden lg:inline">
-                  {userPreferences.showInitialJudgment ? 'HIDE' : 'SHOW'} GUT FEEL
-                </span>
               </Button>
 
               {/* Help Button */}

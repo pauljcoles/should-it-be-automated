@@ -5,9 +5,9 @@
 import { describe, it, expect } from 'vitest';
 import { ValidationService } from './ValidationService';
 import {
+    CodeChange,
     type TestCase,
     type StateDiagram,
-    ChangeType,
     ImplementationType,
     Recommendation
 } from '../types/models';
@@ -17,7 +17,8 @@ describe('ValidationService', () => {
     const createTestCase = (overrides: Partial<TestCase> = {}): TestCase => ({
         id: '123',
         testName: 'Test Case',
-        changeType: ChangeType.NEW,
+        codeChange: CodeChange.NEW,
+        organisationalPressure: 1,
         implementationType: ImplementationType.CUSTOM,
         isLegal: false,
         userFrequency: 3,
@@ -58,7 +59,8 @@ describe('ValidationService', () => {
 
         it('should return warning for unchanged high-frequency tests', () => {
             const testCase = createTestCase({
-                changeType: ChangeType.UNCHANGED,
+                codeChange: CodeChange.UNCHANGED,
+                organisationalPressure: 1,
                 userFrequency: 4
             });
             const warnings = ValidationService.getValidationWarnings(testCase);
@@ -126,7 +128,8 @@ describe('ValidationService', () => {
 
         it('should return valid for test case with only warnings', () => {
             const testCase = createTestCase({
-                changeType: ChangeType.UNCHANGED,
+                codeChange: CodeChange.UNCHANGED,
+                organisationalPressure: 1,
                 userFrequency: 4
             });
             const result = ValidationService.validateTestCase(testCase);

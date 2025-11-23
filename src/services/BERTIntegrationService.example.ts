@@ -53,7 +53,8 @@ const alternativeBERTJSON = {
     scenarioId: 'BERT-789',
     title: 'Payment Processing Flow',
     ticket: 'JIRA-101',
-    changeType: 'modified-behavior',
+    codeChange: 'modified-behavior',
+    organisationalPressure: 1,
     implementation: 'standard-components'
 };
 
@@ -102,7 +103,7 @@ function exampleMappingToTestCase() {
     console.log('- Name:', testCase.testName);
     console.log('- BERT Scenario ID:', testCase.bertScenarioId);
     console.log('- Jira Ticket:', testCase.jiraTicket);
-    console.log('- Change Type:', testCase.changeType);
+    console.log('- Change Type:', testCase.codeChange);
     console.log('- Implementation Type:', testCase.implementationType);
     console.log('- Total Score:', testCase.scores.total);
     console.log('- Recommendation:', testCase.recommendation);
@@ -119,7 +120,8 @@ async function exampleCopyDecision() {
         testName: 'User Login Test',
         bertScenarioId: 'BERT-123',
         jiraTicket: 'JIRA-456',
-        changeType: 'new' as const,
+        codeChange: 'new' as const,
+        organisationalPressure: 1,
         implementationType: 'custom-implementation' as const,
         isLegal: false,
         userFrequency: 4,
@@ -156,7 +158,8 @@ function exampleFormattedDecision() {
         testName: 'User Login Test',
         bertScenarioId: 'BERT-123',
         jiraTicket: 'JIRA-456',
-        changeType: 'new' as const,
+        codeChange: 'new' as const,
+        organisationalPressure: 1,
         implementationType: 'custom-implementation' as const,
         isLegal: false,
         userFrequency: 4,

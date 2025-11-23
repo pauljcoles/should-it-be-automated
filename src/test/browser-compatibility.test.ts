@@ -30,7 +30,8 @@ const createMockAppState = (): AppState => ({
         {
             id: 'test-1',
             testName: 'Test Case 1',
-            changeType: 'new',
+            codeChange: 'new',
+            organisationalPressure: 1,
             implementationType: 'custom-implementation',
             isLegal: false,
             userFrequency: 3,

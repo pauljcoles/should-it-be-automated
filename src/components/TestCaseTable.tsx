@@ -5,13 +5,15 @@
 
 import { useMemo } from 'react';
 import { useAppContext } from '../context';
-import { TestCaseRow } from './TestCaseRow';
+import { TestCaseRowNormal } from './TestCaseRowNormal';
+import { TestCaseRowTeaching } from './TestCaseRowTeaching';
 import { TableFilters } from './TableFilters';
 import { SummaryStats } from './SummaryStats';
-import type { TestCase, SortConfig } from '../types/models';
+import type { TestCase } from '../types/models';
+import { AppMode } from '../types/models';
 
 export function TestCaseTable() {
-  const { appState, filters, sortConfig, toggleSort, userPreferences } = useAppContext();
+  const { appState, filters, sortConfig, userPreferences } = useAppContext();
 
   // ========================================================================
   // Filter and Sort Logic
@@ -33,8 +35,8 @@ export function TestCaseTable() {
       );
     }
 
-    if (filters.changeType) {
-      result = result.filter(tc => tc.changeType === filters.changeType);
+    if (filters.codeChange) {
+      result = result.filter(tc => tc.codeChange === filters.codeChange);
     }
 
     if (filters.implementationType) {
@@ -87,41 +89,7 @@ export function TestCaseTable() {
     return result;
   }, [appState.testCases, filters, sortConfig]);
 
-  // ========================================================================
-  // Column Header Component
-  // ========================================================================
 
-  interface ColumnHeaderProps {
-    column: SortConfig['column'];
-    label: string;
-    className?: string;
-  }
-
-  function ColumnHeader({ column, label, className = '' }: ColumnHeaderProps) {
-    const isSorted = sortConfig?.column === column;
-    const direction = isSorted ? sortConfig.direction : null;
-
-    return (
-      <th
-        onClick={() => toggleSort(column)}
-        className={`px-2 sm:px-4 py-3 text-left text-base font-medium text-gray-700 cursor-pointer hover:bg-gray-100 select-none touch-manipulation ${className}`}
-      >
-        <div className="flex items-center gap-1">
-          <span>{label}</span>
-          {isSorted && (
-            <svg
-              className={`w-4 h-4 transition-transform ${direction === 'desc' ? 'rotate-180' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-            </svg>
-          )}
-        </div>
-      </th>
-    );
-  }
 
   // ========================================================================
   // Render
@@ -138,64 +106,32 @@ export function TestCaseTable() {
           {/* Desktop Table - hidden on mobile */}
           <table className="hidden lg:table w-full table-auto divide-y divide-gray-200">
             <thead className="bg-gray-50 sticky top-0 z-10">
-              <tr>
-                <ColumnHeader column="testName" label="Test Name" className="min-w-[200px]" />
-                {userPreferences.showInitialJudgment && (
-                  <th className="px-2 py-2 text-left text-base font-medium text-gray-700 min-w-[160px]">
-                    <div className="flex items-center gap-1">
-                      <span>Gut Feel</span>
-                      <span 
-                        className="cursor-help text-blue-500" 
-                        title="Your initial judgment before seeing the calculated score. Helps identify biases and learn from scoring patterns."
-                      >
-                        ℹ️
-                      </span>
-                    </div>
-                  </th>
-                )}
-                <th className="px-2 py-2 text-left text-base font-medium text-gray-700 min-w-[180px]">
-                  <div className="flex items-center gap-1">
-                    <span>New or Changed?</span>
-                    <span 
-                      className="cursor-help text-blue-500" 
-                      title="Does this test verify something new or changed?"
-                    >
-                      ℹ️
-                    </span>
-                  </div>
-                </th>
-                <th className="px-2 py-2 text-left text-base font-medium text-gray-700 min-w-[140px]">
-                  <div className="flex items-center gap-1">
-                    <span>Easy?</span>
-                    <span 
-                      className="cursor-help text-blue-500" 
-                      title="How easy is it to automate? (1=very difficult, 5=very easy)"
-                    >
-                      ℹ️
-                    </span>
-                  </div>
-                </th>
-                <th className="px-2 py-2 text-left text-base font-medium text-gray-700 min-w-[140px]">
-                  <div className="flex items-center gap-1">
-                    <span>Quick?</span>
-                    <span 
-                      className="cursor-help text-blue-500" 
-                      title="How quick is it to automate? (1=very slow, 5=very fast)"
-                    >
-                      ℹ️
-                    </span>
-                  </div>
-                </th>
-                <ColumnHeader column="userFrequency" label="Usage Freq" className="w-16" />
-                <ColumnHeader column="businessImpact" label="Impact if Broken" className="w-16" />
-                <ColumnHeader column="affectedAreas" label="Connected" className="w-16" />
-                <ColumnHeader column="isLegal" label="Legal" className="w-16" />
-              </tr>
+              {userPreferences.appMode === AppMode.NORMAL ? (
+                // Normal Mode Headers - Grid layout
+                <tr>
+                  <th className="px-3 py-2 text-left text-base font-medium text-gray-700 min-w-[150px]">Test Name</th>
+                  <th className="px-3 py-2 text-center text-base font-medium text-gray-700 min-w-[100px]">Gut Feel</th>
+                  <th className="px-3 py-2 text-center text-base font-medium text-gray-700 border-l border-gray-300" colSpan={4}>Scoring Categories</th>
+                  <th className="px-3 py-2 text-center text-base font-medium text-gray-700 min-w-[80px]">Total Score</th>
+                  <th className="px-3 py-2 text-center text-base font-medium text-gray-700 min-w-[120px]">Recommendation</th>
+                  <th className="px-3 py-2 text-center text-base font-medium text-gray-700 min-w-[80px]">Actions</th>
+                </tr>
+              ) : (
+                // Teaching Mode Headers - Grid layout (same as Normal mode)
+                <tr>
+                  <th className="px-3 py-2 text-left text-base font-medium text-gray-700 min-w-[150px]">Test Name</th>
+                  <th className="px-3 py-2 text-center text-base font-medium text-gray-700 border-l border-gray-300" colSpan={4}>Scoring Categories</th>
+                  <th className="px-3 py-2 text-center text-base font-medium text-gray-700 min-w-[100px]">Legal & Org Pressure</th>
+                  <th className="px-3 py-2 text-center text-base font-medium text-gray-700 min-w-[80px]">Total Score</th>
+                  <th className="px-3 py-2 text-center text-base font-medium text-gray-700 min-w-[120px]">Recommendation</th>
+                  <th className="px-3 py-2 text-center text-base font-medium text-gray-700 min-w-[80px]">Actions</th>
+                </tr>
+              )}
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredAndSortedTestCases.length === 0 ? (
                 <tr>
-                  <td colSpan={userPreferences.showInitialJudgment ? 9 : 8} className="px-2 sm:px-4 py-8 text-center text-gray-500">
+                  <td colSpan={userPreferences.appMode === AppMode.NORMAL ? 13 : (userPreferences.showInitialJudgment ? 10 : 9)} className="px-2 sm:px-4 py-8 text-center text-gray-500">
                     {appState.testCases.length === 0 ? (
                       <div>
                         <p className="text-base sm:text-lg font-medium mb-2">No test cases yet</p>
@@ -211,7 +147,11 @@ export function TestCaseTable() {
                 </tr>
               ) : (
                 filteredAndSortedTestCases.map(testCase => (
-                  <TestCaseRow key={testCase.id} testCase={testCase} />
+                  userPreferences.appMode === AppMode.NORMAL ? (
+                    <TestCaseRowNormal key={testCase.id} testCase={testCase} />
+                  ) : (
+                    <TestCaseRowTeaching key={testCase.id} testCase={testCase} />
+                  )
                 ))
               )}
             </tbody>
@@ -235,7 +175,11 @@ export function TestCaseTable() {
               </div>
             ) : (
               filteredAndSortedTestCases.map(testCase => (
-                <TestCaseRow key={testCase.id} testCase={testCase} isMobile />
+                userPreferences.appMode === AppMode.NORMAL ? (
+                  <TestCaseRowNormal key={testCase.id} testCase={testCase} isMobile />
+                ) : (
+                  <TestCaseRowTeaching key={testCase.id} testCase={testCase} isMobile />
+                )
               ))
             )}
           </div>

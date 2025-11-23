@@ -15,11 +15,13 @@ import type {
     StateDiagram
 } from '../types/models';
 import {
-    ChangeType,
+    CodeChange,
     ImplementationType,
-    Recommendation
+    Recommendation,
+    AppMode
 } from '../types/models';
-import { ScoreCalculator } from '../services/ScoreCalculator';
+import { AngieScoreCalculator } from '../services/AngieScoreCalculator';
+import { TeachingScoreCalculator } from '../services/TeachingScoreCalculator';
 import { StorageService } from '../services/StorageService';
 
 // ============================================================================
@@ -32,6 +34,8 @@ import { StorageService } from '../services/StorageService';
 interface UserPreferences {
     /** Whether to show the initial judgment (gut feel) column */
     showInitialJudgment: boolean;
+    /** Application mode: normal (calculator) or teaching (with guidance) */
+    appMode: import('../types/models').AppMode;
 }
 
 /**
@@ -89,7 +93,7 @@ interface AppContextActions {
     // Filter Actions
     setRecommendationFilter: (recommendation?: Recommendation) => void;
     setSearchTerm: (searchTerm: string) => void;
-    setChangeTypeFilter: (changeType?: ChangeType) => void;
+    setCodeChangeFilter: (codeChange?: CodeChange) => void;
     setImplementationTypeFilter: (implementationType?: ImplementationType) => void;
     setLegalFilter: (isLegal?: boolean) => void;
     clearFilters: () => void;
@@ -117,6 +121,7 @@ interface AppContextActions {
     
     // Preferences Actions
     setShowInitialJudgment: (show: boolean) => void;
+    setAppMode: (mode: import('../types/models').AppMode) => void;
 }
 
 type AppContextValue = AppContextState & AppContextActions;
@@ -160,35 +165,54 @@ function createInitialAppState(): AppState {
 /**
  * Calculate scores and recommendation for a test case
  */
-function calculateTestCaseScores(testCase: Omit<TestCase, 'id' | 'scores' | 'recommendation'> & { id?: string }): {
+function calculateTestCaseScores(
+    testCase: Omit<TestCase, 'id' | 'scores' | 'recommendation'> & { id?: string },
+    mode: AppMode
+): {
     scores: TestCase['scores'];
     recommendation: TestCase['recommendation'];
 } {
-    // Calculate effort score using new fields if available, otherwise fall back to legacy
-    let effortScore: number;
-    if (testCase.easyToAutomate !== undefined && testCase.quickToAutomate !== undefined) {
-        effortScore = ScoreCalculator.calculateEffortScore(testCase.easyToAutomate, testCase.quickToAutomate);
-    } else if (testCase.implementationType) {
-        // Legacy calculation for backward compatibility
-        effortScore = ScoreCalculator.calculateEaseScore(testCase.implementationType);
+    if (mode === AppMode.NORMAL) {
+        // Use Angie Jones' exact model (0-80 scale)
+        const angieResult = AngieScoreCalculator.calculateScores(testCase);
+        
+        return {
+            scores: {
+                // Store Angie's scores
+                customerRisk: angieResult.scores.customerRisk,
+                valueScore: angieResult.scores.valueScore,
+                costScore: angieResult.scores.costScore,
+                historyScore: angieResult.scores.historyScore,
+                // Keep legacy fields for backward compatibility
+                risk: 0,
+                value: 0,
+                history: 0,
+                legal: 0,
+                total: angieResult.scores.total
+            },
+            recommendation: angieResult.recommendation
+        };
     } else {
-        // Default values if neither is provided
-        effortScore = ScoreCalculator.calculateEffortScore(3, 3); // Default to middle values
+        // Teaching mode - use Angie's model + Legal bonus (0-100 scale)
+        const teachingResult = TeachingScoreCalculator.calculateScores(testCase);
+        
+        return {
+            scores: {
+                // Store Teaching mode scores
+                customerRisk: teachingResult.scores.customerRisk,
+                valueScore: teachingResult.scores.valueScore,
+                costScore: teachingResult.scores.costScore,
+                historyScore: teachingResult.scores.historyScore,
+                legal: teachingResult.scores.legal,
+                // Keep legacy fields for backward compatibility
+                risk: 0,
+                value: 0,
+                history: 0,
+                total: teachingResult.scores.total
+            },
+            recommendation: teachingResult.recommendation
+        };
     }
-
-    const scores = {
-        risk: ScoreCalculator.calculateRiskScore(testCase.userFrequency, testCase.businessImpact),
-        value: ScoreCalculator.calculateValueScore(testCase.changeType, testCase.businessImpact),
-        effort: effortScore,
-        history: ScoreCalculator.calculateHistoryScore(testCase.affectedAreas),
-        legal: ScoreCalculator.calculateLegalScore(testCase.isLegal),
-        total: 0 // Will be calculated next
-    };
-    
-    scores.total = ScoreCalculator.calculateTotalScore(scores);
-    const recommendation = ScoreCalculator.getRecommendation(scores.total);
-    
-    return { scores, recommendation };
 }
 
 // ============================================================================
@@ -237,12 +261,20 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
         try {
             const saved = localStorage.getItem('test-prioritizer-preferences');
             if (saved) {
-                return JSON.parse(saved);
+                const parsed = JSON.parse(saved);
+                // Ensure appMode is set (for backward compatibility)
+                return {
+                    showInitialJudgment: parsed.showInitialJudgment ?? true,
+                    appMode: parsed.appMode ?? AppMode.NORMAL
+                };
             }
         } catch (error) {
             console.error('Failed to load preferences:', error);
         }
-        return { showInitialJudgment: true }; // Default to showing the column
+        return { 
+            showInitialJudgment: true,
+            appMode: AppMode.NORMAL  // Default to Normal mode
+        };
     });
     
     // Save preferences to localStorage when they change
@@ -314,7 +346,7 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
     
     const addTestCase = useCallback((testCase: Omit<TestCase, 'id' | 'scores' | 'recommendation'>) => {
         const id = generateUUID();
-        const { scores, recommendation } = calculateTestCaseScores(testCase);
+        const { scores, recommendation } = calculateTestCaseScores(testCase, userPreferences.appMode);
         
         const newTestCase: TestCase = {
             ...testCase,
@@ -328,7 +360,7 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
             testCases: [...prev.testCases, newTestCase],
             lastModified: new Date().toISOString()
         }));
-    }, []);
+    }, [userPreferences.appMode]);
     
     const updateTestCase = useCallback((id: string, updates: Partial<TestCase>) => {
         setAppState(prev => {
@@ -338,18 +370,20 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
                 // Merge updates
                 const updated = { ...tc, ...updates };
                 
+                // Determine which fields trigger recalculation based on mode
+                // Both modes now use Angie's 7-field model
+                const angieFields = [
+                    'impact', 'probOfUse', 'distinctness', 'fixProbability',
+                    'easyToWrite', 'quickToWrite', 'similarity', 'breakFreq',
+                    'isLegal', 'organisationalPressure'
+                ];
+                
+                // Both modes use the same fields now
+                const shouldRecalculate = angieFields.some(field => updates[field as keyof TestCase] !== undefined);
+                
                 // Recalculate scores if relevant fields changed
-                if (
-                    updates.userFrequency !== undefined ||
-                    updates.businessImpact !== undefined ||
-                    updates.changeType !== undefined ||
-                    updates.easyToAutomate !== undefined ||
-                    updates.quickToAutomate !== undefined ||
-                    updates.implementationType !== undefined ||
-                    updates.affectedAreas !== undefined ||
-                    updates.isLegal !== undefined
-                ) {
-                    const { scores, recommendation } = calculateTestCaseScores(updated);
+                if (shouldRecalculate) {
+                    const { scores, recommendation } = calculateTestCaseScores(updated, userPreferences.appMode);
                     updated.scores = scores;
                     updated.recommendation = recommendation;
                 }
@@ -363,7 +397,7 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
                 lastModified: new Date().toISOString()
             };
         });
-    }, []);
+    }, [userPreferences.appMode]);
     
     const deleteTestCase = useCallback((id: string) => {
         setAppState(prev => ({
@@ -440,8 +474,8 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
         setFilters(prev => ({ ...prev, searchTerm: searchTerm || undefined }));
     }, []);
     
-    const setChangeTypeFilter = useCallback((changeType?: ChangeType) => {
-        setFilters(prev => ({ ...prev, changeType }));
+    const setCodeChangeFilter = useCallback((codeChange?: CodeChange) => {
+        setFilters(prev => ({ ...prev, codeChange }));
     }, []);
     
     const setImplementationTypeFilter = useCallback((implementationType?: ImplementationType) => {
@@ -550,6 +584,24 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
         setUserPreferences(prev => ({ ...prev, showInitialJudgment: show }));
     }, []);
     
+    const setAppMode = useCallback((mode: AppMode) => {
+        setUserPreferences(prev => ({ ...prev, appMode: mode }));
+        
+        // Recalculate all test case scores with the new mode
+        setAppState(prev => ({
+            ...prev,
+            testCases: prev.testCases.map(tc => {
+                const { scores, recommendation } = calculateTestCaseScores(tc, mode);
+                return {
+                    ...tc,
+                    scores,
+                    recommendation
+                };
+            }),
+            lastModified: new Date().toISOString()
+        }));
+    }, []);
+    
     // ========================================================================
     // Context Value
     // ========================================================================
@@ -577,7 +629,7 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
         // Filter Actions
         setRecommendationFilter,
         setSearchTerm,
-        setChangeTypeFilter,
+        setCodeChangeFilter,
         setImplementationTypeFilter,
         setLegalFilter,
         clearFilters,
@@ -604,7 +656,8 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
         clearNotification,
         
         // Preferences Actions
-        setShowInitialJudgment
+        setShowInitialJudgment,
+        setAppMode
     };
     
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

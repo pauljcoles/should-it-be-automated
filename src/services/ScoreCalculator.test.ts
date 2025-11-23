@@ -5,7 +5,7 @@
 import { describe, it, expect } from 'vitest';
 import * as fc from 'fast-check';
 import { ScoreCalculator } from './ScoreCalculator';
-import { ChangeType, ImplementationType, Recommendation, type TestCase } from '../types/models';
+import { CodeChange, ImplementationType, Recommendation, type TestCase } from '../types/models';
 
 describe('ScoreCalculator', () => {
     describe('calculateRiskScore', () => {
@@ -18,20 +18,20 @@ describe('ScoreCalculator', () => {
 
     describe('calculateValueScore', () => {
         it('should calculate value score for unchanged', () => {
-            expect(ScoreCalculator.calculateValueScore(ChangeType.UNCHANGED, 3)).toBe(0);
+            expect(ScoreCalculator.calculateValueScore(CodeChange.UNCHANGED, 3)).toBe(0);
         });
 
         it('should calculate value score for modified-ui', () => {
-            expect(ScoreCalculator.calculateValueScore(ChangeType.MODIFIED_UI, 3)).toBe(4);
+            expect(ScoreCalculator.calculateValueScore(CodeChange.UI_ONLY, 3)).toBe(4);
         });
 
         it('should calculate value score for modified-behavior', () => {
-            expect(ScoreCalculator.calculateValueScore(ChangeType.MODIFIED_BEHAVIOR, 3)).toBe(20);
+            expect(ScoreCalculator.calculateValueScore(CodeChange.MODIFIED, 3)).toBe(20);
         });
 
         it('should calculate value score for new with impact if broken', () => {
-            expect(ScoreCalculator.calculateValueScore(ChangeType.NEW, 3)).toBe(15);
-            expect(ScoreCalculator.calculateValueScore(ChangeType.NEW, 5)).toBe(25);
+            expect(ScoreCalculator.calculateValueScore(CodeChange.NEW, 3)).toBe(15);
+            expect(ScoreCalculator.calculateValueScore(CodeChange.NEW, 5)).toBe(25);
         });
     });
 
@@ -136,7 +136,8 @@ describe('ScoreCalculator', () => {
             const testCase: TestCase = {
                 id: '123',
                 testName: 'Test Login',
-                changeType: ChangeType.NEW,
+                codeChange: CodeChange.NEW,
+                organisationalPressure: 1,
                 implementationType: ImplementationType.LOOP_SAME,
                 isLegal: true,
                 userFrequency: 5,

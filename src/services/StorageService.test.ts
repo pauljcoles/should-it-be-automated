@@ -6,7 +6,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { StorageService } from './StorageService';
 import type { AppState, StateDiagram } from '../types/models';
-import { ChangeType, ImplementationType } from '../types/models';
+import { CodeChange, ImplementationType } from '../types/models';
 
 // ============================================================================
 // Test Helpers
@@ -94,7 +94,8 @@ describe('StorageService', () => {
                     {
                         id: '123',
                         testName: 'Test Case 1',
-                        changeType: ChangeType.NEW,
+                        codeChange: CodeChange.NEW,
+                        organisationalPressure: 1,
                         implementationType: ImplementationType.CUSTOM,
                         isLegal: false,
                         userFrequency: 3,

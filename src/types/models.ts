@@ -8,16 +8,16 @@
 // ============================================================================
 
 /**
- * Classification of how functionality has changed
+ * Classification of whether code has changed
  */
-export const ChangeType = {
+export const CodeChange = {
     NEW: 'new',
-    MODIFIED_BEHAVIOR: 'modified-behavior',
-    MODIFIED_UI: 'modified-ui',
+    MODIFIED: 'modified',
+    UI_ONLY: 'ui-only',
     UNCHANGED: 'unchanged'
 } as const;
 
-export type ChangeType = typeof ChangeType[keyof typeof ChangeType];
+export type CodeChange = typeof CodeChange[keyof typeof CodeChange];
 
 /**
  * Classification of technical implementation approach
@@ -67,6 +67,16 @@ export const FunctionalityStatus = {
 export type FunctionalityStatus = typeof FunctionalityStatus[keyof typeof FunctionalityStatus];
 
 /**
+ * Application mode
+ */
+export const AppMode = {
+    NORMAL: 'normal',       // Simple calculator based on Angie Jones' exact model
+    TEACHING: 'teaching'    // Calculator + educational guidance for learning teams
+} as const;
+
+export type AppMode = typeof AppMode[keyof typeof AppMode];
+
+/**
  * Source of data entry
  */
 export const DataSource = {
@@ -85,6 +95,10 @@ export type DataSource = typeof DataSource[keyof typeof DataSource];
  * Individual and total scores for a test case
  */
 export interface Scores {
+    // ========================================================================
+    // Teaching Mode Scores (0-100 scale)
+    // ========================================================================
+
     /** Risk score: userFrequency × businessImpact (0-25) */
     risk: number;
 
@@ -100,7 +114,27 @@ export interface Scores {
     /** Legal score: 20 if legal requirement, else 0 */
     legal: number;
 
-    /** Total score: sum of all individual scores (0-100) */
+    // ========================================================================
+    // Normal Mode Scores (Angie Jones' model, 0-80 scale)
+    // ========================================================================
+
+    /** Customer Risk: impact × probOfUse (0-25) */
+    customerRisk?: number;
+
+    /** Value of Test: distinctness × fixProbability (0-25) */
+    valueScore?: number;
+
+    /** Cost Efficiency: easyToWrite × quickToWrite (0-25) */
+    costScore?: number;
+
+    /** History: MAX(similarity, breakFreq) (0-5, NOT multiply) */
+    historyScore?: number;
+
+    // ========================================================================
+    // Common
+    // ========================================================================
+
+    /** Total score: sum of all individual scores (0-100 for teaching, 0-80 for normal) */
     total: number;
 
     /** @deprecated Legacy field - use effort instead */
@@ -121,8 +155,15 @@ export interface TestCase {
     /** Name/description of the test case (required, max 100 chars) */
     testName: string;
 
-    /** How the functionality has changed */
-    changeType: ChangeType;
+    // ========================================================================
+    // Teaching Mode Fields (used when appMode = 'teaching')
+    // ========================================================================
+
+    /** Did the code change? */
+    codeChange: CodeChange;
+
+    /** Organisational pressure to automate (1-5, where 1=no pressure, 5=high pressure) */
+    organisationalPressure: number;
 
     /** How easy is it to automate this test? (1=very difficult, 5=very easy) */
     easyToAutomate?: number;
@@ -142,6 +183,41 @@ export interface TestCase {
 
     /** Number of areas affected by this functionality (1-5) */
     affectedAreas: number;
+
+    // ========================================================================
+    // Normal Mode Fields (Angie Jones' exact model, used when appMode = 'normal')
+    // ========================================================================
+
+    /** Gut feel: Initial instinct about automation (1-5) */
+    gutFeel?: 1 | 2 | 3 | 4 | 5;
+
+    /** Customer Risk: Impact if this breaks (1-5) */
+    impact?: number;
+
+    /** Customer Risk: Probability of use (1-5) */
+    probOfUse?: number;
+
+    /** Value: Distinctness - does this test provide NEW information? (1-5, MANUAL) */
+    distinctness?: number;
+
+    /** Value: Fix probability - would dev team prioritize fixing if this fails? (1-5) */
+    fixProbability?: number;
+
+    /** Cost Efficiency: Easy to write (1-5, where 1=hard, 5=easy) */
+    easyToWrite?: number;
+
+    /** Cost Efficiency: Quick to write (1-5, where 1=slow, 5=fast) */
+    quickToWrite?: number;
+
+    /** History: Similarity - have similar areas broken before? (1-5) */
+    similarity?: number;
+
+    /** History: Break frequency - how often does this area break? (1-5) */
+    breakFreq?: number;
+
+    // ========================================================================
+    // Common Fields
+    // ========================================================================
 
     /** Additional notes or context */
     notes?: string;
@@ -342,8 +418,8 @@ export interface FilterState {
     /** Search term for test name or notes */
     searchTerm?: string;
 
-    /** Filter by change type */
-    changeType?: ChangeType;
+    /** Filter by code change */
+    codeChange?: CodeChange;
 
     /** Filter by implementation type */
     implementationType?: ImplementationType;
@@ -405,8 +481,8 @@ export interface BERTScenario {
     /** Associated Jira ticket */
     jiraTicket?: string;
 
-    /** Detected change type from BERT analysis */
-    detectedChangeType?: ChangeType;
+    /** Detected code change from BERT analysis */
+    detectedCodeChange?: CodeChange;
 
     /** Detected implementation approach from BERT analysis */
     detectedImplementation?: ImplementationType;
@@ -439,11 +515,11 @@ export interface SummaryStats {
     /** Count of legal requirements */
     legalCount: number;
 
-    /** Count by change type */
-    changeTypeCounts: {
-        [ChangeType.NEW]: number;
-        [ChangeType.MODIFIED_BEHAVIOR]: number;
-        [ChangeType.MODIFIED_UI]: number;
-        [ChangeType.UNCHANGED]: number;
+    /** Count by code change */
+    codeChangeCounts: {
+        [CodeChange.NEW]: number;
+        [CodeChange.MODIFIED]: number;
+        [CodeChange.UI_ONLY]: number;
+        [CodeChange.UNCHANGED]: number;
     };
 }

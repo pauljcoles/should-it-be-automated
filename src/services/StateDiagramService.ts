@@ -14,7 +14,7 @@ import {
     type ValidationResult,
     type ValidationWarning,
     type ExistingFunctionality,
-    ChangeType,
+    CodeChange,
     ImplementationType,
     DataSource,
     FunctionalityStatus
@@ -276,7 +276,7 @@ export class StateDiagramService {
             const testCase = this.createTestCaseFromState(
                 stateId,
                 state,
-                ChangeType.NEW,
+                CodeChange.NEW,
                 diagram,
                 `New state: ${stateId}`
             );
@@ -315,7 +315,7 @@ export class StateDiagramService {
     private static createTestCaseFromState(
         stateId: string,
         state: State,
-        changeType: ChangeType,
+        changeType: CodeChange,
         diagram: StateDiagram,
         notes: string
     ): TestCase {
@@ -351,7 +351,8 @@ export class StateDiagramService {
         return {
             id: this.generateUUID(),
             testName: state.description || stateId,
-            changeType,
+            codeChange: changeType,
+            organisationalPressure: 1,
             easyToAutomate,
             quickToAutomate,
             isLegal,
@@ -399,27 +400,27 @@ export class StateDiagramService {
      * @param modification - State modification details
      * @returns Detected change type
      */
-    static detectChangeType(modification: StateModification): ChangeType {
+    static detectChangeType(modification: StateModification): CodeChange {
         const { changes } = modification;
 
         // If actions or transitions changed, it's a behavior change
         if (changes.actionsAdded || changes.actionsRemoved ||
             changes.transitionsAdded || changes.transitionsRemoved) {
-            return ChangeType.MODIFIED_BEHAVIOR;
+            return CodeChange.MODIFIED;
         }
 
         // If implementation changed, it's a UI change
         if (changes.implementation) {
-            return ChangeType.MODIFIED_UI;
+            return CodeChange.UI_ONLY;
         }
 
         // If only lastModified changed, treat as UI change
         if (changes.lastModified && Object.keys(changes).length === 1) {
-            return ChangeType.MODIFIED_UI;
+            return CodeChange.UI_ONLY;
         }
 
         // Default to behavior change for any other modifications
-        return ChangeType.MODIFIED_BEHAVIOR;
+        return CodeChange.MODIFIED;
     }
 
     /**

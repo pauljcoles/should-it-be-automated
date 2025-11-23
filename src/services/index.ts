@@ -1,5 +1,7 @@
 // Service classes
 export { ScoreCalculator } from './ScoreCalculator';
+export { AngieScoreCalculator } from './AngieScoreCalculator';
+export { TeachingScoreCalculator } from './TeachingScoreCalculator';
 export { StorageService } from './StorageService';
 export { StateDiagramService } from './StateDiagramService';
 export { ValidationService } from './ValidationService';

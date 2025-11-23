@@ -665,7 +665,7 @@ function FAQTab() {
   "scenarioId": "SCENARIO-123",
   "scenarioTitle": "User Login Test",
   "jiraTicket": "JIRA-456",
-  "detectedChangeType": "new",
+  "detectedCodeChange": "new",
   "detectedImplementation": "standard-components",
   "context": "Test description..."
 }`}

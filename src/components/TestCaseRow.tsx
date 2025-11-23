@@ -7,7 +7,7 @@
 import { memo, useCallback, useState, useMemo } from 'react';
 import { useAppContext } from '../context';
 import type { TestCase } from '../types/models';
-import { ChangeType, Recommendation, InitialJudgment } from '../types/models';
+import { CodeChange, Recommendation, InitialJudgment } from '../types/models';
 import { BERTIntegrationService } from '../services/BERTIntegrationService';
 import { ValidationService } from '../services/ValidationService';
 import { ValidationDisplay, InlineValidation } from './ValidationDisplay';
@@ -214,38 +214,36 @@ function TestCaseRowComponent({ testCase, isMobile = false }: TestCaseRowProps) 
 
         <div className="space-y-3">
           <div>
-            <div className="text-base font-medium text-slate-600 mb-1">New or Changed?</div>
-            <div className="flex items-center gap-2 mb-1">
-              <input
-                type="range"
-                min="0"
-                max="3"
-                value={
-                  testCase.changeType === ChangeType.UNCHANGED ? 0 :
-                  testCase.changeType === ChangeType.MODIFIED_UI ? 1 :
-                  testCase.changeType === ChangeType.MODIFIED_BEHAVIOR ? 2 : 3
-                }
-                onChange={(e) => {
-                  const val = parseInt(e.target.value);
-                  const newType = val === 0 ? ChangeType.UNCHANGED :
-                                  val === 1 ? ChangeType.MODIFIED_UI :
-                                  val === 2 ? ChangeType.MODIFIED_BEHAVIOR : ChangeType.NEW;
-                  handleFieldChange('changeType', newType);
-                }}
-                className="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
-              />
-              <span className="w-6 text-center font-medium text-slate-700 text-base">
-                {testCase.changeType === ChangeType.UNCHANGED ? 0 :
-                 testCase.changeType === ChangeType.MODIFIED_UI ? 2 :
-                 testCase.changeType === ChangeType.MODIFIED_BEHAVIOR ? 4 : 5}
-              </span>
+            <div className="text-base font-medium text-slate-600 mb-1">Did Code Change?</div>
+            <select
+              value={testCase.codeChange}
+              onChange={handleSelectChange('codeChange')}
+              className="w-full px-3 py-2 border border-slate-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              <option value={CodeChange.NEW}>Yes - New (never existed before)</option>
+              <option value={CodeChange.MODIFIED}>Yes - Modified (behaviour/logic changed)</option>
+              <option value={CodeChange.UI_ONLY}>Yes - UI only (styling/layout changed)</option>
+              <option value={CodeChange.UNCHANGED}>No - Unchanged (works the same way)</option>
+            </select>
+            <div className="text-sm text-blue-600 mt-1">
+              💡 If unchanged, you probably don't need to test it again!
             </div>
-            <span className="text-base text-slate-600 italic">
-              {testCase.changeType === ChangeType.UNCHANGED ? 'No, code unchanged' :
-               testCase.changeType === ChangeType.MODIFIED_UI ? 'Yes, UI/presentation changed' :
-               testCase.changeType === ChangeType.MODIFIED_BEHAVIOR ? 'Yes, behavior/logic changed' :
-               'Yes, completely new functionality'}
-            </span>
+            {testCase.codeChange === CodeChange.UNCHANGED && (
+              <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded-md text-sm text-amber-800">
+                <div className="font-semibold mb-1">⚠️ UNCHANGED CODE DETECTED</div>
+                <div className="space-y-1">
+                  <div>This functionality hasn't changed. Consider:</div>
+                  <ul className="list-disc list-inside ml-2 space-y-0.5">
+                    <li>Do existing tests already cover this?</li>
+                    <li>Is this truly NEW risk?</li>
+                    <li>Are you duplicating coverage unnecessarily?</li>
+                  </ul>
+                  <div className="mt-1 italic">
+                    💡 Risk-based testing means: Test what CHANGED, not what's reachable via a new route.
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
           
           <div>
@@ -308,6 +306,29 @@ function TestCaseRowComponent({ testCase, isMobile = false }: TestCaseRowProps) 
             <div className="text-xs font-medium text-slate-600 mb-1">Legal</div>
             <input type="checkbox" checked={testCase.isLegal} onChange={handleCheckboxChange('isLegal')} className="w-5 h-5 text-blue-500 border-slate-300 rounded" id={`legal-m-${testCase.id}`} />
           </div>
+        </div>
+
+        <div>
+          <div className="text-base font-medium text-slate-600 mb-1">Organisational Pressure</div>
+          <div className="flex items-center gap-2 mb-1">
+            <input
+              type="range"
+              min="1"
+              max="5"
+              value={testCase.organisationalPressure}
+              onChange={handleNumberChange('organisationalPressure', 1, 5)}
+              className="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
+              title="How much pressure is there to automate this?"
+            />
+            <span className="w-6 text-center font-medium text-slate-700 text-base">{testCase.organisationalPressure}</span>
+          </div>
+          <span className="text-sm text-slate-600 italic">
+            {testCase.organisationalPressure === 1 ? 'No pressure, team decides' :
+             testCase.organisationalPressure === 2 ? 'Low pressure' :
+             testCase.organisationalPressure === 3 ? 'Some stakeholder anxiety' :
+             testCase.organisationalPressure === 4 ? 'High pressure' :
+             'Must show coverage'}
+          </span>
         </div>
 
         <div className="flex justify-between items-center gap-2 pt-2 border-t border-slate-200">
@@ -397,42 +418,24 @@ function TestCaseRowComponent({ testCase, isMobile = false }: TestCaseRowProps) 
           </td>
         )}
 
-        {/* Change Type - Slider with descriptive text */}
+        {/* Did Code Change? - Dropdown */}
         <td className="px-2 sm:px-4 py-2 sm:py-3 text-base">
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
-              <input
-                type="range"
-                min="0"
-                max="3"
-                value={
-                  testCase.changeType === ChangeType.UNCHANGED ? 0 :
-                  testCase.changeType === ChangeType.MODIFIED_UI ? 1 :
-                  testCase.changeType === ChangeType.MODIFIED_BEHAVIOR ? 2 : 3
-                }
-                onChange={(e) => {
-                  const val = parseInt(e.target.value);
-                  const newType = val === 0 ? ChangeType.UNCHANGED :
-                                  val === 1 ? ChangeType.MODIFIED_UI :
-                                  val === 2 ? ChangeType.MODIFIED_BEHAVIOR : ChangeType.NEW;
-                  handleFieldChange('changeType', newType);
-                }}
-                className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
-                title="Does this test verify something new or changed?"
-              />
-              <span className="w-6 text-center font-medium text-gray-700 text-base">
-                {testCase.changeType === ChangeType.UNCHANGED ? 0 :
-                 testCase.changeType === ChangeType.MODIFIED_UI ? 2 :
-                 testCase.changeType === ChangeType.MODIFIED_BEHAVIOR ? 4 : 5}
-              </span>
+          <select
+            value={testCase.codeChange}
+            onChange={handleSelectChange('codeChange')}
+            className="w-full px-2 py-1.5 sm:py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent touch-manipulation"
+            title="Did the code change?"
+          >
+            <option value={CodeChange.NEW}>Yes - New</option>
+            <option value={CodeChange.MODIFIED}>Yes - Modified</option>
+            <option value={CodeChange.UI_ONLY}>Yes - UI only</option>
+            <option value={CodeChange.UNCHANGED}>No - Unchanged</option>
+          </select>
+          {testCase.codeChange === CodeChange.UNCHANGED && (
+            <div className="text-xs text-amber-600 mt-1">
+              ⚠️ Unchanged code - consider if testing is needed
             </div>
-            <span className="text-base text-gray-600 italic">
-              {testCase.changeType === ChangeType.UNCHANGED ? 'No, code unchanged' :
-               testCase.changeType === ChangeType.MODIFIED_UI ? 'Yes, UI/presentation changed' :
-               testCase.changeType === ChangeType.MODIFIED_BEHAVIOR ? 'Yes, behavior/logic changed' :
-               'Yes, completely new functionality'}
-            </span>
-          </div>
+          )}
         </td>
 
         {/* Easy to Automate - Slider with descriptive text */}
@@ -528,11 +531,36 @@ function TestCaseRowComponent({ testCase, isMobile = false }: TestCaseRowProps) 
             className="w-5 h-5 sm:w-4 sm:h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 touch-manipulation"
           />
         </td>
+
+        {/* Organisational Pressure - Slider */}
+        <td className="px-2 sm:px-4 py-2 sm:py-3 text-base">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <input
+                type="range"
+                min="1"
+                max="5"
+                value={testCase.organisationalPressure}
+                onChange={handleNumberChange('organisationalPressure', 1, 5)}
+                className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                title="Organisational pressure to automate"
+              />
+              <span className="w-6 text-center font-medium text-gray-700 text-base">{testCase.organisationalPressure}</span>
+            </div>
+            <span className="text-xs text-gray-600 italic">
+              {testCase.organisationalPressure === 1 ? 'No pressure' :
+               testCase.organisationalPressure === 2 ? 'Low' :
+               testCase.organisationalPressure === 3 ? 'Some anxiety' :
+               testCase.organisationalPressure === 4 ? 'High' :
+               'Must show coverage'}
+            </span>
+          </div>
+        </td>
       </tr>
 
       {/* Second Row: Scores as labeled fields */}
       <tr className={`${rowClassName} border-b border-gray-200 transition-colors`}>
-        <td colSpan={userPreferences.showInitialJudgment ? 9 : 8} className="px-4 py-3 bg-gray-50">
+        <td colSpan={userPreferences.showInitialJudgment ? 10 : 9} className="px-4 py-3 bg-gray-50">
           <div className="flex items-center gap-4 flex-wrap">
             {/* Risk Score with label */}
             <div className="flex items-center gap-2">
@@ -661,7 +689,7 @@ function TestCaseRowComponent({ testCase, isMobile = false }: TestCaseRowProps) 
       {/* Gut Feel Warning/Notes Row */}
       {judgmentMismatch && (
         <tr>
-          <td colSpan={userPreferences.showInitialJudgment ? 9 : 8} className="px-4 py-2 bg-amber-50 border-b border-amber-200">
+          <td colSpan={userPreferences.showInitialJudgment ? 10 : 9} className="px-4 py-2 bg-amber-50 border-b border-amber-200">
             <div className="flex items-start gap-2 text-base text-amber-800">
               <span className="text-base">⚠️</span>
               <div>
@@ -675,7 +703,7 @@ function TestCaseRowComponent({ testCase, isMobile = false }: TestCaseRowProps) 
       {/* Validation Warnings Row */}
       {showValidation && validationWarnings.length > 0 && (
         <tr>
-          <td colSpan={userPreferences.showInitialJudgment ? 9 : 8} className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+          <td colSpan={userPreferences.showInitialJudgment ? 10 : 9} className="px-4 py-3 bg-gray-50 border-b border-gray-200">
             <ValidationDisplay warnings={validationWarnings} />
           </td>
         </tr>
@@ -684,7 +712,7 @@ function TestCaseRowComponent({ testCase, isMobile = false }: TestCaseRowProps) 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <tr>
-          <td colSpan={userPreferences.showInitialJudgment ? 9 : 8} className="px-4 py-2 bg-red-50 border-b border-red-200">
+          <td colSpan={userPreferences.showInitialJudgment ? 10 : 9} className="px-4 py-2 bg-red-50 border-b border-red-200">
             <div className="flex items-center justify-between">
               <span className="text-sm text-red-800">
                 Are you sure you want to delete "{testCase.testName}"?
