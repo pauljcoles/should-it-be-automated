@@ -104,27 +104,28 @@ export function TestCaseTable() {
       <div className="flex-1 overflow-y-auto">
         <div className="w-full">
           {/* Desktop Table - hidden on mobile */}
-          <table className="hidden lg:table w-full table-auto divide-y divide-gray-200">
-            <thead className="bg-gray-50 sticky top-0 z-10">
+          <table className="hidden lg:table w-full table-auto">
+            <thead className="bg-yellow-400 sticky top-0 z-10 border-b-4 border-black">
               {userPreferences.appMode === AppMode.NORMAL ? (
                 // Normal Mode Headers - Grid layout
                 <tr>
-                  <th className="px-3 py-2 text-left text-base font-medium text-gray-700 min-w-[150px]">Test Name</th>
-                  <th className="px-3 py-2 text-center text-base font-medium text-gray-700 min-w-[100px]">Gut Feel</th>
-                  <th className="px-3 py-2 text-center text-base font-medium text-gray-700 border-l border-gray-300" colSpan={4}>Scoring Categories</th>
-                  <th className="px-3 py-2 text-center text-base font-medium text-gray-700 min-w-[80px]">Total Score</th>
-                  <th className="px-3 py-2 text-center text-base font-medium text-gray-700 min-w-[120px]">Recommendation</th>
-                  <th className="px-3 py-2 text-center text-base font-medium text-gray-700 min-w-[80px]">Actions</th>
+                  <th className="px-3 py-3 text-left text-base font-black text-black min-w-[150px] border-r-4 border-black">Test Name</th>
+                  <th className="px-3 py-3 text-center text-base font-black text-black min-w-[100px] border-r-4 border-black">Gut Feel</th>
+                  <th className="px-3 py-3 text-center text-base font-black text-black border-r-4 border-black" colSpan={4}>Scoring Categories</th>
+                  <th className="px-3 py-3 text-center text-base font-black text-black min-w-[80px] border-r-4 border-black">Total Score</th>
+                  <th className="px-3 py-3 text-center text-base font-black text-black min-w-[120px] border-r-4 border-black">Recommendation</th>
+                  <th className="px-3 py-3 text-center text-base font-black text-black min-w-[80px]">Actions</th>
                 </tr>
               ) : (
                 // Teaching Mode Headers - Grid layout (same as Normal mode)
                 <tr>
-                  <th className="px-3 py-2 text-left text-base font-medium text-gray-700 min-w-[150px]">Test Name</th>
-                  <th className="px-3 py-2 text-center text-base font-medium text-gray-700 border-l border-gray-300" colSpan={4}>Scoring Categories</th>
-                  <th className="px-3 py-2 text-center text-base font-medium text-gray-700 min-w-[100px]">Legal & Org Pressure</th>
-                  <th className="px-3 py-2 text-center text-base font-medium text-gray-700 min-w-[80px]">Total Score</th>
-                  <th className="px-3 py-2 text-center text-base font-medium text-gray-700 min-w-[120px]">Recommendation</th>
-                  <th className="px-3 py-2 text-center text-base font-medium text-gray-700 min-w-[80px]">Actions</th>
+                  <th className="px-3 py-3 text-left text-base font-black text-black min-w-[150px] border-r-4 border-black">Test Name</th>
+                  <th className="px-3 py-3 text-center text-base font-black text-black min-w-[100px] border-r-4 border-black">Gut Feel</th>
+                  <th className="px-3 py-3 text-center text-base font-black text-black border-r-4 border-black" colSpan={4}>Scoring Categories</th>
+                  <th className="px-3 py-3 text-center text-base font-black text-black min-w-[100px] border-r-4 border-black">Legal & Org Pressure</th>
+                  <th className="px-3 py-3 text-center text-base font-black text-black min-w-[80px] border-r-4 border-black">Total Score</th>
+                  <th className="px-3 py-3 text-center text-base font-black text-black min-w-[120px] border-r-4 border-black">Recommendation</th>
+                  <th className="px-3 py-3 text-center text-base font-black text-black min-w-[80px]">Actions</th>
                 </tr>
               )}
             </thead>

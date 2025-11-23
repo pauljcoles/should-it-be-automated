@@ -77,47 +77,47 @@ export function SummaryStats({ testCases }: SummaryStatsProps) {
   if (isNormalMode) {
     // Normal Mode - Simple stats, no teaching
     return (
-      <div className="bg-white border-t-2 border-black px-2 py-2">
-        <div className="flex lg:grid lg:grid-cols-5 gap-1 lg:gap-3 overflow-x-auto lg:overflow-visible text-xs">
+      <div className="bg-yellow-400 border-t-4 border-black px-3 py-3 lg:py-4">
+        <div className="flex lg:grid lg:grid-cols-5 gap-2 lg:gap-4 overflow-x-auto lg:overflow-visible text-xs">
           {/* Total Count */}
-          <div className="bg-gray-50 rounded px-2 py-1 min-w-[70px] text-center">
-            <div className="text-gray-600 font-medium">Total tests</div>
-            <div className="text-lg font-bold text-gray-900">{stats.totalCount}</div>
+          <div className="bg-white rounded border-brutal shadow-brutal px-3 py-2 lg:px-4 lg:py-3 min-w-[70px] text-center hover:shadow-brutal-lg transition-all">
+            <div className="text-gray-700 font-black text-xs lg:text-base">Total tests</div>
+            <div className="text-2xl font-black text-gray-900">{stats.totalCount}</div>
           </div>
 
           {/* Automate Count */}
-          <div className="bg-green-50 rounded px-2 py-1 min-w-[90px] text-center">
-            <div className="text-green-700 font-medium">✅ Automate</div>
-            <div className="text-lg font-bold text-green-800">
+          <div className="bg-emerald-100 rounded border-brutal shadow-brutal px-3 py-2 lg:px-4 lg:py-3 min-w-[90px] text-center hover:shadow-brutal-lg transition-all">
+            <div className="text-emerald-700 font-black text-xs lg:text-base">✅ Automate</div>
+            <div className="text-2xl font-black text-emerald-800">
               {stats.recommendationCounts[Recommendation.AUTOMATE]}
-              <span className="text-xs font-normal text-green-600 ml-1">(54-80)</span>
             </div>
+            <div className="text-xs lg:text-sm font-bold text-emerald-600">(54-80)</div>
           </div>
 
           {/* Maybe Count */}
-          <div className="bg-yellow-50 rounded px-2 py-1 min-w-[90px] text-center">
-            <div className="text-yellow-700 font-medium">⚠️ Maybe</div>
-            <div className="text-lg font-bold text-yellow-800">
+          <div className="bg-amber-100 rounded border-brutal shadow-brutal px-3 py-2 lg:px-4 lg:py-3 min-w-[90px] text-center hover:shadow-brutal-lg transition-all">
+            <div className="text-amber-700 font-black text-xs lg:text-base">⚠️ Maybe</div>
+            <div className="text-2xl font-black text-amber-800">
               {stats.recommendationCounts[Recommendation.MAYBE]}
-              <span className="text-xs font-normal text-yellow-600 ml-1">(27-53)</span>
             </div>
+            <div className="text-xs lg:text-sm font-bold text-amber-600">(27-53)</div>
           </div>
 
           {/* Exploratory Testing Count */}
-          <div className="bg-red-50 rounded px-2 py-1 min-w-[110px] text-center">
-            <div className="text-red-700 font-medium">🔍 Exploratory</div>
-            <div className="text-lg font-bold text-red-800">
+          <div className="bg-rose-100 rounded border-brutal shadow-brutal px-3 py-2 lg:px-4 lg:py-3 min-w-[110px] text-center hover:shadow-brutal-lg transition-all">
+            <div className="text-rose-700 font-black text-xs lg:text-base">🔍 Exploratory</div>
+            <div className="text-2xl font-black text-rose-800">
               {stats.recommendationCounts[Recommendation.DONT_AUTOMATE]}
-              <span className="text-xs font-normal text-red-600 ml-1">(0-26)</span>
             </div>
+            <div className="text-xs lg:text-sm font-bold text-rose-600">(0-26)</div>
           </div>
 
           {/* Average Score */}
-          <div className="bg-blue-50 rounded px-2 py-1 min-w-[80px] text-center">
-            <div className="text-blue-700 font-medium">Average score</div>
-            <div className="text-lg font-bold text-blue-800">
+          <div className="bg-sky-100 rounded border-brutal shadow-brutal px-3 py-2 lg:px-4 lg:py-3 min-w-[80px] text-center hover:shadow-brutal-lg transition-all">
+            <div className="text-sky-700 font-black text-xs lg:text-base">Average score</div>
+            <div className="text-2xl font-black text-sky-800">
               {stats.averageScore}
-              <span className="text-xs font-normal text-blue-600">/80</span>
+              <span className="text-sm font-bold text-sky-600">/80</span>
             </div>
           </div>
         </div>
@@ -127,73 +127,73 @@ export function SummaryStats({ testCases }: SummaryStatsProps) {
 
   // Teaching Mode - Full stats with code change breakdown
   return (
-    <div className="bg-white border-t-2 border-black px-2 py-2">
+    <div className="bg-yellow-400 border-t-4 border-black px-3 py-3 lg:py-4">
       {/* Compact single row on mobile, grid on desktop */}
-      <div className="flex lg:grid lg:grid-cols-6 gap-1 lg:gap-3 overflow-x-auto lg:overflow-visible text-xs">
+      <div className="flex lg:grid lg:grid-cols-6 gap-2 lg:gap-3 overflow-x-auto lg:overflow-visible text-xs">
         {/* Total Count */}
-        <div className="bg-gray-50 rounded px-2 py-1 min-w-[60px] text-center">
-          <div className="text-gray-600 font-medium">Total</div>
-          <div className="text-lg font-bold text-gray-900">{stats.totalCount}</div>
+        <div className="bg-white rounded border-brutal shadow-brutal px-3 py-2 lg:px-4 lg:py-3 min-w-[60px] text-center hover:shadow-brutal-lg transition-all">
+          <div className="text-gray-700 font-black text-xs lg:text-base">Total</div>
+          <div className="text-2xl font-black text-gray-900">{stats.totalCount}</div>
         </div>
 
         {/* Automate Count */}
-        <div className="bg-green-50 rounded px-2 py-1 min-w-[60px] text-center">
-          <div className="text-green-700 font-medium">Auto</div>
-          <div className="text-lg font-bold text-green-800">
+        <div className="bg-emerald-100 rounded border-brutal shadow-brutal px-3 py-2 lg:px-4 lg:py-3 min-w-[60px] text-center hover:shadow-brutal-lg transition-all">
+          <div className="text-emerald-700 font-black text-xs lg:text-base">Auto</div>
+          <div className="text-2xl font-black text-emerald-800">
             {stats.recommendationCounts[Recommendation.AUTOMATE]}
           </div>
         </div>
 
         {/* Maybe Count */}
-        <div className="bg-yellow-50 rounded px-2 py-1 min-w-[60px] text-center">
-          <div className="text-yellow-700 font-medium">Maybe</div>
-          <div className="text-lg font-bold text-yellow-800">
+        <div className="bg-amber-100 rounded border-brutal shadow-brutal px-3 py-2 lg:px-4 lg:py-3 min-w-[60px] text-center hover:shadow-brutal-lg transition-all">
+          <div className="text-amber-700 font-black text-xs lg:text-base">Maybe</div>
+          <div className="text-2xl font-black text-amber-800">
             {stats.recommendationCounts[Recommendation.MAYBE]}
           </div>
         </div>
 
         {/* Don't Automate Count */}
-        <div className="bg-red-50 rounded px-2 py-1 min-w-[60px] text-center">
-          <div className="text-red-700 font-medium">No</div>
-          <div className="text-lg font-bold text-red-800">
+        <div className="bg-rose-100 rounded border-brutal shadow-brutal px-3 py-2 lg:px-4 lg:py-3 min-w-[60px] text-center hover:shadow-brutal-lg transition-all">
+          <div className="text-rose-700 font-black text-xs lg:text-base">No</div>
+          <div className="text-2xl font-black text-rose-800">
             {stats.recommendationCounts[Recommendation.DONT_AUTOMATE]}
           </div>
         </div>
 
         {/* Average Score */}
-        <div className="bg-blue-50 rounded px-2 py-1 min-w-[60px] text-center">
-          <div className="text-blue-700 font-medium">Avg</div>
-          <div className="text-lg font-bold text-blue-800">
+        <div className="bg-sky-100 rounded border-brutal shadow-brutal px-3 py-2 lg:px-4 lg:py-3 min-w-[60px] text-center hover:shadow-brutal-lg transition-all">
+          <div className="text-sky-700 font-black text-xs lg:text-base">Avg</div>
+          <div className="text-2xl font-black text-sky-800">
             {stats.averageScore}
-            <span className="text-xs font-normal text-blue-600">/100</span>
+            <span className="text-sm font-bold text-sky-600">/100</span>
           </div>
         </div>
 
         {/* Legal Count */}
-        <div className="bg-purple-50 rounded px-2 py-1 min-w-[60px] text-center">
-          <div className="text-purple-700 font-medium">Legal</div>
-          <div className="text-lg font-bold text-purple-800">{stats.legalCount}</div>
+        <div className="bg-purple-100 rounded border-brutal shadow-brutal px-3 py-2 lg:px-4 lg:py-3 min-w-[60px] text-center hover:shadow-brutal-lg transition-all">
+          <div className="text-purple-700 font-black text-xs lg:text-base">Legal</div>
+          <div className="text-2xl font-black text-purple-800">{stats.legalCount}</div>
         </div>
       </div>
 
       {/* Code Change Breakdown - Only show on desktop */}
-      <div className="hidden lg:block mt-2 pt-2 border-t border-gray-200">
-        <div className="flex flex-wrap gap-3 text-xs">
-          <div>
-            <span className="text-gray-600">New:</span>{' '}
-            <span className="font-semibold">{stats.codeChangeCounts[CodeChange.NEW]}</span>
+      <div className="hidden lg:block mt-3 pt-3 border-t-4 border-black">
+        <div className="flex flex-wrap gap-4 text-xs lg:text-sm">
+          <div className="bg-white rounded border-2 border-black px-3 py-1 lg:px-4 lg:py-2 shadow-brutal">
+            <span className="text-gray-700 font-bold">New:</span>{' '}
+            <span className="font-black text-gray-900">{stats.codeChangeCounts[CodeChange.NEW]}</span>
           </div>
-          <div>
-            <span className="text-gray-600">Modified:</span>{' '}
-            <span className="font-semibold">{stats.codeChangeCounts[CodeChange.MODIFIED]}</span>
+          <div className="bg-white rounded border-2 border-black px-3 py-1 lg:px-4 lg:py-2 shadow-brutal">
+            <span className="text-gray-700 font-bold">Modified:</span>{' '}
+            <span className="font-black text-gray-900">{stats.codeChangeCounts[CodeChange.MODIFIED]}</span>
           </div>
-          <div>
-            <span className="text-gray-600">UI Only:</span>{' '}
-            <span className="font-semibold">{stats.codeChangeCounts[CodeChange.UI_ONLY]}</span>
+          <div className="bg-white rounded border-2 border-black px-3 py-1 lg:px-4 lg:py-2 shadow-brutal">
+            <span className="text-gray-700 font-bold">UI Only:</span>{' '}
+            <span className="font-black text-gray-900">{stats.codeChangeCounts[CodeChange.UI_ONLY]}</span>
           </div>
-          <div>
-            <span className="text-gray-600">Unchanged:</span>{' '}
-            <span className="font-semibold">{stats.codeChangeCounts[CodeChange.UNCHANGED]}</span>
+          <div className="bg-white rounded border-2 border-black px-3 py-1 lg:px-4 lg:py-2 shadow-brutal">
+            <span className="text-gray-700 font-bold">Unchanged:</span>{' '}
+            <span className="font-black text-gray-900">{stats.codeChangeCounts[CodeChange.UNCHANGED]}</span>
           </div>
         </div>
       </div>

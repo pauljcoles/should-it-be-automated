@@ -3,11 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://pauljcoles.github.io/should-it-be-automated",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
     "test": "vitest --run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui"
@@ -35,6 +38,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "fast-check": "^4.3.0",
+    "gh-pages": "^6.3.0",
     "globals": "^16.5.0",
     "jsdom": "^24.1.0",
     "postcss": "^8.5.6",

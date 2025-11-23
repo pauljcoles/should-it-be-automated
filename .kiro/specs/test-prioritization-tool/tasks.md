@@ -735,7 +735,7 @@
     - Rationale: Capture instinct before seeing any other fields
     - _Requirements: UX improvement for bias detection_
 
-  - [ ] 26.2 Apply Neo-Brutalist design to desktop test case rows
+  - [x] 26.2 Apply Neo-Brutalist design to desktop test case rows
     - Add bold black borders (border-brutal) to table cells
     - Increase border thickness between rows (border-4)
     - Add shadow effects to input fields (shadow-brutal)
