@@ -357,9 +357,9 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
             </div>
             <div className="space-y-2">
               <div>
-                <div className="flex justify-between items-center">
+                <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
                   <span className="text-base text-gray-600">Impact: {testCase.impact ?? 3}</span>
-                  <span className="text-base text-gray-500 italic w-[200px] text-right flex-shrink-0">{getImpactLabel(testCase.impact ?? 3)}</span>
+                  <span className="text-base text-gray-500 italic text-right truncate">{getImpactLabel(testCase.impact ?? 3)}</span>
                 </div>
                 <input
                   type="range"
@@ -371,9 +371,9 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
                 />
               </div>
               <div>
-                <div className="flex justify-between items-center">
+                <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
                   <span className="text-base text-gray-600">Prob of Use: {testCase.probOfUse ?? 3}</span>
-                  <span className="text-base text-gray-500 italic w-[200px] text-right flex-shrink-0">{getProbabilityLabel(testCase.probOfUse ?? 3)}</span>
+                  <span className="text-base text-gray-500 italic text-right truncate">{getProbabilityLabel(testCase.probOfUse ?? 3)}</span>
                 </div>
                 <input
                   type="range"
@@ -397,9 +397,9 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
             </div>
             <div className="space-y-2">
               <div>
-                <div className="flex justify-between items-center">
+                <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
                   <span className="text-base text-gray-600">Distinctness: {testCase.distinctness ?? 3}</span>
-                  <span className="text-base text-gray-500 italic w-[200px] text-right flex-shrink-0">{getDistinctnessLabel(testCase.distinctness ?? 3)}</span>
+                  <span className="text-base text-gray-500 italic text-right truncate">{getDistinctnessLabel(testCase.distinctness ?? 3)}</span>
                 </div>
                 <input
                   type="range"
@@ -411,9 +411,9 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
                 />
               </div>
               <div>
-                <div className="flex justify-between items-center">
+                <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
                   <span className="text-base text-gray-600">Fix Prob: {testCase.fixProbability ?? 3}</span>
-                  <span className="text-base text-gray-500 italic w-[200px] text-right flex-shrink-0">{getFixProbabilityLabel(testCase.fixProbability ?? 3)}</span>
+                  <span className="text-base text-gray-500 italic text-right truncate">{getFixProbabilityLabel(testCase.fixProbability ?? 3)}</span>
                 </div>
                 <input
                   type="range"
@@ -437,9 +437,9 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
             </div>
             <div className="space-y-2">
               <div>
-                <div className="flex justify-between items-center">
+                <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
                   <span className="text-base text-gray-600">Easy: {testCase.easyToWrite ?? 3}</span>
-                  <span className="text-base text-gray-500 italic w-[200px] text-right flex-shrink-0">{getEaseLabel(testCase.easyToWrite ?? 3)}</span>
+                  <span className="text-base text-gray-500 italic text-right truncate">{getEaseLabel(testCase.easyToWrite ?? 3)}</span>
                 </div>
                 <input
                   type="range"
@@ -451,9 +451,9 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
                 />
               </div>
               <div>
-                <div className="flex justify-between items-center">
+                <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
                   <span className="text-base text-gray-600">Quick: {testCase.quickToWrite ?? 3}</span>
-                  <span className="text-base text-gray-500 italic w-[200px] text-right flex-shrink-0">{getSpeedLabel(testCase.quickToWrite ?? 3)}</span>
+                  <span className="text-base text-gray-500 italic text-right truncate">{getSpeedLabel(testCase.quickToWrite ?? 3)}</span>
                 </div>
                 <input
                   type="range"
@@ -477,9 +477,9 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
             </div>
             <div className="space-y-2">
               <div>
-                <div className="flex justify-between items-center">
+                <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
                   <span className="text-base text-gray-600">Similarity: {testCase.similarity ?? 1}</span>
-                  <span className="text-base text-gray-500 italic w-[200px] text-right flex-shrink-0">{getSimilarityLabel(testCase.similarity ?? 1)}</span>
+                  <span className="text-base text-gray-500 italic text-right truncate">{getSimilarityLabel(testCase.similarity ?? 1)}</span>
                 </div>
                 <input
                   type="range"
@@ -491,9 +491,9 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
                 />
               </div>
               <div>
-                <div className="flex justify-between items-center">
+                <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
                   <span className="text-base text-gray-600">Break Freq: {testCase.breakFreq ?? 1}</span>
-                  <span className="text-base text-gray-500 italic w-[200px] text-right flex-shrink-0">{getBreakFrequencyLabel(testCase.breakFreq ?? 1)}</span>
+                  <span className="text-base text-gray-500 italic text-right truncate">{getBreakFrequencyLabel(testCase.breakFreq ?? 1)}</span>
                 </div>
                 <input
                   type="range"
