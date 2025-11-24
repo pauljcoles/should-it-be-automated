@@ -106,7 +106,7 @@ export interface Scores {
     value: number;
 
     /** COST EFFICIENCY score: Easy to write × Quick to write (0-25) */
-    costEfficiency: number;
+    costEfficiency?: number;
 
     /** HISTORY score: Bug count × Affected areas (0-25) */
     history: number;

@@ -4,7 +4,7 @@
  */
 
 import { useAppContext } from '../context';
-import { Recommendation, CodeChange, ImplementationType, AppMode } from '../types/models';
+import { Recommendation, AppMode } from '../types/models';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { X } from 'lucide-react';
@@ -14,8 +14,6 @@ export function TableFilters() {
     filters,
     setRecommendationFilter,
     setSearchTerm,
-    setCodeChangeFilter,
-    setImplementationTypeFilter,
     setLegalFilter,
     clearFilters,
     userPreferences
