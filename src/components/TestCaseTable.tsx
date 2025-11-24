@@ -105,27 +105,27 @@ export function TestCaseTable() {
         <div className="w-full">
           {/* Desktop Table - hidden on mobile */}
           <table className="hidden lg:table w-full table-auto">
-            <thead className="bg-yellow-400 sticky top-0 z-10 border-b-4 border-black">
+            <thead className="bg-slate-100 sticky top-0 z-10 border-b-2 border-slate-300">
               {userPreferences.appMode === AppMode.NORMAL ? (
                 // Normal Mode Headers - Grid layout
                 <tr>
-                  <th className="px-3 py-3 text-left text-base font-black text-black min-w-[150px] border-r-4 border-black">Test Name</th>
-                  <th className="px-3 py-3 text-center text-base font-black text-black min-w-[100px] border-r-4 border-black">Gut Feel</th>
-                  <th className="px-3 py-3 text-center text-base font-black text-black border-r-4 border-black" colSpan={4}>Scoring Categories</th>
-                  <th className="px-3 py-3 text-center text-base font-black text-black min-w-[80px] border-r-4 border-black">Total Score</th>
-                  <th className="px-3 py-3 text-center text-base font-black text-black min-w-[120px] border-r-4 border-black">Recommendation</th>
-                  <th className="px-3 py-3 text-center text-base font-black text-black min-w-[80px]">Actions</th>
+                  <th className="px-3 py-3 text-left text-base font-bold text-slate-700 min-w-[150px] border-r border-slate-300">Test Name</th>
+                  <th className="px-3 py-3 text-center text-base font-bold text-slate-700 min-w-[100px] border-r border-slate-300">Gut Feel</th>
+                  <th className="px-3 py-3 text-center text-base font-bold text-slate-700 border-r border-slate-300" colSpan={4}>Scoring Categories</th>
+                  <th className="px-3 py-3 text-center text-base font-bold text-slate-700 min-w-[80px] border-r border-slate-300">Total Score</th>
+                  <th className="px-3 py-3 text-center text-base font-bold text-slate-700 min-w-[120px] border-r border-slate-300">Recommendation</th>
+                  <th className="px-3 py-3 text-center text-base font-bold text-slate-700 min-w-[80px]">Actions</th>
                 </tr>
               ) : (
                 // Teaching Mode Headers - Grid layout (same as Normal mode)
                 <tr>
-                  <th className="px-3 py-3 text-left text-base font-black text-black min-w-[150px] border-r-4 border-black">Test Name</th>
-                  <th className="px-3 py-3 text-center text-base font-black text-black min-w-[100px] border-r-4 border-black">Gut Feel</th>
-                  <th className="px-3 py-3 text-center text-base font-black text-black border-r-4 border-black" colSpan={4}>Scoring Categories</th>
-                  <th className="px-3 py-3 text-center text-base font-black text-black min-w-[100px] border-r-4 border-black">Legal & Org Pressure</th>
-                  <th className="px-3 py-3 text-center text-base font-black text-black min-w-[80px] border-r-4 border-black">Total Score</th>
-                  <th className="px-3 py-3 text-center text-base font-black text-black min-w-[120px] border-r-4 border-black">Recommendation</th>
-                  <th className="px-3 py-3 text-center text-base font-black text-black min-w-[80px]">Actions</th>
+                  <th className="px-3 py-3 text-left text-base font-bold text-slate-700 min-w-[150px] border-r border-slate-300">Test Name</th>
+                  <th className="px-3 py-3 text-center text-base font-bold text-slate-700 min-w-[100px] border-r border-slate-300">Gut Feel</th>
+                  <th className="px-3 py-3 text-center text-base font-bold text-slate-700 border-r border-slate-300" colSpan={4}>Scoring Categories</th>
+                  <th className="px-3 py-3 text-center text-base font-bold text-slate-700 min-w-[100px] border-r border-slate-300">Legal & Org Pressure</th>
+                  <th className="px-3 py-3 text-center text-base font-bold text-slate-700 min-w-[80px] border-r border-slate-300">Total Score</th>
+                  <th className="px-3 py-3 text-center text-base font-bold text-slate-700 min-w-[120px] border-r border-slate-300">Recommendation</th>
+                  <th className="px-3 py-3 text-center text-base font-bold text-slate-700 min-w-[80px]">Actions</th>
                 </tr>
               )}
             </thead>

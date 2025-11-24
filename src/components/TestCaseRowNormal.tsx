@@ -143,9 +143,9 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
           <div className="text-xs text-slate-600 text-center">{testCase.gutFeel ?? 3}</div>
         </div>
 
-        {/* Customer Risk */}
+        {/* RISK */}
         <div className="border-t pt-2">
-          <div className="text-sm font-semibold text-slate-700 mb-2">Customer Risk (max 25)</div>
+          <div className="text-sm font-semibold text-slate-700 mb-2">RISK (max 25)</div>
           <div className="grid grid-cols-2 gap-2">
             <div>
               <div className="text-xs text-slate-600 mb-1">Impact</div>
@@ -159,7 +159,7 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
               />
             </div>
             <div>
-              <div className="text-xs text-slate-600 mb-1">Prob of Use</div>
+              <div className="text-xs text-slate-600 mb-1">Probability</div>
               <input
                 type="number"
                 min="1"
@@ -172,15 +172,15 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
           </div>
           <div className="text-center mt-1">
             <span className="text-xs text-slate-500">Score: </span>
-            <span className={`px-2 py-0.5 rounded text-sm font-semibold ${getScoreColor(testCase.scores.customerRisk ?? 0, 25)}`}>
-              {testCase.scores.customerRisk ?? 0}
+            <span className={`px-2 py-0.5 rounded text-sm font-semibold ${getScoreColor(testCase.scores.risk ?? 0, 25)}`}>
+              {testCase.scores.risk ?? 0}
             </span>
           </div>
         </div>
 
-        {/* Value of Test */}
+        {/* VALUE */}
         <div className="border-t pt-2">
-          <div className="text-sm font-semibold text-slate-700 mb-2">Value of Test (max 25)</div>
+          <div className="text-sm font-semibold text-slate-700 mb-2">VALUE (max 25)</div>
           <div className="grid grid-cols-2 gap-2">
             <div>
               <div className="text-xs text-slate-600 mb-1">Distinctness</div>
@@ -194,7 +194,7 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
               />
             </div>
             <div>
-              <div className="text-xs text-slate-600 mb-1">Fix Prob</div>
+              <div className="text-xs text-slate-600 mb-1">Induction to Action</div>
               <input
                 type="number"
                 min="1"
@@ -207,18 +207,18 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
           </div>
           <div className="text-center mt-1">
             <span className="text-xs text-slate-500">Score: </span>
-            <span className={`px-2 py-0.5 rounded text-sm font-semibold ${getScoreColor(testCase.scores.valueScore ?? 0, 25)}`}>
-              {testCase.scores.valueScore ?? 0}
+            <span className={`px-2 py-0.5 rounded text-sm font-semibold ${getScoreColor(testCase.scores.value ?? 0, 25)}`}>
+              {testCase.scores.value ?? 0}
             </span>
           </div>
         </div>
 
-        {/* Cost Efficiency */}
+        {/* COST EFFICIENCY */}
         <div className="border-t pt-2">
-          <div className="text-sm font-semibold text-slate-700 mb-2">Cost Efficiency (max 25)</div>
+          <div className="text-sm font-semibold text-slate-700 mb-2">COST EFFICIENCY (max 25)</div>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <div className="text-xs text-slate-600 mb-1">Easy</div>
+              <div className="text-xs text-slate-600 mb-1">Easy to write</div>
               <input
                 type="number"
                 min="1"
@@ -229,7 +229,7 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
               />
             </div>
             <div>
-              <div className="text-xs text-slate-600 mb-1">Quick</div>
+              <div className="text-xs text-slate-600 mb-1">Quick to write</div>
               <input
                 type="number"
                 min="1"
@@ -242,18 +242,18 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
           </div>
           <div className="text-center mt-1">
             <span className="text-xs text-slate-500">Score: </span>
-            <span className={`px-2 py-0.5 rounded text-sm font-semibold ${getScoreColor(testCase.scores.costScore ?? 0, 25)}`}>
-              {testCase.scores.costScore ?? 0}
+            <span className={`px-2 py-0.5 rounded text-sm font-semibold ${getScoreColor(testCase.scores.costEfficiency ?? 0, 25)}`}>
+              {testCase.scores.costEfficiency ?? 0}
             </span>
           </div>
         </div>
 
-        {/* History */}
+        {/* HISTORY */}
         <div className="border-t pt-2">
-          <div className="text-sm font-semibold text-slate-700 mb-2">History (max 5)</div>
+          <div className="text-sm font-semibold text-slate-700 mb-2">HISTORY (max 25)</div>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <div className="text-xs text-slate-600 mb-1">Similarity</div>
+              <div className="text-xs text-slate-600 mb-1">Bug count</div>
               <input
                 type="number"
                 min="1"
@@ -264,7 +264,7 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
               />
             </div>
             <div>
-              <div className="text-xs text-slate-600 mb-1">Break Freq</div>
+              <div className="text-xs text-slate-600 mb-1">Affected areas</div>
               <input
                 type="number"
                 min="1"
@@ -277,8 +277,8 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
           </div>
           <div className="text-center mt-1">
             <span className="text-xs text-slate-500">Score: </span>
-            <span className={`px-2 py-0.5 rounded text-sm font-semibold ${getScoreColor(testCase.scores.historyScore ?? 0, 5)}`}>
-              {testCase.scores.historyScore ?? 0}
+            <span className={`px-2 py-0.5 rounded text-sm font-semibold ${getScoreColor(testCase.scores.history ?? 0, 25)}`}>
+              {testCase.scores.history ?? 0}
             </span>
           </div>
         </div>
@@ -287,8 +287,8 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
         <div className="flex justify-between items-center gap-2 pt-2 border-t border-slate-200">
           <div className="text-center">
             <div className="text-xs text-slate-500 font-medium mb-0.5">Total Score</div>
-            <div className={`px-3 py-1 rounded-md font-bold text-lg ${getScoreColor(testCase.scores.total, 80)}`}>
-              {testCase.scores.total}/80
+            <div className={`px-3 py-1 rounded-md font-bold text-lg ${getScoreColor(testCase.scores.total, 100)}`}>
+              {testCase.scores.total}/100
             </div>
           </div>
           <div className={`px-4 py-2 rounded-md border font-bold text-sm ${getRecommendationColor(testCase.recommendation)}`}>
@@ -316,13 +316,13 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
   // Collapsed view - just show test name and key scores
   if (isCollapsed) {
     return (
-      <tr className="bg-white hover:bg-gray-50 border-b-4 border-black transition-all">
+      <tr className="bg-white hover:bg-gray-50 border-b border-slate-300 transition-all">
         {/* Test Name with Expand Button */}
-        <td className="px-3 py-3 border-r-4 border-black" colSpan={2}>
+        <td className="px-3 py-3 border-r border-slate-300" colSpan={2}>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsCollapsed(false)}
-              className="p-1 hover:bg-gray-200 rounded border-2 border-black transition-all"
+              className="p-1 hover:bg-gray-200 rounded border transition-all"
               title="Expand row"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -334,45 +334,45 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
         </td>
 
         {/* Quick Scores Summary */}
-        <td className="px-3 py-3 border-r-4 border-black" colSpan={4}>
+        <td className="px-3 py-3 border-r border-slate-300" colSpan={4}>
           <div className="flex items-center gap-3 justify-center">
             <div className="text-center">
-              <div className="text-xs text-gray-500 font-medium">Customer</div>
-              <div className={`px-2 py-0.5 rounded border-2 border-black text-sm font-bold ${getScoreColor(testCase.scores.customerRisk ?? 0, 25)}`}>
-                {testCase.scores.customerRisk ?? 0}
+              <div className="text-xs text-gray-500 font-medium">RISK</div>
+              <div className={`px-2 py-0.5 rounded border text-sm font-bold ${getScoreColor(testCase.scores.risk ?? 0, 25)}`}>
+                {testCase.scores.risk ?? 0}
               </div>
             </div>
             <div className="text-center">
-              <div className="text-xs text-gray-500 font-medium">Value</div>
-              <div className={`px-2 py-0.5 rounded border-2 border-black text-sm font-bold ${getScoreColor(testCase.scores.valueScore ?? 0, 25)}`}>
-                {testCase.scores.valueScore ?? 0}
+              <div className="text-xs text-gray-500 font-medium">VALUE</div>
+              <div className={`px-2 py-0.5 rounded border text-sm font-bold ${getScoreColor(testCase.scores.value ?? 0, 25)}`}>
+                {testCase.scores.value ?? 0}
               </div>
             </div>
             <div className="text-center">
-              <div className="text-xs text-gray-500 font-medium">Cost</div>
-              <div className={`px-2 py-0.5 rounded border-2 border-black text-sm font-bold ${getScoreColor(testCase.scores.costScore ?? 0, 25)}`}>
-                {testCase.scores.costScore ?? 0}
+              <div className="text-xs text-gray-500 font-medium">COST EFF</div>
+              <div className={`px-2 py-0.5 rounded border text-sm font-bold ${getScoreColor(testCase.scores.costEfficiency ?? 0, 25)}`}>
+                {testCase.scores.costEfficiency ?? 0}
               </div>
             </div>
             <div className="text-center">
-              <div className="text-xs text-gray-500 font-medium">History</div>
-              <div className={`px-2 py-0.5 rounded border-2 border-black text-sm font-bold ${getScoreColor(testCase.scores.historyScore ?? 0, 5)}`}>
-                {testCase.scores.historyScore ?? 0}
+              <div className="text-xs text-gray-500 font-medium">HISTORY</div>
+              <div className={`px-2 py-0.5 rounded border text-sm font-bold ${getScoreColor(testCase.scores.history ?? 0, 25)}`}>
+                {testCase.scores.history ?? 0}
               </div>
             </div>
           </div>
         </td>
 
         {/* Total Score */}
-        <td className="px-3 py-3 text-center border-r-4 border-black">
-          <div className={`px-3 py-1 rounded border-brutal shadow-brutal font-black text-xl ${getScoreColor(testCase.scores.total, 80)}`}>
+        <td className="px-3 py-3 text-center border-r border-slate-300">
+          <div className={`px-3 py-1 rounded-lg border-2 shadow-md font-bold text-xl hover:scale-105 transition-transform ${getScoreColor(testCase.scores.total, 100)}`}>
             {testCase.scores.total}
           </div>
         </td>
 
         {/* Recommendation */}
-        <td className="px-3 py-3 text-center border-r-4 border-black">
-          <div className={`px-3 py-1 rounded border-brutal shadow-brutal font-black text-sm ${getRecommendationColor(testCase.recommendation)}`}>
+        <td className="px-3 py-3 text-center border-r border-slate-300">
+          <div className={`px-3 py-1 rounded-lg border-2 shadow-md font-bold text-sm hover:scale-105 transition-transform ${getRecommendationColor(testCase.recommendation)}`}>
             {getRecommendationLabel(testCase.recommendation)}
           </div>
         </td>
@@ -382,7 +382,7 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
           <div className="flex gap-1 justify-center">
             <button
               onClick={handleDuplicate}
-              className="p-1 text-blue-500 hover:bg-blue-100 rounded border-2 border-blue-500 hover:shadow-brutal transition-all"
+              className="p-1 text-blue-500 hover:bg-blue-100 rounded border-2 border-blue-500 hover:shadow-sm transition-all"
               title="Duplicate"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -391,7 +391,7 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
             </button>
             <button
               onClick={handleDelete}
-              className="p-1 text-red-500 hover:bg-red-100 rounded border-2 border-red-500 hover:shadow-brutal transition-all"
+              className="p-1 text-red-500 hover:bg-red-100 rounded border-2 border-red-500 hover:shadow-sm transition-all"
               title="Delete"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -405,13 +405,13 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
   }
 
   return (
-    <tr className="bg-white hover:bg-gray-50 border-b-4 border-black transition-all hover:shadow-brutal">
+    <tr className="bg-white hover:bg-gray-50 border-b border-slate-300 transition-all hover:shadow-sm">
       {/* Test Name with Collapse Button */}
-      <td className="px-3 py-3 border-r-4 border-black">
+      <td className="px-3 py-3 border-r border-slate-300">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsCollapsed(true)}
-            className="p-1 hover:bg-gray-200 rounded border-2 border-black transition-all flex-shrink-0"
+            className="p-1 hover:bg-gray-200 rounded border transition-all flex-shrink-0"
             title="Collapse row"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -422,14 +422,14 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
             type="text"
             value={testCase.testName}
             onChange={handleTextChange('testName')}
-            className="flex-1 px-2 py-1.5 text-base border-brutal rounded focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-brutal hover:shadow-brutal-lg transition-all"
+            className="flex-1 px-2 py-1.5 text-base border rounded-lg rounded focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm hover:shadow-md transition-all"
             placeholder="Test name"
           />
         </div>
       </td>
 
       {/* Gut Feel */}
-      <td className="px-3 py-3 border-r-4 border-black">
+      <td className="px-3 py-3 border-r border-slate-300">
         <div className="flex flex-col gap-1">
           <span className="text-base text-gray-600 text-center font-bold">Gut Feel</span>
           <input
@@ -451,12 +451,12 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
       </td>
 
       {/* 2x2 Grid of Categories */}
-      <td className="px-3 py-3 border-r-4 border-black" colSpan={4}>
+      <td className="px-3 py-3 border-r border-slate-300" colSpan={4}>
         <div className="grid grid-cols-2 gap-3">
-          {/* Customer Risk */}
-          <div className="border-brutal rounded-lg p-3 bg-gray-50 shadow-brutal hover:shadow-brutal-lg transition-all">
-            <div className="text-base font-black text-gray-700 mb-2 text-center border-b-4 border-black pb-1">
-              Customer Risk (25)
+          {/* RISK */}
+          <div className="border-2 border-slate-200 rounded-lg p-3 bg-gradient-to-br from-slate-50 to-slate-100 shadow-sm hover:shadow-lg hover:border-slate-300 hover:-translate-y-0.5 transition-all">
+            <div className="text-base font-bold text-slate-700 mb-2 text-center border-b-2 border-slate-300 pb-1">
+              RISK (25)
             </div>
             <div className="space-y-2">
               <div>
@@ -475,7 +475,7 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
               </div>
               <div>
                 <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
-                  <span className="text-base text-gray-700 font-semibold">Prob of Use: {testCase.probOfUse ?? 3}</span>
+                  <span className="text-base text-gray-700 font-semibold">Probability: {testCase.probOfUse ?? 3}</span>
                   <span className="text-base text-gray-500 italic text-right truncate">{getProbabilityLabel(testCase.probOfUse ?? 3)}</span>
                 </div>
                 <input
@@ -487,16 +487,16 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
                   className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
                 />
               </div>
-              <div className={`text-lg font-black text-center mt-2 px-2 py-1 rounded border-brutal shadow-brutal ${getScoreColor(testCase.scores.customerRisk ?? 0, 25)}`}>
-                Score: {testCase.scores.customerRisk ?? 0}/25
+              <div className={`text-lg font-bold text-center mt-2 px-2 py-1 rounded-lg border-2 shadow-md ${getScoreColor(testCase.scores.risk ?? 0, 25)}`}>
+                Score: {testCase.scores.risk ?? 0}/25
               </div>
             </div>
           </div>
 
-          {/* Value of Test */}
-          <div className="border-brutal rounded-lg p-3 bg-gray-50 shadow-brutal hover:shadow-brutal-lg transition-all">
-            <div className="text-base font-black text-gray-700 mb-2 text-center border-b-4 border-black pb-1">
-              Value of Test (25)
+          {/* VALUE */}
+          <div className="border-2 border-slate-200 rounded-lg p-3 bg-gradient-to-br from-slate-50 to-slate-100 shadow-sm hover:shadow-lg hover:border-slate-300 hover:-translate-y-0.5 transition-all">
+            <div className="text-base font-bold text-slate-700 mb-2 text-center border-b-2 border-slate-300 pb-1">
+              VALUE (25)
             </div>
             <div className="space-y-2">
               <div>
@@ -515,7 +515,7 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
               </div>
               <div>
                 <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
-                  <span className="text-base text-gray-700 font-semibold">Fix Prob: {testCase.fixProbability ?? 3}</span>
+                  <span className="text-base text-gray-700 font-semibold">Induction to Action: {testCase.fixProbability ?? 3}</span>
                   <span className="text-base text-gray-500 italic text-right truncate">{getFixProbabilityLabel(testCase.fixProbability ?? 3)}</span>
                 </div>
                 <input
@@ -527,21 +527,21 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
                   className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
                 />
               </div>
-              <div className={`text-lg font-black text-center mt-2 px-2 py-1 rounded border-brutal shadow-brutal ${getScoreColor(testCase.scores.valueScore ?? 0, 25)}`}>
-                Score: {testCase.scores.valueScore ?? 0}/25
+              <div className={`text-lg font-bold text-center mt-2 px-2 py-1 rounded-lg border-2 shadow-md ${getScoreColor(testCase.scores.value ?? 0, 25)}`}>
+                Score: {testCase.scores.value ?? 0}/25
               </div>
             </div>
           </div>
 
-          {/* Cost Efficiency */}
-          <div className="border-brutal rounded-lg p-3 bg-gray-50 shadow-brutal hover:shadow-brutal-lg transition-all">
-            <div className="text-base font-black text-gray-700 mb-2 text-center border-b-4 border-black pb-1">
-              Cost Efficiency (25)
+          {/* COST EFFICIENCY */}
+          <div className="border-2 border-slate-200 rounded-lg p-3 bg-gradient-to-br from-slate-50 to-slate-100 shadow-sm hover:shadow-lg hover:border-slate-300 hover:-translate-y-0.5 transition-all">
+            <div className="text-base font-bold text-slate-700 mb-2 text-center border-b-2 border-slate-300 pb-1">
+              COST EFFICIENCY (25)
             </div>
             <div className="space-y-2">
               <div>
                 <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
-                  <span className="text-base text-gray-700 font-semibold">Easy: {testCase.easyToWrite ?? 3}</span>
+                  <span className="text-base text-gray-700 font-semibold">Easy to write: {testCase.easyToWrite ?? 3}</span>
                   <span className="text-base text-gray-500 italic text-right truncate">{getEaseLabel(testCase.easyToWrite ?? 3)}</span>
                 </div>
                 <input
@@ -555,7 +555,7 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
               </div>
               <div>
                 <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
-                  <span className="text-base text-gray-700 font-semibold">Quick: {testCase.quickToWrite ?? 3}</span>
+                  <span className="text-base text-gray-700 font-semibold">Quick to write: {testCase.quickToWrite ?? 3}</span>
                   <span className="text-base text-gray-500 italic text-right truncate">{getSpeedLabel(testCase.quickToWrite ?? 3)}</span>
                 </div>
                 <input
@@ -567,21 +567,21 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
                   className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
                 />
               </div>
-              <div className={`text-lg font-black text-center mt-2 px-2 py-1 rounded border-brutal shadow-brutal ${getScoreColor(testCase.scores.costScore ?? 0, 25)}`}>
-                Score: {testCase.scores.costScore ?? 0}/25
+              <div className={`text-lg font-bold text-center mt-2 px-2 py-1 rounded-lg border-2 shadow-md ${getScoreColor(testCase.scores.costEfficiency ?? 0, 25)}`}>
+                Score: {testCase.scores.costEfficiency ?? 0}/25
               </div>
             </div>
           </div>
 
-          {/* History */}
-          <div className="border-brutal rounded-lg p-3 bg-gray-50 shadow-brutal hover:shadow-brutal-lg transition-all">
-            <div className="text-base font-black text-gray-700 mb-2 text-center border-b-4 border-black pb-1">
-              History (5)
+          {/* HISTORY */}
+          <div className="border-2 border-slate-200 rounded-lg p-3 bg-gradient-to-br from-slate-50 to-slate-100 shadow-sm hover:shadow-lg hover:border-slate-300 hover:-translate-y-0.5 transition-all">
+            <div className="text-base font-bold text-slate-700 mb-2 text-center border-b-2 border-slate-300 pb-1">
+              HISTORY (25)
             </div>
             <div className="space-y-2">
               <div>
                 <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
-                  <span className="text-base text-gray-700 font-semibold">Similarity: {testCase.similarity ?? 1}</span>
+                  <span className="text-base text-gray-700 font-semibold">Bug count: {testCase.similarity ?? 1}</span>
                   <span className="text-base text-gray-500 italic text-right truncate">{getSimilarityLabel(testCase.similarity ?? 1)}</span>
                 </div>
                 <input
@@ -595,7 +595,7 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
               </div>
               <div>
                 <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
-                  <span className="text-base text-gray-700 font-semibold">Break Freq: {testCase.breakFreq ?? 1}</span>
+                  <span className="text-base text-gray-700 font-semibold">Affected areas: {testCase.breakFreq ?? 1}</span>
                   <span className="text-base text-gray-500 italic text-right truncate">{getBreakFrequencyLabel(testCase.breakFreq ?? 1)}</span>
                 </div>
                 <input
@@ -607,8 +607,8 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
                   className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
                 />
               </div>
-              <div className={`text-lg font-black text-center mt-2 px-2 py-1 rounded border-brutal shadow-brutal ${getScoreColor(testCase.scores.historyScore ?? 0, 5)}`}>
-                Score: {testCase.scores.historyScore ?? 0}/5 (MAX)
+              <div className={`text-lg font-bold text-center mt-2 px-2 py-1 rounded-lg border-2 shadow-md ${getScoreColor(testCase.scores.history ?? 0, 25)}`}>
+                Score: {testCase.scores.history ?? 0}/25
               </div>
             </div>
           </div>
@@ -616,19 +616,19 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
       </td>
 
       {/* Total Score */}
-      <td className="px-3 py-3 text-center border-r-4 border-black">
+      <td className="px-3 py-3 text-center border-r border-slate-300">
         <div className="flex flex-col gap-1">
-          <span className="text-base text-gray-700 font-black">Total</span>
-          <div className={`px-3 py-2 rounded border-brutal shadow-brutal font-black text-2xl ${getScoreColor(testCase.scores.total, 80)}`}>
+          <span className="text-base text-slate-700 font-bold">Total</span>
+          <div className={`px-3 py-2 rounded-lg border-2 shadow-lg font-bold text-2xl hover:scale-105 transition-transform ${getScoreColor(testCase.scores.total, 100)}`}>
             {testCase.scores.total}
           </div>
-          <span className="text-sm text-gray-600 font-bold">/80</span>
+          <span className="text-sm text-gray-600 font-bold">/100</span>
         </div>
       </td>
 
       {/* Recommendation */}
-      <td className="px-3 py-3 text-center border-r-4 border-black">
-        <div className={`px-3 py-2 rounded border-brutal shadow-brutal font-black text-base ${getRecommendationColor(testCase.recommendation)}`}>
+      <td className="px-3 py-3 text-center border-r border-slate-300">
+        <div className={`px-3 py-2 rounded-lg border-2 shadow-lg font-bold text-base hover:scale-105 transition-transform ${getRecommendationColor(testCase.recommendation)}`}>
           {getRecommendationLabel(testCase.recommendation)}
         </div>
       </td>
@@ -638,7 +638,7 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
         <div className="flex gap-1 justify-center">
           <button
             onClick={handleDuplicate}
-            className="p-1 text-blue-500 hover:bg-blue-100 rounded border-2 border-blue-500 hover:shadow-brutal transition-all"
+            className="p-1 text-blue-500 hover:bg-blue-100 rounded border-2 border-blue-500 hover:shadow-sm transition-all"
             title="Duplicate"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -647,7 +647,7 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
           </button>
           <button
             onClick={handleDelete}
-            className="p-1 text-red-500 hover:bg-red-100 rounded border-2 border-red-500 hover:shadow-brutal transition-all"
+            className="p-1 text-red-500 hover:bg-red-100 rounded border-2 border-red-500 hover:shadow-sm transition-all"
             title="Delete"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -656,11 +656,11 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
           </button>
         </div>
         {showDeleteConfirm && (
-          <div className="absolute z-10 mt-1 p-2 bg-white border-brutal rounded shadow-brutal-lg right-0">
+          <div className="absolute z-10 mt-1 p-2 bg-white border rounded-lg rounded shadow-md right-0">
             <p className="text-xs text-red-700 font-bold mb-2">Delete?</p>
             <div className="flex gap-1">
-              <button onClick={confirmDelete} className="px-2 py-1 text-xs bg-red-500 text-white rounded border-2 border-black hover:shadow-brutal font-bold">Yes</button>
-              <button onClick={cancelDelete} className="px-2 py-1 text-xs bg-gray-200 rounded border-2 border-black hover:shadow-brutal font-bold">No</button>
+              <button onClick={confirmDelete} className="px-2 py-1 text-xs bg-red-500 text-white rounded border hover:shadow-sm font-bold">Yes</button>
+              <button onClick={cancelDelete} className="px-2 py-1 text-xs bg-gray-200 rounded border hover:shadow-sm font-bold">No</button>
             </div>
           </div>
         )}

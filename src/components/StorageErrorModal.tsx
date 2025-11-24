@@ -106,25 +106,25 @@ export function StorageErrorModal({ isOpen, onClose }: StorageErrorModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <Card className="max-w-2xl w-full bg-white border-brutal-thick shadow-brutal-xl">
-        <CardHeader className="border-b-4 border-black bg-red-100">
+      <Card className="max-w-2xl w-full bg-card border shadow-lg">
+        <CardHeader className="border-b bg-red-100">
           <div className="flex items-center gap-3">
             <AlertTriangle className="w-8 h-8 text-red-600" />
-            <CardTitle className="text-2xl font-black uppercase">
+            <CardTitle className="text-2xl font-semibold">
               Storage Limit Reached
             </CardTitle>
           </div>
         </CardHeader>
 
         <div className="p-6 space-y-6">
-          <div className="bg-yellow-50 border-brutal p-4">
-            <p className="text-sm font-medium text-gray-800">
+          <div className="bg-yellow-50 border rounded-lg p-4">
+            <p className="text-sm font-medium">
               Your browser's local storage is full. To continue saving changes, you need to free up space by clearing old data.
             </p>
           </div>
 
-          <div className="bg-gray-50 border-brutal p-4">
-            <h3 className="font-bold mb-2">Current Storage Usage:</h3>
+          <div className="bg-muted border rounded-lg p-4">
+            <h3 className="font-medium mb-2">Current Storage Usage:</h3>
             <ul className="text-sm space-y-1">
               <li>• Total keys: {storageInfo.totalKeys}</li>
               <li>• State diagrams: {storageInfo.stateDiagramCount}</li>
@@ -133,11 +133,11 @@ export function StorageErrorModal({ isOpen, onClose }: StorageErrorModalProps) {
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-bold text-lg">What would you like to do?</h3>
+            <h3 className="font-medium text-lg">What would you like to do?</h3>
 
             <Button
               onClick={handleExportBeforeClear}
-              className="w-full gap-2 bg-blue-400 hover:bg-blue-300"
+              className="w-full gap-2"
               disabled={isClearing}
             >
               <Download className="w-4 h-4" />
@@ -146,7 +146,8 @@ export function StorageErrorModal({ isOpen, onClose }: StorageErrorModalProps) {
 
             <Button
               onClick={handleClearStateDiagrams}
-              className="w-full gap-2 bg-yellow-400 hover:bg-yellow-300"
+              className="w-full gap-2"
+              variant="secondary"
               disabled={isClearing}
             >
               <Trash2 className="w-4 h-4" />
@@ -155,7 +156,8 @@ export function StorageErrorModal({ isOpen, onClose }: StorageErrorModalProps) {
 
             <Button
               onClick={handleClearAllData}
-              className="w-full gap-2 bg-red-400 hover:bg-red-300"
+              className="w-full gap-2"
+              variant="destructive"
               disabled={isClearing}
             >
               <Trash2 className="w-4 h-4" />
@@ -172,7 +174,7 @@ export function StorageErrorModal({ isOpen, onClose }: StorageErrorModalProps) {
             </Button>
           </div>
 
-          <div className="text-xs text-gray-500 text-center">
+          <div className="text-xs text-muted-foreground text-center">
             <p>Tip: Export your data regularly to avoid losing work.</p>
           </div>
         </div>

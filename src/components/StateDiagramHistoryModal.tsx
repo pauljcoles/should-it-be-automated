@@ -111,17 +111,16 @@ export function StateDiagramHistoryModal({ applicationName }: StateDiagramHistor
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <Card className="max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <CardHeader className="border-b-4 border-black bg-purple-100">
+        <CardHeader className="border-b">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="uppercase">State Diagram History</CardTitle>
-              <p className="text-sm font-bold mt-1">{applicationName}</p>
+              <CardTitle>State Diagram History</CardTitle>
+              <p className="text-sm font-medium mt-1">{applicationName}</p>
             </div>
             <Button
               variant="ghost"
               size="icon"
               onClick={handleClose}
-              className="hover:bg-purple-200"
             >
               <X className="w-5 h-5" />
             </Button>
@@ -130,9 +129,9 @@ export function StateDiagramHistoryModal({ applicationName }: StateDiagramHistor
 
         <div className="flex-1 overflow-hidden flex">
           {/* Left Panel: Version List */}
-          <div className="w-1/3 border-r-4 border-black overflow-y-auto p-6">
+          <div className="w-1/3 border-r overflow-y-auto p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-black uppercase">Versions</h3>
+              <h3 className="text-lg font-semibold">Versions</h3>
               {(selectedVersion1 || selectedVersion2) && (
                 <Button
                   variant="outline"
@@ -146,10 +145,10 @@ export function StateDiagramHistoryModal({ applicationName }: StateDiagramHistor
             </div>
 
             {filteredHistory.length === 0 ? (
-              <div className="border-brutal bg-gray-50 p-6 text-center">
-                <Clock className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                <p className="font-bold text-gray-600">No History</p>
-                <p className="text-sm text-gray-500 mt-2">
+              <div className="border rounded-lg bg-muted p-6 text-center">
+                <Clock className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                <p className="font-medium text-muted-foreground">No History</p>
+                <p className="text-sm text-muted-foreground mt-2">
                   Upload state diagrams to see version history
                 </p>
               </div>
@@ -163,38 +162,38 @@ export function StateDiagramHistoryModal({ applicationName }: StateDiagramHistor
                     <button
                       key={diagram.metadata.generated}
                       onClick={() => handleVersionSelect(diagram)}
-                      className={`w-full text-left border-brutal p-4 transition-colors ${
+                      className={`w-full text-left border rounded-lg p-4 transition-colors ${
                         isSelected
                           ? isVersion1
                             ? 'bg-blue-100 border-blue-500'
                             : 'bg-green-100 border-green-500'
-                          : 'bg-white hover:bg-gray-50'
+                          : 'bg-card hover:bg-accent'
                       }`}
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <Clock className="w-4 h-4 text-gray-600" />
-                            <span className="font-bold text-sm">
+                            <Clock className="w-4 h-4 text-muted-foreground" />
+                            <span className="font-medium text-sm">
                               {formatTimestamp(diagram.metadata.generated)}
                             </span>
                           </div>
-                          <p className="text-xs text-gray-600">
+                          <p className="text-xs text-muted-foreground">
                             {Object.keys(diagram.states).length} state{Object.keys(diagram.states).length !== 1 ? 's' : ''}
                           </p>
                           {diagram.metadata.team && (
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-xs text-muted-foreground mt-1">
                               Team: {diagram.metadata.team}
                             </p>
                           )}
                         </div>
                         {index === 0 && (
-                          <span className="text-xs font-bold bg-purple-200 px-2 py-1 rounded uppercase">
+                          <span className="text-xs font-medium bg-purple-200 px-2 py-1 rounded">
                             Latest
                           </span>
                         )}
                         {isSelected && (
-                          <span className={`text-xs font-bold px-2 py-1 rounded uppercase ${
+                          <span className={`text-xs font-medium px-2 py-1 rounded ${
                             isVersion1 ? 'bg-blue-200' : 'bg-green-200'
                           }`}>
                             {isVersion1 ? 'V1' : 'V2'}
@@ -208,8 +207,8 @@ export function StateDiagramHistoryModal({ applicationName }: StateDiagramHistor
             )}
 
             {selectedVersion1 && !selectedVersion2 && (
-              <div className="mt-4 border-brutal bg-blue-50 p-4">
-                <p className="text-sm font-bold text-blue-900">
+              <div className="mt-4 border rounded-lg bg-blue-50 p-4">
+                <p className="text-sm font-medium text-blue-900">
                   <GitCompare className="w-4 h-4 inline mr-2" />
                   Select another version to compare
                 </p>
@@ -243,11 +242,11 @@ export function StateDiagramHistoryModal({ applicationName }: StateDiagramHistor
               <div>
                 {/* Comparison Header */}
                 <div className="mb-6">
-                  <h3 className="text-lg font-black uppercase mb-4">Comparison</h3>
+                  <h3 className="text-lg font-semibold mb-4">Comparison</h3>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="border-brutal bg-blue-50 p-4">
-                      <p className="text-xs font-bold text-blue-900 uppercase mb-1">Version 1 (Older)</p>
-                      <p className="text-sm font-bold">
+                    <div className="border rounded-lg bg-blue-50 p-4">
+                      <p className="text-xs font-medium text-blue-900 mb-1">Version 1 (Older)</p>
+                      <p className="text-sm font-medium">
                         {formatTimestamp(
                           new Date(selectedVersion1!.metadata.generated).getTime() <
                           new Date(selectedVersion2!.metadata.generated).getTime()
@@ -256,9 +255,9 @@ export function StateDiagramHistoryModal({ applicationName }: StateDiagramHistor
                         )}
                       </p>
                     </div>
-                    <div className="border-brutal bg-green-50 p-4">
-                      <p className="text-xs font-bold text-green-900 uppercase mb-1">Version 2 (Newer)</p>
-                      <p className="text-sm font-bold">
+                    <div className="border rounded-lg bg-green-50 p-4">
+                      <p className="text-xs font-medium text-green-900 mb-1">Version 2 (Newer)</p>
+                      <p className="text-sm font-medium">
                         {formatTimestamp(
                           new Date(selectedVersion1!.metadata.generated).getTime() >
                           new Date(selectedVersion2!.metadata.generated).getTime()
@@ -272,59 +271,59 @@ export function StateDiagramHistoryModal({ applicationName }: StateDiagramHistor
 
                 {/* Diff Summary */}
                 <div className="mb-6">
-                  <h4 className="text-md font-black uppercase mb-3">Summary</h4>
+                  <h4 className="text-md font-semibold mb-3">Summary</h4>
                   <div className="grid grid-cols-4 gap-3">
-                    <div className="border-brutal bg-green-100 p-3">
+                    <div className="border rounded-lg bg-green-100 p-3">
                       <div className="flex items-center gap-2 mb-1">
                         <Plus className="w-4 h-4 text-green-700" />
-                        <span className="font-black text-xl text-green-700">
+                        <span className="font-semibold text-xl text-green-700">
                           {diff.added.length}
                         </span>
                       </div>
-                      <p className="text-xs font-bold text-green-900 uppercase">Added</p>
+                      <p className="text-xs font-medium text-green-900">Added</p>
                     </div>
 
-                    <div className="border-brutal bg-yellow-100 p-3">
+                    <div className="border rounded-lg bg-yellow-100 p-3">
                       <div className="flex items-center gap-2 mb-1">
                         <Edit className="w-4 h-4 text-yellow-700" />
-                        <span className="font-black text-xl text-yellow-700">
+                        <span className="font-semibold text-xl text-yellow-700">
                           {diff.modified.length}
                         </span>
                       </div>
-                      <p className="text-xs font-bold text-yellow-900 uppercase">Modified</p>
+                      <p className="text-xs font-medium text-yellow-900">Modified</p>
                     </div>
 
-                    <div className="border-brutal bg-red-100 p-3">
+                    <div className="border rounded-lg bg-red-100 p-3">
                       <div className="flex items-center gap-2 mb-1">
                         <Minus className="w-4 h-4 text-red-700" />
-                        <span className="font-black text-xl text-red-700">
+                        <span className="font-semibold text-xl text-red-700">
                           {diff.removed.length}
                         </span>
                       </div>
-                      <p className="text-xs font-bold text-red-900 uppercase">Removed</p>
+                      <p className="text-xs font-medium text-red-900">Removed</p>
                     </div>
 
-                    <div className="border-brutal bg-gray-100 p-3">
+                    <div className="border rounded-lg bg-muted p-3">
                       <div className="flex items-center gap-2 mb-1">
-                        <CheckCircle className="w-4 h-4 text-gray-700" />
-                        <span className="font-black text-xl text-gray-700">
+                        <CheckCircle className="w-4 h-4 text-muted-foreground" />
+                        <span className="font-semibold text-xl text-muted-foreground">
                           {diff.unchanged.length}
                         </span>
                       </div>
-                      <p className="text-xs font-bold text-gray-900 uppercase">Unchanged</p>
+                      <p className="text-xs font-medium">Unchanged</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Detailed Changes */}
                 <div>
-                  <h4 className="text-md font-black uppercase mb-3">Detailed Changes</h4>
+                  <h4 className="text-md font-semibold mb-3">Detailed Changes</h4>
 
                   {diff.added.length === 0 && diff.modified.length === 0 && diff.removed.length === 0 ? (
-                    <div className="border-brutal bg-gray-50 p-8 text-center">
-                      <CheckCircle className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                      <p className="font-bold text-gray-600">No changes detected</p>
-                      <p className="text-sm text-gray-500 mt-2">
+                    <div className="border rounded-lg bg-muted p-8 text-center">
+                      <CheckCircle className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                      <p className="font-medium text-muted-foreground">No changes detected</p>
+                      <p className="text-sm text-muted-foreground mt-2">
                         These versions are identical
                       </p>
                     </div>
@@ -333,7 +332,7 @@ export function StateDiagramHistoryModal({ applicationName }: StateDiagramHistor
                       {/* Added States */}
                       {diff.added.length > 0 && (
                         <div>
-                          <h5 className="font-black text-green-700 uppercase mb-2 flex items-center gap-2 text-sm">
+                          <h5 className="font-semibold text-green-700 mb-2 flex items-center gap-2 text-sm">
                             <Plus className="w-4 h-4" />
                             Added States ({diff.added.length})
                           </h5>
@@ -349,9 +348,9 @@ export function StateDiagramHistoryModal({ applicationName }: StateDiagramHistor
                               return (
                                 <div
                                   key={stateId}
-                                  className="border-brutal bg-green-50 p-3 border-l-4 border-l-green-500"
+                                  className="border rounded-lg bg-green-50 p-3 border-l-4 border-l-green-500"
                                 >
-                                  <p className="font-bold text-green-900 text-sm">{stateId}</p>
+                                  <p className="font-medium text-green-900 text-sm">{stateId}</p>
                                   {state?.description && (
                                     <p className="text-xs text-green-800 mt-1">{state.description}</p>
                                   )}
@@ -374,7 +373,7 @@ export function StateDiagramHistoryModal({ applicationName }: StateDiagramHistor
                       {/* Modified States */}
                       {diff.modified.length > 0 && (
                         <div>
-                          <h5 className="font-black text-yellow-700 uppercase mb-2 flex items-center gap-2 text-sm">
+                          <h5 className="font-semibold text-yellow-700 mb-2 flex items-center gap-2 text-sm">
                             <Edit className="w-4 h-4" />
                             Modified States ({diff.modified.length})
                           </h5>
@@ -390,9 +389,9 @@ export function StateDiagramHistoryModal({ applicationName }: StateDiagramHistor
                               return (
                                 <div
                                   key={modification.stateId}
-                                  className="border-brutal bg-yellow-50 p-3 border-l-4 border-l-yellow-500"
+                                  className="border rounded-lg bg-yellow-50 p-3 border-l-4 border-l-yellow-500"
                                 >
-                                  <p className="font-bold text-yellow-900 text-sm">{modification.stateId}</p>
+                                  <p className="font-medium text-yellow-900 text-sm">{modification.stateId}</p>
                                   {state?.description && (
                                     <p className="text-xs text-yellow-800 mt-1">{state.description}</p>
                                   )}
@@ -436,7 +435,7 @@ export function StateDiagramHistoryModal({ applicationName }: StateDiagramHistor
                       {/* Removed States */}
                       {diff.removed.length > 0 && (
                         <div>
-                          <h5 className="font-black text-red-700 uppercase mb-2 flex items-center gap-2 text-sm">
+                          <h5 className="font-semibold text-red-700 mb-2 flex items-center gap-2 text-sm">
                             <Minus className="w-4 h-4" />
                             Removed States ({diff.removed.length})
                           </h5>
@@ -444,9 +443,9 @@ export function StateDiagramHistoryModal({ applicationName }: StateDiagramHistor
                             {diff.removed.map(stateId => (
                               <div
                                 key={stateId}
-                                className="border-brutal bg-red-50 p-3 border-l-4 border-l-red-500"
+                                className="border rounded-lg bg-red-50 p-3 border-l-4 border-l-red-500"
                               >
-                                <p className="font-bold text-red-900 line-through text-sm">{stateId}</p>
+                                <p className="font-medium text-red-900 line-through text-sm">{stateId}</p>
                                 <p className="text-xs text-red-700 mt-1">
                                   This state was removed from the diagram
                                 </p>
@@ -464,13 +463,13 @@ export function StateDiagramHistoryModal({ applicationName }: StateDiagramHistor
         </div>
 
         {/* Footer */}
-        <div className="border-t-4 border-black p-4 bg-gray-50">
+        <div className="border-t p-4 bg-muted">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               {filteredHistory.length} version{filteredHistory.length !== 1 ? 's' : ''} available
             </p>
             <Button onClick={handleClose}>
-              CLOSE
+              Close
             </Button>
           </div>
         </div>

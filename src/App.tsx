@@ -8,14 +8,14 @@ function App() {
   const { appState, uiState, setStorageErrorModalOpen } = useAppContext();
 
   return (
-    <div className="h-full bg-yellow-50 flex flex-col">
+    <div className="h-full bg-background flex flex-col">
       <Header />
       {/* Responsive main layout: column on mobile/tablet, row on desktop */}
       <main className="flex-1 flex flex-col lg:flex-row overflow-hidden min-h-0">
         <ExistingFunctionalitySidebar />
         {/* Responsive padding: smaller on mobile, larger on desktop */}
         <div className="flex-1 overflow-auto p-2 sm:p-4 lg:p-6">
-          <div className="border-brutal-thick bg-white shadow-brutal-xl h-full flex flex-col">
+          <div className="border rounded-lg bg-white shadow-lg h-full flex flex-col">
             <TestCaseTable />
           </div>
         </div>

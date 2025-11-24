@@ -4,7 +4,7 @@
  */
 
 import { useAppContext } from '../context';
-import { Recommendation, CodeChange, ImplementationType } from '../types/models';
+import { Recommendation, CodeChange, ImplementationType, AppMode } from '../types/models';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { X } from 'lucide-react';
@@ -17,8 +17,11 @@ export function TableFilters() {
     setCodeChangeFilter,
     setImplementationTypeFilter,
     setLegalFilter,
-    clearFilters
+    clearFilters,
+    userPreferences
   } = useAppContext();
+
+  const isTeachingMode = userPreferences.appMode === AppMode.TEACHING;
 
   const hasActiveFilters = !!(
     filters.recommendation ||
@@ -29,7 +32,7 @@ export function TableFilters() {
   );
 
   return (
-    <div className="bg-white border-b-4 border-black px-2 sm:px-4 lg:px-6 py-3 sm:py-4">
+    <div className="bg-slate-100 border-b border-slate-300 px-2 sm:px-4 lg:px-6 py-3 sm:py-4">
       {/* Responsive grid layout: 1 column on mobile, 2 on tablet, multiple on desktop */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap items-center gap-2 sm:gap-3">
         {/* Search - Full width on mobile, flexible on desktop */}
@@ -39,7 +42,7 @@ export function TableFilters() {
             value={filters.searchTerm || ''}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search test name or notes..."
-            className="font-bold touch-manipulation"
+            className="font-medium touch-manipulation"
           />
         </div>
 
@@ -48,60 +51,32 @@ export function TableFilters() {
           <select
             value={filters.recommendation || ''}
             onChange={(e) => setRecommendationFilter(e.target.value as Recommendation || undefined)}
-            className="w-full h-10 px-3 py-2 border-brutal bg-white text-sm font-bold shadow-brutal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black touch-manipulation"
+            className="w-full h-10 px-3 py-2 border-2 border-slate-300 rounded-lg bg-white text-sm font-semibold shadow-sm hover:shadow-md hover:border-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 touch-manipulation transition-all"
           >
             <option value="">All Recommendations</option>
             <option value={Recommendation.AUTOMATE}>Automate</option>
             <option value={Recommendation.MAYBE}>Maybe</option>
-            <option value={Recommendation.DONT_AUTOMATE}>Don't Automate</option>
+            <option value={Recommendation.DONT_AUTOMATE}>Exploratory Testing</option>
           </select>
         </div>
 
-        {/* Code Change Filter - Touch-friendly */}
-        <div className="w-full lg:w-auto">
-          <select
-            value={filters.codeChange || ''}
-            onChange={(e) => setCodeChangeFilter(e.target.value as CodeChange || undefined)}
-            className="w-full h-10 px-3 py-2 border-brutal bg-white text-sm font-bold shadow-brutal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black touch-manipulation"
-          >
-            <option value="">All Code Changes</option>
-            <option value={CodeChange.NEW}>New</option>
-            <option value={CodeChange.MODIFIED}>Modified</option>
-            <option value={CodeChange.UI_ONLY}>UI Only</option>
-            <option value={CodeChange.UNCHANGED}>Unchanged</option>
-          </select>
-        </div>
-
-        {/* Implementation Type Filter - Touch-friendly */}
-        <div className="w-full lg:w-auto">
-          <select
-            value={filters.implementationType || ''}
-            onChange={(e) => setImplementationTypeFilter(e.target.value as ImplementationType || undefined)}
-            className="w-full h-10 px-3 py-2 border-brutal bg-white text-sm font-bold shadow-brutal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black touch-manipulation"
-          >
-            <option value="">All Implementation Types</option>
-            <option value={ImplementationType.LOOP_SAME}>Loop - Same</option>
-            <option value={ImplementationType.LOOP_DIFFERENT}>Loop - Different</option>
-            <option value={ImplementationType.CUSTOM}>Custom</option>
-            <option value={ImplementationType.MIX}>Mix</option>
-          </select>
-        </div>
-
-        {/* Legal Filter - Touch-friendly */}
-        <div className="w-full lg:w-auto">
-          <select
-            value={filters.isLegal === undefined ? '' : filters.isLegal ? 'true' : 'false'}
-            onChange={(e) => {
-              const value = e.target.value;
-              setLegalFilter(value === '' ? undefined : value === 'true');
-            }}
-            className="w-full h-10 px-3 py-2 border-brutal bg-white text-sm font-bold shadow-brutal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black touch-manipulation"
-          >
-            <option value="">All Legal Status</option>
-            <option value="true">Legal Required</option>
-            <option value="false">Not Legal</option>
-          </select>
-        </div>
+        {/* Legal Filter - Only show in Teaching mode */}
+        {isTeachingMode && (
+          <div className="w-full lg:w-auto">
+            <select
+              value={filters.isLegal === undefined ? '' : filters.isLegal ? 'true' : 'false'}
+              onChange={(e) => {
+                const value = e.target.value;
+                setLegalFilter(value === '' ? undefined : value === 'true');
+              }}
+              className="w-full h-10 px-3 py-2 border-2 border-slate-300 rounded-lg bg-white text-sm font-semibold shadow-sm hover:shadow-md hover:border-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 touch-manipulation transition-all"
+            >
+              <option value="">All Legal Status</option>
+              <option value="true">Legal Required</option>
+              <option value="false">Not Legal</option>
+            </select>
+          </div>
+        )}
 
         {/* Clear Filters - Full width on mobile */}
         {hasActiveFilters && (
@@ -113,7 +88,7 @@ export function TableFilters() {
               className="gap-1 w-full sm:w-auto touch-manipulation"
             >
               <X className="w-4 h-4" />
-              CLEAR
+              Clear
             </Button>
           </div>
         )}

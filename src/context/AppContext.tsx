@@ -173,41 +173,33 @@ function calculateTestCaseScores(
     recommendation: TestCase['recommendation'];
 } {
     if (mode === AppMode.NORMAL) {
-        // Use Angie Jones' exact model (0-80 scale)
+        // Use Angie Jones' exact model (0-100 scale)
         const angieResult = AngieScoreCalculator.calculateScores(testCase);
         
         return {
             scores: {
                 // Store Angie's scores
-                customerRisk: angieResult.scores.customerRisk,
-                valueScore: angieResult.scores.valueScore,
-                costScore: angieResult.scores.costScore,
-                historyScore: angieResult.scores.historyScore,
-                // Keep legacy fields for backward compatibility
-                risk: 0,
-                value: 0,
-                history: 0,
-                legal: 0,
+                risk: angieResult.scores.risk,
+                value: angieResult.scores.value,
+                costEfficiency: angieResult.scores.costEfficiency,
+                history: angieResult.scores.history,
+                legal: 0, // No legal field in Normal mode
                 total: angieResult.scores.total
             },
             recommendation: angieResult.recommendation
         };
     } else {
-        // Teaching mode - use Angie's model + Legal bonus (0-100 scale)
+        // Teaching mode - use Angie's model + Legal bonus (0-120 scale)
         const teachingResult = TeachingScoreCalculator.calculateScores(testCase);
         
         return {
             scores: {
                 // Store Teaching mode scores
-                customerRisk: teachingResult.scores.customerRisk,
-                valueScore: teachingResult.scores.valueScore,
-                costScore: teachingResult.scores.costScore,
-                historyScore: teachingResult.scores.historyScore,
+                risk: teachingResult.scores.risk,
+                value: teachingResult.scores.value,
+                costEfficiency: teachingResult.scores.costEfficiency,
+                history: teachingResult.scores.history,
                 legal: teachingResult.scores.legal,
-                // Keep legacy fields for backward compatibility
-                risk: 0,
-                value: 0,
-                history: 0,
                 total: teachingResult.scores.total
             },
             recommendation: teachingResult.recommendation
@@ -285,6 +277,32 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
             console.error('Failed to save preferences:', error);
         }
     }, [userPreferences]);
+
+    // Migrate old score format to new format on mount
+    useEffect(() => {
+        const needsMigration = appState.testCases.some(tc => 
+            tc.scores.customerRisk !== undefined || 
+            tc.scores.valueScore !== undefined ||
+            tc.scores.costScore !== undefined ||
+            tc.scores.historyScore !== undefined
+        );
+
+        if (needsMigration) {
+            console.log('Migrating test cases to new score format...');
+            setAppState(prev => ({
+                ...prev,
+                testCases: prev.testCases.map(tc => {
+                    const { scores, recommendation } = calculateTestCaseScores(tc, userPreferences.appMode);
+                    return {
+                        ...tc,
+                        scores,
+                        recommendation
+                    };
+                }),
+                lastModified: new Date().toISOString()
+            }));
+        }
+    }, []); // Run once on mount
 
     // ========================================================================
     // Persistence Effect

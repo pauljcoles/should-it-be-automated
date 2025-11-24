@@ -33,10 +33,10 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
 
   // Calculate if Real Talk should be shown
   const baseTechnicalScore = TeachingScoreCalculator.calculateBaseTechnicalScore({
-    customerRisk: testCase.scores.customerRisk ?? 0,
-    valueScore: testCase.scores.valueScore ?? 0,
-    costScore: testCase.scores.costScore ?? 0,
-    historyScore: testCase.scores.historyScore ?? 0
+    risk: testCase.scores.risk ?? testCase.scores.customerRisk ?? 0,
+    value: testCase.scores.value ?? testCase.scores.valueScore ?? 0,
+    costEfficiency: testCase.scores.costEfficiency ?? testCase.scores.costScore ?? 0,
+    history: testCase.scores.history ?? testCase.scores.historyScore ?? 0
   });
   const shouldShowRealTalk = TeachingScoreCalculator.shouldShowRealTalk(
     baseTechnicalScore,
@@ -308,11 +308,11 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
         <div className="flex justify-between items-center gap-2 pt-2 border-t border-slate-200">
           <div className="text-center">
             <div className="text-xs text-slate-500 font-medium mb-0.5">Total Score</div>
-            <div className={`px-3 py-1 rounded-md font-bold text-lg ${getScoreColor(testCase.scores.total, 100)}`}>
-              {testCase.scores.total}/100
+            <div className={`px-3 py-1 rounded-md font-bold text-lg ${getScoreColor(testCase.scores.total, 120)}`}>
+              {testCase.scores.total}/120
             </div>
             <div className="text-xs text-slate-500 mt-0.5">
-              (Base: {baseTechnicalScore}/80 + Legal: {testCase.scores.legal ?? 0}/20)
+              (Base: {baseTechnicalScore}/100 + Legal: {testCase.scores.legal ?? 0}/20)
             </div>
           </div>
           <div className={`px-4 py-2 rounded-md border font-bold text-sm ${getRecommendationColor(testCase.recommendation)}`}>
@@ -378,13 +378,13 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
   if (isCollapsed) {
     return (
       <>
-        <tr className="bg-white hover:bg-gray-50 border-b-4 border-black transition-all">
+        <tr className="bg-white hover:bg-gray-50 border-b transition-all">
           {/* Test Name with Expand Button */}
-          <td className="px-3 py-3 border-r-4 border-black" colSpan={2}>
+          <td className="px-3 py-3 border-r border-slate-300" colSpan={2}>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setIsCollapsed(false)}
-                className="p-1 hover:bg-gray-200 rounded border-2 border-black transition-all"
+                className="p-1 hover:bg-gray-200 rounded border transition-all"
                 title="Expand row"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -396,29 +396,29 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
           </td>
 
           {/* Quick Scores Summary */}
-          <td className="px-3 py-3 border-r-4 border-black" colSpan={4}>
+          <td className="px-3 py-3 border-r border-slate-300" colSpan={4}>
             <div className="flex items-center gap-3 justify-center">
               <div className="text-center">
                 <div className="text-xs text-gray-500 font-medium">Customer</div>
-                <div className={`px-2 py-0.5 rounded border-2 border-black text-sm font-bold ${getScoreColor(testCase.scores.customerRisk ?? 0, 25)}`}>
+                <div className={`px-2 py-0.5 rounded border text-sm font-bold ${getScoreColor(testCase.scores.customerRisk ?? 0, 25)}`}>
                   {testCase.scores.customerRisk ?? 0}
                 </div>
               </div>
               <div className="text-center">
                 <div className="text-xs text-gray-500 font-medium">Value</div>
-                <div className={`px-2 py-0.5 rounded border-2 border-black text-sm font-bold ${getScoreColor(testCase.scores.valueScore ?? 0, 25)}`}>
+                <div className={`px-2 py-0.5 rounded border text-sm font-bold ${getScoreColor(testCase.scores.valueScore ?? 0, 25)}`}>
                   {testCase.scores.valueScore ?? 0}
                 </div>
               </div>
               <div className="text-center">
                 <div className="text-xs text-gray-500 font-medium">Cost</div>
-                <div className={`px-2 py-0.5 rounded border-2 border-black text-sm font-bold ${getScoreColor(testCase.scores.costScore ?? 0, 25)}`}>
+                <div className={`px-2 py-0.5 rounded border text-sm font-bold ${getScoreColor(testCase.scores.costScore ?? 0, 25)}`}>
                   {testCase.scores.costScore ?? 0}
                 </div>
               </div>
               <div className="text-center">
                 <div className="text-xs text-gray-500 font-medium">History</div>
-                <div className={`px-2 py-0.5 rounded border-2 border-black text-sm font-bold ${getScoreColor(testCase.scores.historyScore ?? 0, 5)}`}>
+                <div className={`px-2 py-0.5 rounded border text-sm font-bold ${getScoreColor(testCase.scores.historyScore ?? 0, 5)}`}>
                   {testCase.scores.historyScore ?? 0}
                 </div>
               </div>
@@ -426,7 +426,7 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
           </td>
 
           {/* Legal & Org Pressure */}
-          <td className="px-3 py-3 text-center border-r-4 border-black">
+          <td className="px-3 py-3 text-center border-r border-slate-300">
             <div className="flex items-center justify-center gap-2">
               {testCase.isLegal && <span className="text-xs font-bold text-blue-600">⚖️ Legal</span>}
               <span className="text-xs text-gray-600">Org: {testCase.organisationalPressure ?? 1}</span>
@@ -434,15 +434,15 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
           </td>
 
           {/* Total Score */}
-          <td className="px-3 py-3 text-center border-r-4 border-black">
-            <div className={`px-3 py-1 rounded border-brutal shadow-brutal font-black text-xl ${getScoreColor(testCase.scores.total, 100)}`}>
+          <td className="px-3 py-3 text-center border-r border-slate-300">
+            <div className={`px-3 py-1 rounded-lg border-2 shadow-md font-bold text-xl hover:scale-105 transition-transform ${getScoreColor(testCase.scores.total, 100)}`}>
               {testCase.scores.total}
             </div>
           </td>
 
           {/* Recommendation */}
-          <td className="px-3 py-3 text-center border-r-4 border-black">
-            <div className={`px-3 py-1 rounded border-brutal shadow-brutal font-black text-sm ${getRecommendationColor(testCase.recommendation)}`}>
+          <td className="px-3 py-3 text-center border-r border-slate-300">
+            <div className={`px-3 py-1 rounded-lg border-2 shadow-md font-bold text-sm hover:scale-105 transition-transform ${getRecommendationColor(testCase.recommendation)}`}>
               {getRecommendationLabel(testCase.recommendation)}
             </div>
           </td>
@@ -452,7 +452,7 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
             <div className="flex gap-1 justify-center">
               <button
                 onClick={handleDuplicate}
-                className="p-1 text-blue-500 hover:bg-blue-100 rounded border-2 border-blue-500 hover:shadow-brutal transition-all"
+                className="p-1 text-blue-500 hover:bg-blue-100 rounded border-2 border-blue-500 hover:shadow-sm transition-all"
                 title="Duplicate"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -461,7 +461,7 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
               </button>
               <button
                 onClick={handleDelete}
-                className="p-1 text-red-500 hover:bg-red-100 rounded border-2 border-red-500 hover:shadow-brutal transition-all"
+                className="p-1 text-red-500 hover:bg-red-100 rounded border-2 border-red-500 hover:shadow-sm transition-all"
                 title="Delete"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -477,13 +477,13 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
 
   return (
     <>
-      <tr className="bg-white hover:bg-gray-50 border-b-4 border-black transition-all hover:shadow-brutal">
+      <tr className="bg-white hover:bg-gray-50 border-b border-slate-300 transition-all hover:shadow-sm">
         {/* Test Name with Collapse Button */}
-        <td className="px-3 py-3 border-r-4 border-black">
+        <td className="px-3 py-3 border-r border-slate-300">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsCollapsed(true)}
-              className="p-1 hover:bg-gray-200 rounded border-2 border-black transition-all flex-shrink-0"
+              className="p-1 hover:bg-gray-200 rounded border transition-all flex-shrink-0"
               title="Collapse row"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -494,14 +494,14 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
               type="text"
               value={testCase.testName}
               onChange={handleTextChange('testName')}
-              className="flex-1 px-2 py-1.5 text-base border-brutal rounded focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-brutal hover:shadow-brutal-lg transition-all"
+              className="flex-1 px-2 py-1.5 text-base border rounded-lg rounded focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm hover:shadow-md transition-all"
               placeholder="Test name"
             />
           </div>
         </td>
 
         {/* Gut Feel */}
-        <td className="px-3 py-3 border-r-4 border-black">
+        <td className="px-3 py-3 border-r border-slate-300">
           <div className="flex flex-col gap-1">
             <span className="text-base text-gray-600 text-center font-bold">Gut Feel</span>
             <input
@@ -523,11 +523,11 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
         </td>
 
         {/* 2x2 Grid of Categories */}
-        <td className="px-3 py-3 border-r-4 border-black" colSpan={4}>
+        <td className="px-3 py-3 border-r border-slate-300" colSpan={4}>
           <div className="grid grid-cols-2 gap-3">
             {/* Customer Risk */}
-            <div className="border-brutal rounded-lg p-3 bg-gray-50 shadow-brutal hover:shadow-brutal-lg transition-all">
-              <div className="text-base font-black text-gray-700 mb-2 text-center border-b-4 border-black pb-1">
+            <div className="border-2 border-slate-200 rounded-lg p-3 bg-gradient-to-br from-slate-50 to-slate-100 shadow-sm hover:shadow-lg hover:border-slate-300 hover:-translate-y-0.5 transition-all">
+              <div className="text-base font-bold text-slate-700 mb-2 text-center border-b-2 border-slate-300 pb-1">
                 Customer Risk (25)
               </div>
               <div className="space-y-2">
@@ -559,15 +559,15 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
                   />
                 </div>
-                <div className={`text-lg font-black text-center mt-2 px-2 py-1 rounded border-brutal shadow-brutal ${getScoreColor(testCase.scores.customerRisk ?? 0, 25)}`}>
+                <div className={`text-lg font-bold text-center mt-2 px-2 py-1 rounded-lg border-2 shadow-md ${getScoreColor(testCase.scores.customerRisk ?? 0, 25)}`}>
                   Score: {testCase.scores.customerRisk ?? 0}/25
                 </div>
               </div>
             </div>
 
             {/* Value of Test */}
-            <div className="border-brutal rounded-lg p-3 bg-gray-50 shadow-brutal hover:shadow-brutal-lg transition-all">
-              <div className="text-base font-black text-gray-700 mb-2 text-center border-b-4 border-black pb-1">
+            <div className="border-2 border-slate-200 rounded-lg p-3 bg-gradient-to-br from-slate-50 to-slate-100 shadow-sm hover:shadow-lg hover:border-slate-300 hover:-translate-y-0.5 transition-all">
+              <div className="text-base font-bold text-slate-700 mb-2 text-center border-b-2 border-slate-300 pb-1">
                 Value of Test (25)
               </div>
               <div className="space-y-2">
@@ -599,15 +599,15 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
                   />
                 </div>
-                <div className={`text-lg font-black text-center mt-2 px-2 py-1 rounded border-brutal shadow-brutal ${getScoreColor(testCase.scores.valueScore ?? 0, 25)}`}>
+                <div className={`text-lg font-bold text-center mt-2 px-2 py-1 rounded-lg border-2 shadow-md ${getScoreColor(testCase.scores.valueScore ?? 0, 25)}`}>
                   Score: {testCase.scores.valueScore ?? 0}/25
                 </div>
               </div>
             </div>
 
             {/* Cost Efficiency */}
-            <div className="border-brutal rounded-lg p-3 bg-gray-50 shadow-brutal hover:shadow-brutal-lg transition-all">
-              <div className="text-base font-black text-gray-700 mb-2 text-center border-b-4 border-black pb-1">
+            <div className="border-2 border-slate-200 rounded-lg p-3 bg-gradient-to-br from-slate-50 to-slate-100 shadow-sm hover:shadow-lg hover:border-slate-300 hover:-translate-y-0.5 transition-all">
+              <div className="text-base font-bold text-slate-700 mb-2 text-center border-b-2 border-slate-300 pb-1">
                 Cost Efficiency (25)
               </div>
               <div className="space-y-2">
@@ -639,15 +639,15 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
                   />
                 </div>
-                <div className={`text-lg font-black text-center mt-2 px-2 py-1 rounded border-brutal shadow-brutal ${getScoreColor(testCase.scores.costScore ?? 0, 25)}`}>
+                <div className={`text-lg font-bold text-center mt-2 px-2 py-1 rounded-lg border-2 shadow-md ${getScoreColor(testCase.scores.costScore ?? 0, 25)}`}>
                   Score: {testCase.scores.costScore ?? 0}/25
                 </div>
               </div>
             </div>
 
             {/* History */}
-            <div className="border-brutal rounded-lg p-3 bg-gray-50 shadow-brutal hover:shadow-brutal-lg transition-all">
-              <div className="text-base font-black text-gray-700 mb-2 text-center border-b-4 border-black pb-1">
+            <div className="border-2 border-slate-200 rounded-lg p-3 bg-gradient-to-br from-slate-50 to-slate-100 shadow-sm hover:shadow-lg hover:border-slate-300 hover:-translate-y-0.5 transition-all">
+              <div className="text-base font-bold text-slate-700 mb-2 text-center border-b-2 border-slate-300 pb-1">
                 History (5)
               </div>
               <div className="space-y-2">
@@ -679,7 +679,7 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
                   />
                 </div>
-                <div className={`text-lg font-black text-center mt-2 px-2 py-1 rounded border-brutal shadow-brutal ${getScoreColor(testCase.scores.historyScore ?? 0, 5)}`}>
+                <div className={`text-lg font-bold text-center mt-2 px-2 py-1 rounded-lg border-2 shadow-md ${getScoreColor(testCase.scores.historyScore ?? 0, 5)}`}>
                   Score: {testCase.scores.historyScore ?? 0}/5 (MAX)
                 </div>
               </div>
@@ -688,7 +688,7 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
         </td>
 
         {/* Legal Requirement & Org Pressure Column */}
-        <td className="px-3 py-3 border-r-4 border-black">
+        <td className="px-3 py-3 border-r border-slate-300">
           <div className="space-y-3">
             {/* Legal Requirement */}
             <label className="flex items-center gap-2 cursor-pointer">
@@ -726,10 +726,10 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
         </td>
 
         {/* Total Score */}
-        <td className="px-3 py-3 text-center border-r-4 border-black">
+        <td className="px-3 py-3 text-center border-r border-slate-300">
           <div className="flex flex-col gap-1">
-            <span className="text-base text-gray-700 font-black">Total</span>
-            <div className={`px-3 py-2 rounded border-brutal shadow-brutal font-black text-2xl ${getScoreColor(testCase.scores.total, 100)}`}>
+            <span className="text-base text-slate-700 font-bold">Total</span>
+            <div className={`px-3 py-2 rounded-lg border-2 shadow-lg font-bold text-2xl hover:scale-105 transition-transform ${getScoreColor(testCase.scores.total, 100)}`}>
               {testCase.scores.total}
             </div>
             <span className="text-sm text-gray-600 font-bold">/100</span>
@@ -740,8 +740,8 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
         </td>
 
         {/* Recommendation */}
-        <td className="px-3 py-3 text-center border-r-4 border-black">
-          <div className={`px-3 py-2 rounded border-brutal shadow-brutal font-black text-base ${getRecommendationColor(testCase.recommendation)}`}>
+        <td className="px-3 py-3 text-center border-r border-slate-300">
+          <div className={`px-3 py-2 rounded-lg border-2 shadow-lg font-bold text-base hover:scale-105 transition-transform ${getRecommendationColor(testCase.recommendation)}`}>
             {getRecommendationLabel(testCase.recommendation)}
           </div>
         </td>
@@ -751,7 +751,7 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
           <div className="flex gap-1 justify-center">
             <button
               onClick={handleDuplicate}
-              className="p-1 text-blue-500 hover:bg-blue-100 rounded border-2 border-blue-500 hover:shadow-brutal transition-all"
+              className="p-1 text-blue-500 hover:bg-blue-100 rounded border-2 border-blue-500 hover:shadow-sm transition-all"
               title="Duplicate"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -760,7 +760,7 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
             </button>
             <button
               onClick={handleDelete}
-              className="p-1 text-red-500 hover:bg-red-100 rounded border-2 border-red-500 hover:shadow-brutal transition-all"
+              className="p-1 text-red-500 hover:bg-red-100 rounded border-2 border-red-500 hover:shadow-sm transition-all"
               title="Delete"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -769,11 +769,11 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
             </button>
           </div>
           {showDeleteConfirm && (
-            <div className="absolute z-10 mt-1 p-2 bg-white border-brutal rounded shadow-brutal-lg right-0">
+            <div className="absolute z-10 mt-1 p-2 bg-white border rounded-lg rounded shadow-md right-0">
               <p className="text-xs text-red-700 font-bold mb-2">Delete?</p>
               <div className="flex gap-1">
-                <button onClick={confirmDelete} className="px-2 py-1 text-xs bg-red-500 text-white rounded border-2 border-black hover:shadow-brutal font-bold">Yes</button>
-                <button onClick={cancelDelete} className="px-2 py-1 text-xs bg-gray-200 rounded border-2 border-black hover:shadow-brutal font-bold">No</button>
+                <button onClick={confirmDelete} className="px-2 py-1 text-xs bg-red-500 text-white rounded border hover:shadow-sm font-bold">Yes</button>
+                <button onClick={cancelDelete} className="px-2 py-1 text-xs bg-gray-200 rounded border hover:shadow-sm font-bold">No</button>
               </div>
             </div>
           )}
@@ -782,13 +782,13 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
 
       {/* Real Talk Expandable Row */}
       {shouldShowRealTalk && (
-        <tr className="bg-amber-50 border-b-4 border-black">
+        <tr className="bg-amber-50 border-b border-slate-300">
           <td colSpan={8} className="px-3 py-2">
             <button
               onClick={() => setShowRealTalk(!showRealTalk)}
-              className="w-full flex items-center justify-between p-2 hover:bg-amber-100 rounded border-2 border-amber-600 hover:shadow-brutal transition-all"
+              className="w-full flex items-center justify-between p-2 hover:bg-amber-100 rounded border-2 border-amber-600 hover:shadow-sm transition-all"
             >
-              <span className="text-sm font-black text-amber-800">{realTalkContent.title}</span>
+              <span className="text-sm font-semibold text-amber-800">{realTalkContent.title}</span>
               <svg
                 className={`w-4 h-4 text-amber-600 transition-transform ${showRealTalk ? 'rotate-180' : ''}`}
                 fill="none"
@@ -799,12 +799,12 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
               </svg>
             </button>
             {showRealTalk && (
-              <div className="mt-2 p-3 bg-white border-brutal rounded shadow-brutal space-y-3">
+              <div className="mt-2 p-3 bg-white border rounded-lg rounded shadow-sm space-y-3">
                 <p className="text-sm text-amber-900 font-semibold">{realTalkContent.message}</p>
                 
                 {/* Coverage Duvet Teaching */}
                 <div className="border-t-4 border-amber-600 pt-3">
-                  <div className="text-sm font-black text-amber-900 mb-2">📚 The Coverage Duvet</div>
+                  <div className="text-sm font-semibold text-amber-900 mb-2">📚 The Coverage Duvet</div>
                   <p className="text-sm text-amber-800 mb-2">
                     High test coverage doesn't equal effective testing. It's like a duvet that looks warm but has holes - 
                     you might have 90% coverage but miss the critical 10% that matters.

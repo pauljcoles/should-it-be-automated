@@ -7,53 +7,38 @@ html, body, #root {
   padding: 0;
 }
 
-/* Tailwind v4 Theme Configuration */
+/* Tailwind v4 Theme Configuration - New York Theme */
 @theme {
-  /* Neo-Brutalist Color Palette */
-  --color-brutal-yellow: #ffd700;
-  --color-brutal-purple: #b794f6;
-  --color-brutal-green: #48bb78;
-  --color-brutal-red: #f56565;
+  /* New York Theme Color Palette (Slate-based) */
+  --color-background: 0 0% 100%;
+  --color-foreground: 222.2 84% 4.9%;
   
-  /* Shadow utilities */
-  --shadow-brutal: 4px 4px 0px 0px rgba(0, 0, 0, 1);
-  --shadow-brutal-lg: 6px 6px 0px 0px rgba(0, 0, 0, 1);
-  --shadow-brutal-xl: 8px 8px 0px 0px rgba(0, 0, 0, 1);
-}
-
-/* Custom Utilities */
-.border-brutal {
-  border: 3px solid black;
-}
-
-.border-brutal-thick {
-  border: 4px solid black;
-}
-
-.shadow-brutal {
-  box-shadow: var(--shadow-brutal);
-}
-
-.shadow-brutal-lg {
-  box-shadow: var(--shadow-brutal-lg);
-}
-
-.shadow-brutal-xl {
-  box-shadow: var(--shadow-brutal-xl);
-}
-
-.hover-lift {
-  transition: all 0.15s ease;
-}
-
-.hover-lift:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: var(--shadow-brutal-lg);
-}
-
-.hover-lift:active {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+  --color-card: 0 0% 100%;
+  --color-card-foreground: 222.2 84% 4.9%;
+  
+  --color-popover: 0 0% 100%;
+  --color-popover-foreground: 222.2 84% 4.9%;
+  
+  --color-primary: 222.2 47.4% 11.2%;
+  --color-primary-foreground: 210 40% 98%;
+  
+  --color-secondary: 210 40% 96.1%;
+  --color-secondary-foreground: 222.2 47.4% 11.2%;
+  
+  --color-muted: 210 40% 96.1%;
+  --color-muted-foreground: 215.4 16.3% 46.9%;
+  
+  --color-accent: 210 40% 96.1%;
+  --color-accent-foreground: 222.2 47.4% 11.2%;
+  
+  --color-destructive: 0 84.2% 60.2%;
+  --color-destructive-foreground: 210 40% 98%;
+  
+  --color-border: 214.3 31.8% 91.4%;
+  --color-input: 214.3 31.8% 91.4%;
+  --color-ring: 222.2 84% 4.9%;
+  
+  --radius: 0.5rem;
 }
 
 /* Touch-friendly interactions */

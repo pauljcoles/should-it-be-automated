@@ -163,14 +163,14 @@ export function ExistingFunctionalitySidebar() {
 
   return (
     <aside
-      className={`bg-yellow-50 border-r-4 border-black flex flex-col transition-all duration-300 ${
+      className={`bg-muted border-r flex flex-col transition-all duration-300 ${
         isCollapsed ? 'w-12 sm:w-16' : 'w-full lg:w-80'
       }`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b-4 border-black bg-yellow-400">
+      <div className="flex items-center justify-between p-4 border-b bg-background">
         {!isCollapsed && (
-          <h2 className="text-xl font-black text-black uppercase">
+          <h2 className="text-xl font-semibold text-foreground uppercase">
             Existing
           </h2>
         )}
@@ -179,7 +179,6 @@ export function ExistingFunctionalitySidebar() {
           size="icon"
           onClick={() => setIsCollapsed(!isCollapsed)}
           title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className="border-2"
         >
           <ChevronLeft className={`w-5 h-5 transition-transform ${isCollapsed ? 'rotate-180' : ''}`} />
         </Button>
@@ -189,19 +188,18 @@ export function ExistingFunctionalitySidebar() {
       {!isCollapsed && (
         <>
           {/* Search Box */}
-          <div className="p-4 border-b-4 border-black bg-white">
+          <div className="p-4 border-b bg-background">
             <Input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search..."
-              className="font-bold"
             />
           </div>
 
           {/* Add Button */}
           {!isAdding && !editingId && (
-            <div className="p-4 border-b-4 border-black bg-white">
+            <div className="p-4 border-b bg-background">
               <Button
                 onClick={handleStartAdd}
                 className="w-full gap-2"
@@ -215,15 +213,15 @@ export function ExistingFunctionalitySidebar() {
 
           {/* Add/Edit Form */}
           {(isAdding || editingId) && (
-            <div className="p-4 border-b-4 border-black bg-purple-100">
-              <h3 className="text-sm font-black text-black mb-3 uppercase">
+            <div className="p-4 border-b bg-muted">
+              <h3 className="text-sm font-semibold text-foreground mb-3 uppercase">
                 {isAdding ? 'Add New' : 'Edit'}
               </h3>
               
               <div className="space-y-3">
                 {/* Name */}
                 <div>
-                  <label className="block text-xs font-black text-black mb-1 uppercase">
+                  <label className="block text-xs font-semibold text-foreground mb-1 uppercase">
                     Name *
                   </label>
                   <Input
@@ -236,13 +234,13 @@ export function ExistingFunctionalitySidebar() {
 
                 {/* Implementation Type */}
                 <div>
-                  <label className="block text-xs font-black text-black mb-1 uppercase">
+                  <label className="block text-xs font-semibold text-foreground mb-1 uppercase">
                     Implementation
                   </label>
                   <select
                     value={formData.implementation}
                     onChange={(e) => setFormData({ ...formData, implementation: e.target.value as ImplementationType })}
-                    className="w-full h-10 border-brutal bg-white px-3 py-2 text-sm font-bold shadow-brutal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
+                    className="w-full h-10 border rounded-md bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     <option value={ImplementationType.LOOP_SAME}>Standard Components</option>
                     <option value={ImplementationType.LOOP_DIFFERENT}>New Pattern</option>
@@ -253,13 +251,13 @@ export function ExistingFunctionalitySidebar() {
 
                 {/* Status */}
                 <div>
-                  <label className="block text-xs font-black text-black mb-1 uppercase">
+                  <label className="block text-xs font-semibold text-foreground mb-1 uppercase">
                     Status
                   </label>
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value as FunctionalityStatus })}
-                    className="w-full h-10 border-brutal bg-white px-3 py-2 text-sm font-bold shadow-brutal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
+                    className="w-full h-10 border rounded-md bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     <option value={FunctionalityStatus.STABLE}>Stable</option>
                     <option value={FunctionalityStatus.UNSTABLE}>Unstable</option>
@@ -269,7 +267,7 @@ export function ExistingFunctionalitySidebar() {
 
                 {/* Last Tested */}
                 <div>
-                  <label className="block text-xs font-black text-black mb-1 uppercase">
+                  <label className="block text-xs font-semibold text-foreground mb-1 uppercase">
                     Last Tested
                   </label>
                   <Input
@@ -300,11 +298,11 @@ export function ExistingFunctionalitySidebar() {
           )}
 
           {/* Functionality List */}
-          <div className="flex-1 overflow-y-auto bg-white">
+          <div className="flex-1 overflow-y-auto bg-background">
             {filteredFunctionality.length === 0 ? (
               <div className="p-4 text-center">
-                <div className="border-brutal bg-gray-100 p-6 shadow-brutal">
-                  <p className="text-sm font-bold text-gray-600 uppercase">
+                <div className="border rounded-md bg-muted p-6 shadow-sm">
+                  <p className="text-sm font-medium text-muted-foreground uppercase">
                     {searchTerm ? 'No matches found' : 'No functionality yet'}
                   </p>
                 </div>
@@ -314,11 +312,11 @@ export function ExistingFunctionalitySidebar() {
                 {filteredFunctionality.map((func) => (
                   <div
                     key={func.id}
-                    className="border-brutal bg-white p-4 shadow-brutal hover-lift transition-all"
+                    className="border rounded-md bg-card p-4 shadow-sm hover:shadow-md transition-all"
                   >
                     {/* Name and Source Badge */}
                     <div className="flex items-start justify-between mb-2 gap-2">
-                      <h3 className="text-sm font-black text-black flex-1">
+                      <h3 className="text-sm font-semibold text-foreground flex-1">
                         {func.name}
                       </h3>
                       {getSourceBadge(func.source)}
@@ -326,7 +324,7 @@ export function ExistingFunctionalitySidebar() {
 
                     {/* Implementation and Status */}
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
-                      <span className="text-xs font-bold text-gray-700 uppercase">
+                      <span className="text-xs font-medium text-muted-foreground uppercase">
                         {getImplementationLabel(func.implementation)}
                       </span>
                       {getStatusBadge(func.status)}
@@ -334,7 +332,7 @@ export function ExistingFunctionalitySidebar() {
 
                     {/* Last Tested */}
                     {func.lastTested && (
-                      <div className="text-xs font-bold text-gray-600 mb-3 uppercase">
+                      <div className="text-xs font-medium text-muted-foreground mb-3 uppercase">
                         Tested: {new Date(func.lastTested).toLocaleDateString()}
                       </div>
                     )}
@@ -369,8 +367,8 @@ export function ExistingFunctionalitySidebar() {
           </div>
 
           {/* Footer with count */}
-          <div className="p-4 border-t-4 border-black bg-yellow-400">
-            <p className="text-xs font-black text-black text-center uppercase">
+          <div className="p-4 border-t bg-background">
+            <p className="text-xs font-semibold text-foreground text-center uppercase">
               {filteredFunctionality.length} of {appState.existingFunctionality.length} items
             </p>
           </div>

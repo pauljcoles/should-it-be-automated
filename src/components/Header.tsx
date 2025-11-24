@@ -376,7 +376,7 @@ export function Header() {
   return (
     <>
       <header
-        className={`bg-yellow-400 border-b-4 border-black ${isDragging ? 'bg-yellow-300' : ''}`}
+        className={`bg-slate-100 border-b border-slate-300 ${isDragging ? 'bg-slate-200' : ''}`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -388,10 +388,10 @@ export function Header() {
             {/* Title */}
             <div className="w-full lg:w-auto">
               {/* Responsive text size */}
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-black">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-800">
                 Test Prioritisation Tool
               </h1>
-              <p className="text-xs sm:text-sm font-bold text-black mt-1">
+              <p className="text-xs sm:text-sm font-medium text-slate-600 mt-1">
                 {appState.projectName} • {appState.testCases.length} test case{appState.testCases.length !== 1 ? 's' : ''}
               </p>
             </div>
@@ -429,7 +429,7 @@ export function Header() {
               <Button
                 onClick={handlePasteFromBERT}
                 variant="outline"
-                className="gap-2 bg-blue-400 hover:bg-blue-300 hidden md:flex"
+                className="gap-2 hidden md:flex"
                 size="sm"
                 title="Paste test scenario from external tool"
               >
@@ -442,7 +442,7 @@ export function Header() {
               <Button
                 onClick={handleViewHistory}
                 variant="outline"
-                className="gap-2 bg-purple-400 hover:bg-purple-300 hidden md:flex"
+                className="gap-2 hidden md:flex"
                 size="sm"
                 title="View state diagram version history"
               >
@@ -453,7 +453,7 @@ export function Header() {
               {/* Add Row Button */}
               <Button
                 onClick={handleAddRow}
-                className="gap-2 bg-green-400 hover:bg-green-300"
+                className="gap-2"
                 size="sm"
                 title="Add new test case"
               >
@@ -475,10 +475,10 @@ export function Header() {
 
           {/* Drag and drop overlay hint */}
           {isDragging && (
-            <div className="absolute inset-0 bg-yellow-300 bg-opacity-95 flex items-center justify-center pointer-events-none border-4 border-black">
-              <div className="text-center border-brutal-thick bg-white p-4 sm:p-8 shadow-brutal-xl">
-                <Upload className="w-12 h-12 sm:w-16 sm:h-16 mx-auto text-black mb-4" />
-                <p className="text-xl sm:text-2xl font-black text-black uppercase">Drop JSON File</p>
+            <div className="absolute inset-0 bg-blue-50/95 flex items-center justify-center pointer-events-none border-2 border-blue-400">
+              <div className="text-center border-2 border-blue-400 rounded-lg bg-white p-4 sm:p-8 shadow-lg">
+                <Upload className="w-12 h-12 sm:w-16 sm:h-16 mx-auto text-blue-600 mb-4" />
+                <p className="text-xl sm:text-2xl font-bold text-slate-800 uppercase">Drop JSON File</p>
               </div>
             </div>
           )}

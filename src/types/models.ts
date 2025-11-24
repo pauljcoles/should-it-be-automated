@@ -96,48 +96,51 @@ export type DataSource = typeof DataSource[keyof typeof DataSource];
  */
 export interface Scores {
     // ========================================================================
-    // Teaching Mode Scores (0-100 scale)
+    // Angie Jones' Model Scores (Both Modes)
     // ========================================================================
 
-    /** Risk score: userFrequency × businessImpact (0-25) */
+    /** RISK score: Probability × Impact (0-25) */
     risk: number;
 
-    /** Value score: distinctness × induction to action (0-25) */
+    /** VALUE score: Distinctness × Induction to Action (0-25) */
     value: number;
 
-    /** Effort score: easyToAutomate × quickToAutomate (0-25) */
-    effort?: number;
+    /** COST EFFICIENCY score: Easy to write × Quick to write (0-25) */
+    costEfficiency: number;
 
-    /** History score: min(affectedAreas, 5) (0-5) */
+    /** HISTORY score: Bug count × Affected areas (0-25) */
     history: number;
 
-    /** Legal score: 20 if legal requirement, else 0 */
+    /** Legal score: 20 if legal requirement, else 0 (Teaching mode only) */
     legal: number;
-
-    // ========================================================================
-    // Normal Mode Scores (Angie Jones' model, 0-80 scale)
-    // ========================================================================
-
-    /** Customer Risk: impact × probOfUse (0-25) */
-    customerRisk?: number;
-
-    /** Value of Test: distinctness × fixProbability (0-25) */
-    valueScore?: number;
-
-    /** Cost Efficiency: easyToWrite × quickToWrite (0-25) */
-    costScore?: number;
-
-    /** History: MAX(similarity, breakFreq) (0-5, NOT multiply) */
-    historyScore?: number;
 
     // ========================================================================
     // Common
     // ========================================================================
 
-    /** Total score: sum of all individual scores (0-100 for teaching, 0-80 for normal) */
+    /** Total score: sum of all individual scores (0-100 for normal, 0-120 for teaching) */
     total: number;
 
-    /** @deprecated Legacy field - use effort instead */
+    // ========================================================================
+    // Legacy/Deprecated Fields
+    // ========================================================================
+
+    /** @deprecated Legacy field - use risk instead */
+    customerRisk?: number;
+
+    /** @deprecated Legacy field - use value instead */
+    valueScore?: number;
+
+    /** @deprecated Legacy field - use costEfficiency instead */
+    costScore?: number;
+
+    /** @deprecated Legacy field - use history instead */
+    historyScore?: number;
+
+    /** @deprecated Legacy field - use costEfficiency instead */
+    effort?: number;
+
+    /** @deprecated Legacy field - use costEfficiency instead */
     ease?: number;
 }
 

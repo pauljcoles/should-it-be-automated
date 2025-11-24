@@ -36,23 +36,13 @@ export function Tooltip({ content, children, side = 'top', className }: TooltipP
       {isVisible && (
         <div
           className={cn(
-            "absolute z-50 px-3 py-2 text-sm font-medium text-black bg-white border-brutal shadow-brutal-lg whitespace-normal max-w-xs",
+            "absolute z-50 overflow-hidden rounded-md border bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95 whitespace-normal max-w-xs",
             sideClasses[side],
             className
           )}
           role="tooltip"
         >
           {content}
-          {/* Arrow */}
-          <div
-            className={cn(
-              "absolute w-2 h-2 bg-white border-black",
-              side === 'top' && "bottom-[-5px] left-1/2 -translate-x-1/2 border-b-2 border-r-2 rotate-45",
-              side === 'right' && "left-[-5px] top-1/2 -translate-y-1/2 border-l-2 border-b-2 rotate-45",
-              side === 'bottom' && "top-[-5px] left-1/2 -translate-x-1/2 border-t-2 border-l-2 rotate-45",
-              side === 'left' && "right-[-5px] top-1/2 -translate-y-1/2 border-r-2 border-t-2 rotate-45"
-            )}
-          />
         </div>
       )}
     </div>
