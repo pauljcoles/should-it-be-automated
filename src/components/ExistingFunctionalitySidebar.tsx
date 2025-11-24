@@ -3,7 +3,7 @@
  * Collapsible sidebar for managing existing functionality entries
  */
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAppContext } from '../context';
 import { ImplementationType, FunctionalityStatus, DataSource } from '../types/models';
 import type { ExistingFunctionality } from '../types/models';
@@ -18,16 +18,10 @@ export function ExistingFunctionalitySidebar() {
     addExistingFunctionality,
     updateExistingFunctionality,
     deleteExistingFunctionality,
-    showNotification
+    showNotification,
+    uiState,
+    setSidebarOpen
   } = useAppContext();
-
-  // Auto-collapse on screens < 1024px (lg breakpoint)
-  const [isCollapsed, setIsCollapsed] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return window.innerWidth < 1024;
-    }
-    return false;
-  });
   const [searchTerm, setSearchTerm] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
@@ -39,18 +33,6 @@ export function ExistingFunctionalitySidebar() {
     status: FunctionalityStatus.STABLE,
     source: DataSource.MANUAL
   });
-
-  // Handle responsive collapse on window resize
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 1024) {
-        setIsCollapsed(true);
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   // Filter Logic
   const filteredFunctionality = appState.existingFunctionality.filter(func =>
@@ -161,31 +143,39 @@ export function ExistingFunctionalitySidebar() {
     return labels[impl];
   };
 
+  // On mobile, hide completely when closed
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
+  if (!uiState.isSidebarOpen && isMobile) {
+    return null;
+  }
+
   return (
     <aside
       className={`bg-muted border-r flex flex-col transition-all duration-300 ${
-        isCollapsed ? 'w-12 sm:w-16' : 'w-full lg:w-80'
+        uiState.isSidebarOpen ? 'w-full lg:w-80' : 'hidden lg:flex lg:w-16'
       }`}
+      style={{ minWidth: uiState.isSidebarOpen ? undefined : '64px' }}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b bg-background">
-        {!isCollapsed && (
-          <h2 className="text-xl font-semibold text-foreground uppercase">
+      {/* Header - Always visible */}
+      <div className={`flex items-center border-b bg-background min-h-[60px] ${uiState.isSidebarOpen ? 'justify-between p-4' : 'justify-center p-2'}`}>
+        {uiState.isSidebarOpen && (
+          <h2 className="text-xl font-semibold text-foreground uppercase whitespace-nowrap">
             Existing
           </h2>
         )}
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          onClick={() => setSidebarOpen(!uiState.isSidebarOpen)}
+          title={uiState.isSidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+          className="flex-shrink-0 min-w-[40px] min-h-[40px]"
         >
-          <ChevronLeft className={`w-5 h-5 transition-transform ${isCollapsed ? 'rotate-180' : ''}`} />
+          <ChevronLeft className={`w-5 h-5 transition-transform ${uiState.isSidebarOpen ? '' : 'rotate-180'}`} />
         </Button>
       </div>
 
       {/* Content (hidden when collapsed) */}
-      {!isCollapsed && (
+      {uiState.isSidebarOpen && (
         <>
           {/* Search Box */}
           <div className="p-4 border-b bg-background">
@@ -195,11 +185,11 @@ export function ExistingFunctionalitySidebar() {
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search..."
             />
-          </div>
+      </div>
 
-          {/* Add Button */}
-          {!isAdding && !editingId && (
-            <div className="p-4 border-b bg-background">
+      {/* Add Button */}
+      {!isAdding && !editingId && (
+        <div className="p-4 border-b bg-background">
               <Button
                 onClick={handleStartAdd}
                 className="w-full gap-2"
@@ -207,13 +197,13 @@ export function ExistingFunctionalitySidebar() {
               >
                 <Plus className="w-5 h-5" />
                 ADD FUNCTIONALITY
-              </Button>
-            </div>
-          )}
+          </Button>
+        </div>
+      )}
 
-          {/* Add/Edit Form */}
-          {(isAdding || editingId) && (
-            <div className="p-4 border-b bg-muted">
+      {/* Add/Edit Form */}
+      {(isAdding || editingId) && (
+        <div className="p-4 border-b bg-muted">
               <h3 className="text-sm font-semibold text-foreground mb-3 uppercase">
                 {isAdding ? 'Add New' : 'Edit'}
               </h3>
@@ -292,13 +282,13 @@ export function ExistingFunctionalitySidebar() {
                   >
                     CANCEL
                   </Button>
-                </div>
-              </div>
             </div>
-          )}
+          </div>
+        </div>
+      )}
 
-          {/* Functionality List */}
-          <div className="flex-1 overflow-y-auto bg-background">
+      {/* Functionality List */}
+      <div className="flex-1 overflow-y-auto bg-background">
             {filteredFunctionality.length === 0 ? (
               <div className="p-4 text-center">
                 <div className="border rounded-md bg-muted p-6 shadow-sm">
@@ -360,11 +350,11 @@ export function ExistingFunctionalitySidebar() {
                         DELETE
                       </Button>
                     </div>
-                  </div>
-                ))}
               </div>
-            )}
+            ))}
           </div>
+        )}
+      </div>
 
           {/* Footer with count */}
           <div className="p-4 border-t bg-background">

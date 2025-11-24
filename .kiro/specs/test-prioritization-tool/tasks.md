@@ -2114,3 +2114,71 @@
     - Update HelpModal
     - Update design.md
     - _Requirements: Clear documentation_
+
+
+- [x] 32. Mobile UX Overhaul - Maximize Content Space
+  - [x] 32.1 Hide Mode Toggle completely (both mobile and desktop)
+    - Remove ModeToggle component from Header
+    - Mode should be set via settings or URL parameter instead
+    - Frees up significant header space
+    - _Requirements: Mobile UX optimization_
+
+  - [x] 32.2 Make Search/Filter collapsible with toggle button
+    - Add filter icon button in header (mobile only)
+    - Clicking opens/closes filter panel
+    - Filter panel slides down from header when open
+    - Closed by default on mobile
+    - Always visible on desktop
+    - _Requirements: Mobile UX optimization_
+
+  - [x] 32.3 Move Summary Stats to collapsible drawer
+    - Add stats icon button in header or floating button
+    - Stats appear in bottom drawer that slides up
+    - Closed by default on mobile
+    - Always visible at bottom on desktop
+    - Show quick summary (just counts) when collapsed
+    - _Requirements: Mobile UX optimization_
+
+  - [x] 32.4 Make Existing Functionality sidebar a proper toggle
+    - Currently has chevron but takes up space when closed
+    - Should completely hide when closed (0 width)
+    - Add toggle button in header or as floating button
+    - Better alignment when open
+    - _Requirements: Mobile UX optimization_
+
+  - [x] 32.5 Optimize header button layout for mobile
+    - Stack buttons more efficiently
+    - Consider hamburger menu for secondary actions
+    - Keep only essential buttons visible (Add Row, Help)
+    - Upload/Download in menu
+    - _Requirements: Mobile UX optimization_
+
+  - [x] 32.6 Test mobile layout on various screen sizes
+    - Test on iPhone SE (smallest)
+    - Test on standard iPhone/Android
+    - Test on tablet
+    - Ensure test case cards are prominent
+    - Verify all functionality accessible
+    - _Requirements: Mobile UX optimization_
+
+
+- [x] 33. Standardize Mobile Input Fields to Match Desktop
+  - [x] 33.1 Convert all mobile number inputs to sliders
+    - Replace number input fields with range sliders in mobile card view
+    - Ensure sliders match desktop styling and behavior
+    - Apply to all scoring fields: Impact, Probability of Use, Distinctness, Fix Probability, Easy to Write, Quick to Write, Similarity, Break Frequency
+    - _Requirements: Consistent UX across devices_
+
+  - [x] 33.2 Standardize field labels and wording across mobile and desktop
+    - Audit all field labels in both TestCaseRowNormal and TestCaseRowTeaching
+    - Ensure mobile card labels exactly match desktop table headers
+    - Update any abbreviated or different wording to be consistent
+    - Verify tooltips and help text are identical
+    - _Requirements: Consistent terminology_
+
+  - [x] 33.3 Test mobile slider interactions
+    - Verify sliders are touch-friendly (adequate size)
+    - Test on various mobile devices
+    - Ensure value updates are immediate
+    - Check that sliders work smoothly on touch screens
+    - _Requirements: Mobile usability_

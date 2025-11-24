@@ -50,6 +50,12 @@ interface UIState {
     isStateDiagramHistoryModalOpen: boolean;
     /** Whether storage error modal is open */
     isStorageErrorModalOpen: boolean;
+    /** Whether filters panel is open (mobile only) */
+    isFiltersOpen: boolean;
+    /** Whether summary stats drawer is open (mobile only) */
+    isSummaryStatsOpen: boolean;
+    /** Whether existing functionality sidebar is open */
+    isSidebarOpen: boolean;
     /** Current notification message */
     notification?: {
         message: string;
@@ -116,6 +122,9 @@ interface AppContextActions {
     setStateDiagramDiffModalOpen: (isOpen: boolean) => void;
     setStateDiagramHistoryModalOpen: (isOpen: boolean) => void;
     setStorageErrorModalOpen: (isOpen: boolean) => void;
+    setFiltersOpen: (isOpen: boolean) => void;
+    setSummaryStatsOpen: (isOpen: boolean) => void;
+    setSidebarOpen: (isOpen: boolean) => void;
     showNotification: (message: string, type: 'success' | 'error' | 'info') => void;
     clearNotification: () => void;
     
@@ -243,7 +252,10 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
         isHelpModalOpen: false,
         isStateDiagramDiffModalOpen: false,
         isStateDiagramHistoryModalOpen: false,
-        isStorageErrorModalOpen: false
+        isStorageErrorModalOpen: false,
+        isFiltersOpen: false,
+        isSummaryStatsOpen: false,
+        isSidebarOpen: false // Default to closed
     });
     const [stateDiagramHistory, setStateDiagramHistory] = useState<StateDiagram[]>([]);
     const [storageAvailable, setStorageAvailable] = useState<boolean>(true);
@@ -586,6 +598,18 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
         setUIState(prev => ({ ...prev, isStorageErrorModalOpen: isOpen }));
     }, []);
     
+    const setFiltersOpen = useCallback((isOpen: boolean) => {
+        setUIState(prev => ({ ...prev, isFiltersOpen: isOpen }));
+    }, []);
+    
+    const setSummaryStatsOpen = useCallback((isOpen: boolean) => {
+        setUIState(prev => ({ ...prev, isSummaryStatsOpen: isOpen }));
+    }, []);
+    
+    const setSidebarOpen = useCallback((isOpen: boolean) => {
+        setUIState(prev => ({ ...prev, isSidebarOpen: isOpen }));
+    }, []);
+    
     const showNotification = useCallback((message: string, type: 'success' | 'error' | 'info') => {
         setUIState(prev => ({ ...prev, notification: { message, type } }));
     }, []);
@@ -670,6 +694,9 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
         setStateDiagramDiffModalOpen,
         setStateDiagramHistoryModalOpen,
         setStorageErrorModalOpen,
+        setFiltersOpen,
+        setSummaryStatsOpen,
+        setSidebarOpen,
         showNotification,
         clearNotification,
         

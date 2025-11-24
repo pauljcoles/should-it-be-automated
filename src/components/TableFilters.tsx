@@ -16,7 +16,8 @@ export function TableFilters() {
     setSearchTerm,
     setLegalFilter,
     clearFilters,
-    userPreferences
+    userPreferences,
+    uiState
   } = useAppContext();
 
   const isTeachingMode = userPreferences.appMode === AppMode.TEACHING;
@@ -28,6 +29,11 @@ export function TableFilters() {
     filters.implementationType ||
     filters.isLegal !== undefined
   );
+
+  // On mobile, hide filters when closed
+  if (!uiState.isFiltersOpen && typeof window !== 'undefined' && window.innerWidth < 1024) {
+    return null;
+  }
 
   return (
     <div className="bg-slate-100 border-b border-slate-300 px-2 sm:px-4 lg:px-6 py-3 sm:py-4">

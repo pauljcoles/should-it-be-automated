@@ -7,12 +7,11 @@ import { useRef, useState } from 'react';
 import { useAppContext } from '../context';
 import type { AppState, StateDiagram, StateDiff } from '../types/models';
 import { Button } from './ui/button';
-import { Upload, Download, Plus, HelpCircle, Clipboard, History } from 'lucide-react';
+import { Upload, Download, Plus, HelpCircle, Clipboard, History, Filter, BarChart3, PanelLeftClose, PanelLeftOpen, Menu, X } from 'lucide-react';
 import { StateDiagramService } from '../services/StateDiagramService';
 import { StorageService } from '../services/StorageService';
 import { BERTIntegrationService } from '../services/BERTIntegrationService';
 import { StateDiagramDiffModal } from './StateDiagramDiffModal';
-import { ModeToggle } from './ModeToggle';
 
 export function Header() {
   const {
@@ -26,11 +25,16 @@ export function Header() {
     setStateDiagramDiffModalOpen,
     setStateDiagramHistoryModalOpen,
     addExistingFunctionality,
-    userPreferences
+    userPreferences,
+    uiState,
+    setFiltersOpen,
+    setSummaryStatsOpen,
+    setSidebarOpen
   } = useAppContext();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [pendingStateDiagram, setPendingStateDiagram] = useState<{
     diagram: StateDiagram;
     diff: StateDiff;
@@ -381,97 +385,217 @@ export function Header() {
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        {/* Responsive padding: smaller on mobile, larger on desktop */}
-        <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-3 lg:py-4">
+        {/* Responsive padding: minimal on mobile, larger on desktop */}
+        <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-2 lg:py-4">
           {/* Responsive flex: column on mobile, row on desktop */}
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 lg:gap-0">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-2 lg:gap-0">
             {/* Title */}
             <div className="w-full lg:w-auto">
-              {/* Responsive text size */}
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-800">
+              {/* Responsive text size - smaller on mobile */}
+              <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold text-slate-800">
                 Test Prioritisation Tool
               </h1>
-              <p className="text-xs sm:text-sm font-medium text-slate-600 mt-1">
-                {appState.projectName} • {appState.testCases.length} test case{appState.testCases.length !== 1 ? 's' : ''}
+              <p className="text-xs sm:text-sm font-medium text-slate-600 mt-0.5">
+                <span className="hidden sm:inline">{appState.projectName} • </span>{appState.testCases.length} test case{appState.testCases.length !== 1 ? 's' : ''}
               </p>
             </div>
 
-            {/* Mode Toggle */}
-            <ModeToggle />
-
             {/* Action Buttons - Responsive layout */}
-            <div className="flex items-center gap-2 flex-wrap w-full lg:w-auto justify-end">
-              {/* Upload Button - Icon only on mobile */}
-              <Button
-                onClick={handleUploadClick}
-                variant="outline"
-                className="gap-2"
-                size="sm"
-                title="Upload JSON file (or drag and drop)"
-              >
-                <Upload className="w-4 h-4" />
-                <span className="hidden sm:inline">UPLOAD</span>
-              </Button>
+            <div className="flex items-center gap-2 w-full lg:w-auto justify-end">
+              {/* Mobile: Essential buttons + hamburger menu */}
+              <div className="flex items-center gap-2 lg:hidden">
+                {/* Sidebar Toggle Button */}
+                <Button
+                  onClick={() => setSidebarOpen(!uiState.isSidebarOpen)}
+                  variant="outline"
+                  size="sm"
+                  title="Toggle existing functionality sidebar"
+                >
+                  {uiState.isSidebarOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeftOpen className="w-4 h-4" />}
+                </Button>
 
-              {/* Download Button - Icon only on mobile */}
-              <Button
-                onClick={handleDownload}
-                variant="outline"
-                className="gap-2"
-                size="sm"
-                title="Download as JSON"
-              >
-                <Download className="w-4 h-4" />
-                <span className="hidden sm:inline">DOWNLOAD</span>
-              </Button>
+                {/* Filter Toggle Button */}
+                <Button
+                  onClick={() => setFiltersOpen(!uiState.isFiltersOpen)}
+                  variant="outline"
+                  size="sm"
+                  title="Toggle filters"
+                >
+                  <Filter className="w-4 h-4" />
+                </Button>
 
-              {/* Paste Scenario Button - Hidden on mobile */}
-              <Button
-                onClick={handlePasteFromBERT}
-                variant="outline"
-                className="gap-2 hidden md:flex"
-                size="sm"
-                title="Paste test scenario from external tool"
-              >
-                <Clipboard className="w-4 h-4" />
-                <span className="hidden lg:inline">PASTE SCENARIO</span>
-                <span className="lg:hidden">PASTE</span>
-              </Button>
+                {/* Stats Toggle Button */}
+                <Button
+                  onClick={() => setSummaryStatsOpen(!uiState.isSummaryStatsOpen)}
+                  variant="outline"
+                  size="sm"
+                  title="Toggle summary stats"
+                >
+                  <BarChart3 className="w-4 h-4" />
+                </Button>
 
-              {/* View History Button - Hidden on mobile */}
-              <Button
-                onClick={handleViewHistory}
-                variant="outline"
-                className="gap-2 hidden md:flex"
-                size="sm"
-                title="View state diagram version history"
-              >
-                <History className="w-4 h-4" />
-                <span className="hidden lg:inline">HISTORY</span>
-              </Button>
+                {/* Add Row Button */}
+                <Button
+                  onClick={handleAddRow}
+                  size="sm"
+                  title="Add new test case"
+                >
+                  <Plus className="w-4 h-4" />
+                </Button>
 
-              {/* Add Row Button */}
-              <Button
-                onClick={handleAddRow}
-                className="gap-2"
-                size="sm"
-                title="Add new test case"
-              >
-                <Plus className="w-4 h-4" />
-                <span className="hidden sm:inline">ADD ROW</span>
-              </Button>
+                {/* Help Button */}
+                <Button
+                  onClick={handleHelp}
+                  variant="secondary"
+                  size="sm"
+                  title="Help and documentation"
+                >
+                  <HelpCircle className="w-4 h-4" />
+                </Button>
 
-              {/* Help Button */}
-              <Button
-                onClick={handleHelp}
-                variant="secondary"
-                size="icon"
-                title="Help and documentation"
-              >
-                <HelpCircle className="w-4 sm:w-5 sm:h-5 h-4" />
-              </Button>
+                {/* Hamburger Menu */}
+                <Button
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  variant="outline"
+                  size="sm"
+                  title="More options"
+                >
+                  {isMobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+                </Button>
+              </div>
+
+              {/* Desktop: All buttons visible */}
+              <div className="hidden lg:flex items-center gap-2">
+                {/* Upload Button */}
+                <Button
+                  onClick={handleUploadClick}
+                  variant="outline"
+                  className="gap-2"
+                  size="sm"
+                  title="Upload JSON file (or drag and drop)"
+                >
+                  <Upload className="w-4 h-4" />
+                  UPLOAD
+                </Button>
+
+                {/* Download Button */}
+                <Button
+                  onClick={handleDownload}
+                  variant="outline"
+                  className="gap-2"
+                  size="sm"
+                  title="Download as JSON"
+                >
+                  <Download className="w-4 h-4" />
+                  DOWNLOAD
+                </Button>
+
+                {/* Paste Scenario Button */}
+                <Button
+                  onClick={handlePasteFromBERT}
+                  variant="outline"
+                  className="gap-2"
+                  size="sm"
+                  title="Paste test scenario from external tool"
+                >
+                  <Clipboard className="w-4 h-4" />
+                  PASTE
+                </Button>
+
+                {/* View History Button */}
+                <Button
+                  onClick={handleViewHistory}
+                  variant="outline"
+                  className="gap-2"
+                  size="sm"
+                  title="View state diagram version history"
+                >
+                  <History className="w-4 h-4" />
+                  HISTORY
+                </Button>
+
+                {/* Add Row Button */}
+                <Button
+                  onClick={handleAddRow}
+                  className="gap-2"
+                  size="sm"
+                  title="Add new test case"
+                >
+                  <Plus className="w-4 h-4" />
+                  ADD ROW
+                </Button>
+
+                {/* Help Button */}
+                <Button
+                  onClick={handleHelp}
+                  variant="secondary"
+                  size="sm"
+                  title="Help and documentation"
+                >
+                  <HelpCircle className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </div>
+
+          {/* Mobile Menu Dropdown */}
+          {isMobileMenuOpen && (
+            <div className="lg:hidden border-t border-slate-300 bg-white p-3">
+              <div className="flex flex-col gap-2">
+                <Button
+                  onClick={() => {
+                    handleUploadClick();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  variant="outline"
+                  className="gap-2 justify-start w-full"
+                  size="sm"
+                >
+                  <Upload className="w-4 h-4" />
+                  Upload JSON
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    handleDownload();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  variant="outline"
+                  className="gap-2 justify-start w-full"
+                  size="sm"
+                >
+                  <Download className="w-4 h-4" />
+                  Download JSON
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    handlePasteFromBERT();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  variant="outline"
+                  className="gap-2 justify-start w-full"
+                  size="sm"
+                >
+                  <Clipboard className="w-4 h-4" />
+                  Paste Scenario
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    handleViewHistory();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  variant="outline"
+                  className="gap-2 justify-start w-full"
+                  size="sm"
+                >
+                  <History className="w-4 h-4" />
+                  View History
+                </Button>
+              </div>
+            </div>
+          )}
 
           {/* Drag and drop overlay hint */}
           {isDragging && (

@@ -37,7 +37,19 @@ export function HelpModal() {
         {/* Header */}
         <CardHeader className="border-b border-slate-300 bg-slate-100">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-slate-800">Help & Documentation</CardTitle>
+            <div>
+              <CardTitle className="text-slate-800">Help & Documentation</CardTitle>
+              <p className="text-xs text-slate-600 mt-1">
+                Based on <a 
+                  href="https://www.youtube.com/watch?v=VL-_pnICmGY" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 underline font-medium"
+                >
+                  Angie Jones' Risk-Based Testing Model
+                </a>
+              </p>
+            </div>
             <Button
               variant="ghost"
               size="icon"
@@ -49,25 +61,28 @@ export function HelpModal() {
         </CardHeader>
 
         {/* Tab Navigation */}
-        <div className="border-b border-slate-300 bg-slate-50 flex">
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 px-6 py-4 font-semibold text-sm flex items-center justify-center gap-2 transition-all border-r border-slate-300 last:border-r-0 ${
-                activeTab === tab.id
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-              }`}
-            >
-              {tab.icon}
-              {tab.label}
-            </button>
-          ))}
+        <div className="border-b border-slate-300 bg-slate-50 overflow-x-auto relative z-10 flex-shrink-0">
+          <div className="flex h-[52px]">
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                style={{ width: '25%', minWidth: '140px' }}
+                className={`px-4 py-3 font-semibold text-sm flex items-center justify-center gap-2 transition-all border-r border-slate-300 last:border-r-0 ${
+                  activeTab === tab.id
+                    ? 'bg-white text-slate-900 shadow-sm'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
+              >
+                {tab.icon}
+                <span className="whitespace-nowrap">{tab.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Tab Content */}
-        <div className="flex-1 overflow-y-auto p-8 bg-white">
+        <div className="flex-1 overflow-y-auto p-8 bg-white relative z-0">
           {activeTab === 'quick-start' && <QuickStartTab />}
           {activeTab === 'scoring-guide' && <ScoringGuideTab />}
           {activeTab === 'best-practices' && <BestPracticesTab />}
@@ -87,10 +102,26 @@ function QuickStartTab() {
     <div className="space-y-6 max-w-3xl">
       <div>
         <h2 className="text-2xl font-semibold mb-4">Getting Started</h2>
-        <p className="text-muted-foreground leading-relaxed">
+        <p className="text-muted-foreground leading-relaxed mb-4">
           The Test Prioritisation Tool helps you make objective decisions about which tests to automate
           using Angie Jones' risk-based scoring methodology. Follow these steps to get started:
         </p>
+        <div className="bg-blue-50 border-2 border-blue-300 rounded-lg p-4">
+          <p className="text-sm text-blue-900 font-medium mb-2">
+            📺 This tool implements the scoring model from Angie Jones' talk:
+          </p>
+          <a 
+            href="https://www.youtube.com/watch?v=VL-_pnICmGY" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 underline font-semibold text-sm"
+          >
+            "Which Tests Should We Automate?" - Angie Jones
+          </a>
+          <p className="text-xs text-blue-800 mt-2">
+            Watch the talk to understand the methodology and reasoning behind the scoring system.
+          </p>
+        </div>
       </div>
 
       <div className="space-y-4">
@@ -134,10 +165,11 @@ function QuickStartTab() {
               <p className="text-xs text-yellow-800 mt-1">Score: 34-66</p>
             </div>
             <div className="border rounded-lg bg-red-100 p-3">
-              <p className="font-semibold text-red-700 text-sm">DON'T AUTOMATE</p>
+              <p className="font-semibold text-red-700 text-sm">Exploratory Testing</p>
               <p className="text-xs text-red-800 mt-1">Score: 0-33</p>
             </div>
           </div>
+          <p className='text-muted-foreground mb-3'>A low score doesn't mean that you shouldn't test that thing, it just means that it may not be worth automating it.</p>
         </div>
 
         <div className="border rounded-lg bg-purple-50 p-6">
@@ -160,7 +192,20 @@ function ScoringGuideTab() {
   return (
     <div className="space-y-6 max-w-3xl">
       <div>
-        <h2 className="text-2xl font-semibold mb-4">Scoring Formulas (Angie Jones' Model)</h2>
+        <h2 className="text-2xl font-semibold mb-4">Scoring Formulas</h2>
+        <div className="bg-blue-50 border-2 border-blue-300 rounded-lg p-4 mb-4">
+          <p className="text-sm text-blue-900 font-medium mb-2">
+            📊 This scoring model is from Angie Jones' risk-based testing methodology:
+          </p>
+          <a 
+            href="https://www.youtube.com/watch?v=VL-_pnICmGY" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 underline font-semibold text-sm"
+          >
+            "Which Tests Should We Automate?" - Angie Jones
+          </a>
+        </div>
         <p className="text-muted-foreground leading-relaxed mb-6">
           The total score is calculated from four main components (0-100 for Normal mode, 0-120 for Teaching mode with legal bonus). 
           Each component measures a different aspect of test automation value and feasibility.
@@ -213,7 +258,7 @@ function ScoringGuideTab() {
           <div className="bg-green-50 border rounded-lg p-4">
             <p className="font-medium text-sm mb-2">Induction to Action (1-5):</p>
             <p className="text-sm text-muted-foreground">
-              Would the dev team prioritize fixing if this test fails?
+              Would the dev team prioritise fixing if this test fails?
               <br />
               <span className="font-medium">5 = Critical fix immediately, 1 = Low priority or ignored</span>
             </p>
@@ -371,8 +416,8 @@ function ScoringGuideTab() {
           </div>
           <div className="bg-red-200 border rounded-lg p-4">
             <p className="font-semibold text-red-800 text-lg">0-33</p>
-            <p className="text-sm font-medium text-red-900 mt-1">DON'T AUTOMATE</p>
-            <p className="text-xs text-red-800 mt-2">Low value, consider manual testing</p>
+            <p className="text-sm font-medium text-red-900 mt-1">Exploratory Testing</p>
+            <p className="text-xs text-red-800 mt-2">Low value for automation, consider exploratory testing</p>
           </div>
         </div>
       </div>
@@ -398,7 +443,7 @@ function BestPracticesTab() {
         <div className="border rounded-lg bg-green-50 p-6">
           <h3 className="font-semibold text-lg mb-3 text-green-800">✓ DO: Focus on High-Risk Areas</h3>
           <p className="text-muted-foreground mb-3">
-            Prioritize tests for functionality that is frequently used and has high business impact.
+            Prioritise tests for functionality that is frequently used and has high business impact.
             These are the areas where bugs will hurt the most.
           </p>
           <div className="bg-background border rounded-lg p-4 text-sm">
@@ -424,7 +469,7 @@ function BestPracticesTab() {
         </div>
 
         <div className="border rounded-lg bg-green-50 p-6">
-          <h3 className="font-semibold text-lg mb-3 text-green-800">✓ DO: Prioritize Easy & Quick Tests</h3>
+          <h3 className="font-semibold text-lg mb-3 text-green-800">✓ DO: Prioritise Easy & Quick Tests</h3>
           <p className="text-muted-foreground mb-3">
             When functionality uses standard components and clear patterns, automation is both easier
             and quicker. Rate these highly on both effort factors (5 for easy, 5 for quick = 25 points).
@@ -454,15 +499,15 @@ function BestPracticesTab() {
         <div className="border rounded-lg bg-red-50 p-6">
           <h3 className="font-semibold text-lg mb-3 text-red-800">✗ DON'T: Ignore Legal Requirements</h3>
           <p className="text-muted-foreground mb-3">
-            Legal and compliance requirements must be tested regardless of score. The legal
-            checkbox adds 20 points to ensure these are prioritized.
+            Where I work, Legal and compliance requirements must be automated regardless of score. The legal
+            checkbox adds 20 points to ensure these are prioritised. The legal checkbox doesn't appear in the 'normal' view.
           </p>
           <div className="bg-background border rounded-lg p-4 text-sm">
             <p className="font-medium mb-2">Examples:</p>
             <ul className="text-muted-foreground list-disc list-inside space-y-1">
               <li>GDPR data deletion requests</li>
-              <li>Accessibility features (screen reader support)</li>
-              <li>Audit trail logging</li>
+              <li>Ofcom requirements</li>
+              <li>Legal things for your type of business</li>
             </ul>
           </div>
         </div>
@@ -534,11 +579,7 @@ function FAQTab() {
             When your gut feel doesn't match the calculated recommendation, you'll see a ⚠️ warning with an
             explanation. This is a learning opportunity, not an error!
           </p>
-          <p className="text-gray-700">
-            <strong>For experienced users:</strong> Once you're comfortable with the scoring system, you can hide
-            this column using the "HIDE GUT FEEL" button in the header.
-          </p>
-        </div>
+         </div>
 
         <div className="border-2 border-slate-300 rounded-lg bg-white p-6 shadow-sm">
           <h3 className="font-bold text-lg mb-3">What if my test scores in the "MAYBE" range?</h3>

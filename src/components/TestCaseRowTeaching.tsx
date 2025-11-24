@@ -30,6 +30,7 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showRealTalk, setShowRealTalk] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   // Calculate if Real Talk should be shown
   const baseTechnicalScore = TeachingScoreCalculator.calculateBaseTechnicalScore({
@@ -134,49 +135,152 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
   // ========================================================================
 
   if (isMobile) {
+    // Collapsed mobile view
+    if (isCollapsed) {
+      return (
+        <div className="bg-white border border-slate-300 rounded-lg p-3 shadow-sm">
+          <div className="flex items-center justify-between gap-2">
+            <button
+              onClick={() => setIsCollapsed(false)}
+              className="p-1 hover:bg-gray-200 rounded transition-colors flex-shrink-0"
+              title="Expand"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div className="flex-1 font-semibold text-gray-700 truncate text-sm">
+              {testCase.testName || 'Untitled Test'}
+            </div>
+            <div className="flex items-center gap-2">
+              <div className={`px-2 py-1 rounded text-xs font-bold ${getScoreColor(testCase.scores.total, 100)}`}>
+                {testCase.scores.total}
+              </div>
+              <div className={`px-2 py-1 rounded border text-xs font-bold ${getRecommendationColor(testCase.recommendation)}`}>
+                {getRecommendationLabel(testCase.recommendation)}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Expanded mobile view
     return (
       <div className="bg-white border border-slate-300 rounded-lg p-3 space-y-3 shadow-sm">
-        {/* Test Name */}
+        {/* Test Name with Collapse and Actions Menu */}
         <div className="flex justify-between items-start gap-2">
+          <div className="flex items-start gap-2 flex-1">
+            <button
+              onClick={() => setIsCollapsed(true)}
+              className="p-1 mt-2 hover:bg-gray-200 rounded transition-colors flex-shrink-0"
+              title="Collapse"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+              </svg>
+            </button>
+            <input
+              type="text"
+              value={testCase.testName}
+              onChange={handleTextChange('testName')}
+              className="flex-1 px-3 py-2 text-base border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white"
+              placeholder="Test name"
+            />
+          </div>
+          <div className="relative">
+            <button 
+              onClick={() => setShowMobileMenu(!showMobileMenu)} 
+              className="p-2 text-slate-600 hover:bg-slate-100 rounded-md transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+              </svg>
+            </button>
+            {showMobileMenu && (
+              <>
+                <div 
+                  className="fixed inset-0 z-40" 
+                  onClick={() => setShowMobileMenu(false)}
+                />
+                <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-300 rounded-lg shadow-lg z-50 overflow-hidden">
+                  <button
+                    onClick={() => {
+                      handleDuplicate();
+                      setShowMobileMenu(false);
+                    }}
+                    className="w-full px-4 py-3 text-left text-sm text-slate-700 hover:bg-blue-50 flex items-center gap-2 border-b border-slate-200"
+                  >
+                    <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    Duplicate
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleDelete();
+                      setShowMobileMenu(false);
+                    }}
+                    className="w-full px-4 py-3 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Delete
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Gut Feel */}
+        <div>
+          <div className="text-sm font-medium text-slate-600 mb-1">Gut Feel: {testCase.gutFeel ?? 3}</div>
           <input
-            type="text"
-            value={testCase.testName}
-            onChange={handleTextChange('testName')}
-            className="flex-1 px-3 py-2 text-base border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white"
-            placeholder="Test name"
+            type="range"
+            min="1"
+            max="5"
+            value={testCase.gutFeel ?? 3}
+            onChange={handleNumberChange('gutFeel', 1, 5)}
+            className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
           />
-          <button onClick={handleDelete} className="p-2 text-red-500 hover:bg-red-100 rounded-md transition-colors">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-          </button>
+          <div className="text-xs text-slate-500 italic text-center mt-0.5">
+            {testCase.gutFeel === 5 ? 'Definitely' :
+             testCase.gutFeel === 4 ? 'Probably' :
+             testCase.gutFeel === 3 ? 'Unsure' :
+             testCase.gutFeel === 2 ? 'Probably Skip' :
+             'Definitely Skip'}
+          </div>
         </div>
 
         {/* Customer Risk */}
         <div className="border-t pt-2">
           <div className="text-sm font-semibold text-slate-700 mb-2">Customer Risk (max 25)</div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-2">
             <div>
-              <div className="text-xs text-slate-600 mb-1">Impact</div>
+              <div className="text-xs text-slate-600 mb-1">Impact: {testCase.impact ?? 3}</div>
               <input
-                type="number"
+                type="range"
                 min="1"
                 max="5"
                 value={testCase.impact ?? 3}
                 onChange={handleNumberChange('impact', 1, 5)}
-                className="w-full px-2 py-1 text-sm border border-slate-300 rounded text-center"
+                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
               />
+              <div className="text-xs text-slate-500 italic text-center mt-0.5">{getImpactLabel(testCase.impact ?? 3)}</div>
             </div>
             <div>
-              <div className="text-xs text-slate-600 mb-1">Prob of Use</div>
+              <div className="text-xs text-slate-600 mb-1">Probability of Use: {testCase.probOfUse ?? 3}</div>
               <input
-                type="number"
+                type="range"
                 min="1"
                 max="5"
                 value={testCase.probOfUse ?? 3}
                 onChange={handleNumberChange('probOfUse', 1, 5)}
-                className="w-full px-2 py-1 text-sm border border-slate-300 rounded text-center"
+                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
               />
+              <div className="text-xs text-slate-500 italic text-center mt-0.5">{getProbabilityLabel(testCase.probOfUse ?? 3)}</div>
             </div>
           </div>
         </div>
@@ -184,28 +288,30 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
         {/* Value of Test */}
         <div className="border-t pt-2">
           <div className="text-sm font-semibold text-slate-700 mb-2">Value of Test (max 25)</div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-2">
             <div>
-              <div className="text-xs text-slate-600 mb-1">Distinctness</div>
+              <div className="text-xs text-slate-600 mb-1">Distinctness: {testCase.distinctness ?? 3}</div>
               <input
-                type="number"
+                type="range"
                 min="1"
                 max="5"
                 value={testCase.distinctness ?? 3}
                 onChange={handleNumberChange('distinctness', 1, 5)}
-                className="w-full px-2 py-1 text-sm border border-slate-300 rounded text-center"
+                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
               />
+              <div className="text-xs text-slate-500 italic text-center mt-0.5">{getDistinctnessLabel(testCase.distinctness ?? 3)}</div>
             </div>
             <div>
-              <div className="text-xs text-slate-600 mb-1">Fix Prob</div>
+              <div className="text-xs text-slate-600 mb-1">Induction to Action: {testCase.fixProbability ?? 3}</div>
               <input
-                type="number"
+                type="range"
                 min="1"
                 max="5"
                 value={testCase.fixProbability ?? 3}
                 onChange={handleNumberChange('fixProbability', 1, 5)}
-                className="w-full px-2 py-1 text-sm border border-slate-300 rounded text-center"
+                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
               />
+              <div className="text-xs text-slate-500 italic text-center mt-0.5">{getFixProbabilityLabel(testCase.fixProbability ?? 3)}</div>
             </div>
           </div>
         </div>
@@ -213,28 +319,30 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
         {/* Cost Efficiency */}
         <div className="border-t pt-2">
           <div className="text-sm font-semibold text-slate-700 mb-2">Cost Efficiency (max 25)</div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-2">
             <div>
-              <div className="text-xs text-slate-600 mb-1">Easy</div>
+              <div className="text-xs text-slate-600 mb-1">Easy to write: {testCase.easyToWrite ?? 3}</div>
               <input
-                type="number"
+                type="range"
                 min="1"
                 max="5"
                 value={testCase.easyToWrite ?? 3}
                 onChange={handleNumberChange('easyToWrite', 1, 5)}
-                className="w-full px-2 py-1 text-sm border border-slate-300 rounded text-center"
+                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
               />
+              <div className="text-xs text-slate-500 italic text-center mt-0.5">{getEaseLabel(testCase.easyToWrite ?? 3)}</div>
             </div>
             <div>
-              <div className="text-xs text-slate-600 mb-1">Quick</div>
+              <div className="text-xs text-slate-600 mb-1">Quick to write: {testCase.quickToWrite ?? 3}</div>
               <input
-                type="number"
+                type="range"
                 min="1"
                 max="5"
                 value={testCase.quickToWrite ?? 3}
                 onChange={handleNumberChange('quickToWrite', 1, 5)}
-                className="w-full px-2 py-1 text-sm border border-slate-300 rounded text-center"
+                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
               />
+              <div className="text-xs text-slate-500 italic text-center mt-0.5">{getSpeedLabel(testCase.quickToWrite ?? 3)}</div>
             </div>
           </div>
         </div>
@@ -242,28 +350,30 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
         {/* History */}
         <div className="border-t pt-2">
           <div className="text-sm font-semibold text-slate-700 mb-2">History (max 5)</div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-2">
             <div>
-              <div className="text-xs text-slate-600 mb-1">Similarity</div>
+              <div className="text-xs text-slate-600 mb-1">Bug count: {testCase.similarity ?? 1}</div>
               <input
-                type="number"
+                type="range"
                 min="1"
                 max="5"
                 value={testCase.similarity ?? 1}
                 onChange={handleNumberChange('similarity', 1, 5)}
-                className="w-full px-2 py-1 text-sm border border-slate-300 rounded text-center"
+                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
               />
+              <div className="text-xs text-slate-500 italic text-center mt-0.5">{getSimilarityLabel(testCase.similarity ?? 1)}</div>
             </div>
             <div>
-              <div className="text-xs text-slate-600 mb-1">Break Freq</div>
+              <div className="text-xs text-slate-600 mb-1">Affected areas: {testCase.breakFreq ?? 1}</div>
               <input
-                type="number"
+                type="range"
                 min="1"
                 max="5"
                 value={testCase.breakFreq ?? 1}
                 onChange={handleNumberChange('breakFreq', 1, 5)}
-                className="w-full px-2 py-1 text-sm border border-slate-300 rounded text-center"
+                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
               />
+              <div className="text-xs text-slate-500 italic text-center mt-0.5">{getBreakFrequencyLabel(testCase.breakFreq ?? 1)}</div>
             </div>
           </div>
         </div>
@@ -358,11 +468,13 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
         )}
 
         {showDeleteConfirm && (
-          <div className="p-3 bg-red-50 border border-red-300 rounded-md">
-            <p className="text-sm text-red-700 mb-2">Delete "{testCase.testName}"?</p>
-            <div className="flex gap-2">
-              <button onClick={confirmDelete} className="px-4 py-2 text-sm bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors">Delete</button>
-              <button onClick={cancelDelete} className="px-4 py-2 text-sm bg-slate-200 text-slate-700 rounded-md hover:bg-slate-300 transition-colors">Cancel</button>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full border-2 border-red-300">
+              <p className="text-base text-red-700 font-bold mb-4">Delete "{testCase.testName}"?</p>
+              <div className="flex gap-3 justify-end">
+                <button onClick={cancelDelete} className="px-4 py-2 text-sm bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors font-semibold">Cancel</button>
+                <button onClick={confirmDelete} className="px-4 py-2 text-sm bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors font-semibold">Delete</button>
+              </div>
             </div>
           </div>
         )}
@@ -547,7 +659,7 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
                 </div>
                 <div>
                   <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
-                    <span className="text-base text-gray-700 font-semibold">Prob of Use: {testCase.probOfUse ?? 3}</span>
+                    <span className="text-base text-gray-700 font-semibold">Probability of Use: {testCase.probOfUse ?? 3}</span>
                     <span className="text-base text-gray-500 italic text-right truncate">{getProbabilityLabel(testCase.probOfUse ?? 3)}</span>
                   </div>
                   <input
@@ -587,7 +699,7 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
                 </div>
                 <div>
                   <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
-                    <span className="text-base text-gray-700 font-semibold">Fix Prob: {testCase.fixProbability ?? 3}</span>
+                    <span className="text-base text-gray-700 font-semibold">Induction to Action: {testCase.fixProbability ?? 3}</span>
                     <span className="text-base text-gray-500 italic text-right truncate">{getFixProbabilityLabel(testCase.fixProbability ?? 3)}</span>
                   </div>
                   <input
@@ -613,7 +725,7 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
               <div className="space-y-2">
                 <div>
                   <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
-                    <span className="text-base text-gray-700 font-semibold">Easy: {testCase.easyToWrite ?? 3}</span>
+                    <span className="text-base text-gray-700 font-semibold">Easy to write: {testCase.easyToWrite ?? 3}</span>
                     <span className="text-base text-gray-500 italic text-right truncate">{getEaseLabel(testCase.easyToWrite ?? 3)}</span>
                   </div>
                   <input
@@ -627,7 +739,7 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
                 </div>
                 <div>
                   <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
-                    <span className="text-base text-gray-700 font-semibold">Quick: {testCase.quickToWrite ?? 3}</span>
+                    <span className="text-base text-gray-700 font-semibold">Quick to write: {testCase.quickToWrite ?? 3}</span>
                     <span className="text-base text-gray-500 italic text-right truncate">{getSpeedLabel(testCase.quickToWrite ?? 3)}</span>
                   </div>
                   <input
@@ -653,7 +765,7 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
               <div className="space-y-2">
                 <div>
                   <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
-                    <span className="text-base text-gray-700 font-semibold">Similarity: {testCase.similarity ?? 1}</span>
+                    <span className="text-base text-gray-700 font-semibold">Bug count: {testCase.similarity ?? 1}</span>
                     <span className="text-base text-gray-500 italic text-right truncate">{getSimilarityLabel(testCase.similarity ?? 1)}</span>
                   </div>
                   <input
@@ -667,7 +779,7 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
                 </div>
                 <div>
                   <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
-                    <span className="text-base text-gray-700 font-semibold">Break Freq: {testCase.breakFreq ?? 1}</span>
+                    <span className="text-base text-gray-700 font-semibold">Affected areas: {testCase.breakFreq ?? 1}</span>
                     <span className="text-base text-gray-500 italic text-right truncate">{getBreakFrequencyLabel(testCase.breakFreq ?? 1)}</span>
                   </div>
                   <input
@@ -769,11 +881,13 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
             </button>
           </div>
           {showDeleteConfirm && (
-            <div className="absolute z-10 mt-1 p-2 bg-white border rounded-lg rounded shadow-md right-0">
-              <p className="text-xs text-red-700 font-bold mb-2">Delete?</p>
-              <div className="flex gap-1">
-                <button onClick={confirmDelete} className="px-2 py-1 text-xs bg-red-500 text-white rounded border hover:shadow-sm font-bold">Yes</button>
-                <button onClick={cancelDelete} className="px-2 py-1 text-xs bg-gray-200 rounded border hover:shadow-sm font-bold">No</button>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+              <div className="bg-white rounded-lg shadow-xl p-4 max-w-sm w-full border-2 border-red-300">
+                <p className="text-sm text-red-700 font-bold mb-4">Delete "{testCase.testName}"?</p>
+                <div className="flex gap-2 justify-end">
+                  <button onClick={cancelDelete} className="px-4 py-2 text-sm bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors font-semibold">Cancel</button>
+                  <button onClick={confirmDelete} className="px-4 py-2 text-sm bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors font-semibold">Delete</button>
+                </div>
               </div>
             </div>
           )}
