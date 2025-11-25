@@ -4,7 +4,7 @@
  * Optimized with React.memo for performance
  */
 
-import { memo, useCallback, useState, useMemo } from 'react';
+import { memo, useCallback, useState, useMemo, useRef, useEffect } from 'react';
 import { useAppContext } from '../context';
 import type { TestCase } from '../types/models';
 import { CodeChange, Recommendation, InitialJudgment } from '../types/models';
@@ -21,12 +21,26 @@ function TestCaseRowComponent({ testCase, isMobile = false }: TestCaseRowProps) 
   const { updateTestCase, deleteTestCase, duplicateTestCase, showNotification, userPreferences } = useAppContext();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
+  const textareaRefMobile = useRef<HTMLTextAreaElement>(null);
+  const textareaRefDesktop = useRef<HTMLTextAreaElement>(null);
 
   // Get validation warnings for this test case
   const validationWarnings = useMemo(() => 
     ValidationService.getValidationWarnings(testCase),
     [testCase]
   );
+
+  // Auto-resize textarea when content changes
+  useEffect(() => {
+    const resizeTextarea = (textarea: HTMLTextAreaElement | null) => {
+      if (textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+      }
+    };
+    resizeTextarea(textareaRefMobile.current);
+    resizeTextarea(textareaRefDesktop.current);
+  }, [testCase.testName]);
 
   // ========================================================================
   // Update Handlers
@@ -169,14 +183,15 @@ function TestCaseRowComponent({ testCase, isMobile = false }: TestCaseRowProps) 
     return (
       <div className={`${testCase.isLegal ? 'bg-amber-50' : 'bg-slate-50'} border border-slate-300 rounded-lg p-3 space-y-3 shadow-sm`}>
         <div className="flex justify-between items-start gap-2">
-          <input
-            type="text"
+          <textarea
+            ref={textareaRefMobile}
             value={testCase.testName}
             onChange={handleTextChange('testName')}
-            className={`flex-1 px-3 py-2 text-base border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white ${
+            className={`flex-1 px-3 py-2 text-base border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white resize-none overflow-hidden break-words ${
               hasErrors ? 'border-red-400 bg-red-50' : ''
             }`}
             placeholder="Test name"
+            rows={1}
           />
           <button onClick={handleDelete} className="p-2 text-red-500 hover:bg-red-100 rounded-md transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -386,14 +401,15 @@ function TestCaseRowComponent({ testCase, isMobile = false }: TestCaseRowProps) 
       <tr className={`${rowClassName} border-b-0 transition-colors`}>
         {/* Test Name - Responsive padding */}
         <td className="px-2 sm:px-4 py-2 sm:py-3 text-base relative">
-          <input
-            type="text"
+          <textarea
+            ref={textareaRefDesktop}
             value={testCase.testName}
             onChange={handleTextChange('testName')}
-            className={`w-full px-2 py-1.5 sm:py-1 text-base border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent touch-manipulation ${
+            className={`w-full px-2 py-1.5 sm:py-1 text-base border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent touch-manipulation resize-none overflow-hidden break-words ${
               hasErrors ? 'border-red-300 bg-red-50' : 'border-gray-300'
             }`}
             placeholder="Enter test name"
+            rows={1}
           />
           <InlineValidation warnings={validationWarnings} field="testName" />
         </td>

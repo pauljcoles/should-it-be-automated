@@ -246,6 +246,12 @@ export interface TestCase {
     /** Initial judgment (gut feel) before scoring - for bias detection and learning */
     initialJudgment?: InitialJudgment;
 
+    /** User-controlled flag to mark this test case as fully scored */
+    isScored?: boolean;
+
+    /** User-controlled flag to mark this test case as descoped/junk */
+    isDescoped?: boolean;
+
     /** @deprecated Legacy field - use easyToAutomate and quickToAutomate instead */
     implementationType?: ImplementationType;
 }
@@ -429,6 +435,9 @@ export interface FilterState {
 
     /** Filter by legal requirement */
     isLegal?: boolean;
+
+    /** Filter by descoped status: true = show only descoped, false = hide descoped, undefined = show all */
+    isDescoped?: boolean;
 }
 
 /**

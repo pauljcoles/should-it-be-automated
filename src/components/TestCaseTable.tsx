@@ -13,7 +13,7 @@ import type { TestCase } from '../types/models';
 import { AppMode } from '../types/models';
 
 export function TestCaseTable() {
-  const { appState, filters, sortConfig, userPreferences } = useAppContext();
+  const { appState, filters, sortConfig, userPreferences, collapseAllRows, expandAllRows } = useAppContext();
 
   // ========================================================================
   // Filter and Sort Logic
@@ -45,6 +45,10 @@ export function TestCaseTable() {
 
     if (filters.isLegal !== undefined) {
       result = result.filter(tc => tc.isLegal === filters.isLegal);
+    }
+
+    if (filters.isDescoped !== undefined) {
+      result = result.filter(tc => (tc.isDescoped ?? false) === filters.isDescoped);
     }
 
     // Apply sorting
@@ -109,7 +113,31 @@ export function TestCaseTable() {
               {userPreferences.appMode === AppMode.NORMAL ? (
                 // Normal Mode Headers - Grid layout
                 <tr>
-                  <th className="px-3 py-3 text-left text-base font-bold text-slate-700 min-w-[150px] border-r border-slate-300">Test Name</th>
+                  <th className="px-3 py-3 text-left text-base font-bold text-slate-700 min-w-[150px] border-r border-slate-300">
+                    <div className="flex items-center gap-2">
+                      <span>Test Name</span>
+                      <div className="flex gap-1 ml-auto">
+                        <button
+                          onClick={collapseAllRows}
+                          className="p-1.5 bg-white hover:bg-slate-200 rounded border border-slate-300 transition-colors shadow-sm"
+                          title="Collapse all rows"
+                        >
+                          <svg className="w-3.5 h-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={expandAllRows}
+                          className="p-1.5 bg-white hover:bg-slate-200 rounded border border-slate-300 transition-colors shadow-sm"
+                          title="Expand all rows"
+                        >
+                          <svg className="w-3.5 h-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </th>
                   <th className="px-3 py-3 text-center text-base font-bold text-slate-700 min-w-[100px] border-r border-slate-300">Gut Feel</th>
                   <th className="px-3 py-3 text-center text-base font-bold text-slate-700 border-r border-slate-300" colSpan={4}>Scoring Categories</th>
                   <th className="px-3 py-3 text-center text-base font-bold text-slate-700 min-w-[80px] border-r border-slate-300">Total Score</th>
@@ -119,7 +147,31 @@ export function TestCaseTable() {
               ) : (
                 // Teaching Mode Headers - Grid layout (same as Normal mode)
                 <tr>
-                  <th className="px-3 py-3 text-left text-base font-bold text-slate-700 min-w-[150px] border-r border-slate-300">Test Name</th>
+                  <th className="px-3 py-3 text-left text-base font-bold text-slate-700 min-w-[150px] border-r border-slate-300">
+                    <div className="flex items-center gap-2">
+                      <span>Test Name</span>
+                      <div className="flex gap-1 ml-auto">
+                        <button
+                          onClick={collapseAllRows}
+                          className="p-1.5 bg-white hover:bg-slate-200 rounded border border-slate-300 transition-colors shadow-sm"
+                          title="Collapse all rows"
+                        >
+                          <svg className="w-3.5 h-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={expandAllRows}
+                          className="p-1.5 bg-white hover:bg-slate-200 rounded border border-slate-300 transition-colors shadow-sm"
+                          title="Expand all rows"
+                        >
+                          <svg className="w-3.5 h-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </th>
                   <th className="px-3 py-3 text-center text-base font-bold text-slate-700 min-w-[100px] border-r border-slate-300">Gut Feel</th>
                   <th className="px-3 py-3 text-center text-base font-bold text-slate-700 border-r border-slate-300" colSpan={4}>Scoring Categories</th>
                   <th className="px-3 py-3 text-center text-base font-bold text-slate-700 min-w-[100px] border-r border-slate-300">Legal & Org Pressure</th>

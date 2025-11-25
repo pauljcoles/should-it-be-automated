@@ -61,6 +61,8 @@ interface UIState {
         message: string;
         type: 'success' | 'error' | 'info';
     };
+    /** Map of test case IDs to their collapsed state */
+    collapsedRows: Record<string, boolean>;
 }
 
 /**
@@ -102,6 +104,7 @@ interface AppContextActions {
     setCodeChangeFilter: (codeChange?: CodeChange) => void;
     setImplementationTypeFilter: (implementationType?: ImplementationType) => void;
     setLegalFilter: (isLegal?: boolean) => void;
+    setDescopeFilter: (isDescoped?: boolean) => void;
     clearFilters: () => void;
     
     // Sort Actions
@@ -127,6 +130,11 @@ interface AppContextActions {
     setSidebarOpen: (isOpen: boolean) => void;
     showNotification: (message: string, type: 'success' | 'error' | 'info') => void;
     clearNotification: () => void;
+    
+    // Row Collapse Actions
+    setRowCollapsed: (id: string, collapsed: boolean) => void;
+    collapseAllRows: () => void;
+    expandAllRows: () => void;
     
     // Preferences Actions
     setShowInitialJudgment: (show: boolean) => void;
@@ -255,7 +263,8 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
         isStorageErrorModalOpen: false,
         isFiltersOpen: false,
         isSummaryStatsOpen: false,
-        isSidebarOpen: false // Default to closed
+        isSidebarOpen: false, // Default to closed
+        collapsedRows: {} // Default to all rows expanded
     });
     const [stateDiagramHistory, setStateDiagramHistory] = useState<StateDiagram[]>([]);
     const [storageAvailable, setStorageAvailable] = useState<boolean>(true);
@@ -515,6 +524,10 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
     const setLegalFilter = useCallback((isLegal?: boolean) => {
         setFilters(prev => ({ ...prev, isLegal }));
     }, []);
+
+    const setDescopeFilter = useCallback((isDescoped?: boolean) => {
+        setFilters(prev => ({ ...prev, isDescoped }));
+    }, []);
     
     const clearFilters = useCallback(() => {
         setFilters({});
@@ -619,6 +632,46 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
     }, []);
     
     // ========================================================================
+    // Row Collapse Actions
+    // ========================================================================
+    
+    const setRowCollapsed = useCallback((id: string, collapsed: boolean) => {
+        setUIState(prev => ({
+            ...prev,
+            collapsedRows: {
+                ...prev.collapsedRows,
+                [id]: collapsed
+            }
+        }));
+    }, []);
+    
+    const collapseAllRows = useCallback(() => {
+        setUIState(prev => {
+            const collapsedRows: Record<string, boolean> = {};
+            appState.testCases.forEach(tc => {
+                collapsedRows[tc.id] = true;
+            });
+            return {
+                ...prev,
+                collapsedRows
+            };
+        });
+    }, [appState.testCases]);
+    
+    const expandAllRows = useCallback(() => {
+        setUIState(prev => {
+            const collapsedRows: Record<string, boolean> = {};
+            appState.testCases.forEach(tc => {
+                collapsedRows[tc.id] = false;
+            });
+            return {
+                ...prev,
+                collapsedRows
+            };
+        });
+    }, [appState.testCases]);
+    
+    // ========================================================================
     // Preferences Actions
     // ========================================================================
     
@@ -674,6 +727,7 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
         setCodeChangeFilter,
         setImplementationTypeFilter,
         setLegalFilter,
+        setDescopeFilter,
         clearFilters,
         
         // Sort Actions
@@ -699,6 +753,11 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
         setSidebarOpen,
         showNotification,
         clearNotification,
+        
+        // Row Collapse Actions
+        setRowCollapsed,
+        collapseAllRows,
+        expandAllRows,
         
         // Preferences Actions
         setShowInitialJudgment,

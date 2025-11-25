@@ -4,7 +4,7 @@
  * Uses same 7 fields as Normal Mode with educational guidance
  */
 
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useState, useRef, useEffect } from 'react';
 import { useAppContext } from '../context';
 import type { TestCase } from '../types/models';
 import { Recommendation } from '../types/models';
@@ -26,11 +26,29 @@ interface TestCaseRowTeachingProps {
 }
 
 function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRowTeachingProps) {
-  const { updateTestCase, deleteTestCase, duplicateTestCase, showNotification } = useAppContext();
+  const { updateTestCase, deleteTestCase, duplicateTestCase, showNotification, uiState, setRowCollapsed } = useAppContext();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showRealTalk, setShowRealTalk] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [isHighlighted, setIsHighlighted] = useState(false);
+  const textareaRefMobile = useRef<HTMLTextAreaElement>(null);
+  const textareaRefDesktop = useRef<HTMLTextAreaElement>(null);
+  const rowRef = useRef<HTMLTableRowElement | HTMLDivElement>(null);
+  
+  // Use global collapsed state, default to true (collapsed) if not set
+  const isCollapsed = uiState.collapsedRows[testCase.id] ?? true;
+
+  // Auto-resize textarea when content changes
+  useEffect(() => {
+    const resizeTextarea = (textarea: HTMLTextAreaElement | null) => {
+      if (textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+      }
+    };
+    resizeTextarea(textareaRefMobile.current);
+    resizeTextarea(textareaRefDesktop.current);
+  }, [testCase.testName, isCollapsed]);
 
   // Calculate if Real Talk should be shown
   const baseTechnicalScore = TeachingScoreCalculator.calculateBaseTechnicalScore({
@@ -93,6 +111,31 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
     showNotification('Test case duplicated', 'success');
   }, [testCase.id, duplicateTestCase, showNotification]);
 
+  const handleToggleCollapse = useCallback((collapsed: boolean) => {
+    setRowCollapsed(testCase.id, collapsed);
+    setIsHighlighted(true);
+    setTimeout(() => setIsHighlighted(false), 600);
+    
+    // Scroll to make row visible when expanding, with offset for sticky header
+    if (!collapsed) {
+      setTimeout(() => {
+        if (rowRef.current) {
+          const element = rowRef.current;
+          const rect = element.getBoundingClientRect();
+          const offset = 80; // Account for sticky header
+          
+          // Only scroll if the row is not fully visible
+          if (rect.top < offset || rect.bottom > window.innerHeight) {
+            window.scrollBy({
+              top: rect.top - offset,
+              behavior: 'smooth'
+            });
+          }
+        }
+      }, 50);
+    }
+  }, [testCase.id, setRowCollapsed]);
+
   // ========================================================================
   // Helper Functions
   // ========================================================================
@@ -138,10 +181,10 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
     // Collapsed mobile view
     if (isCollapsed) {
       return (
-        <div className="bg-white border border-slate-300 rounded-lg p-3 shadow-sm">
+        <div className={`border border-slate-300 rounded-lg p-3 shadow-sm ${isHighlighted ? 'bg-blue-100' : testCase.isDescoped ? 'bg-gray-100 opacity-60' : 'bg-white'}`}>
           <div className="flex items-center justify-between gap-2">
             <button
-              onClick={() => setIsCollapsed(false)}
+              onClick={() => handleToggleCollapse(false)}
               className="p-1 hover:bg-gray-200 rounded transition-colors flex-shrink-0"
               title="Expand"
             >
@@ -149,10 +192,24 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
-            <div className="flex-1 font-semibold text-gray-700 truncate text-sm">
+            <div className={`flex-1 font-semibold text-gray-700 truncate text-sm ${testCase.isDescoped ? 'line-through' : ''}`}>
               {testCase.testName || 'Untitled Test'}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              {testCase.isDescoped && (
+                <div className="flex items-center justify-center w-6 h-6 bg-gray-200 border border-gray-400 rounded" title="Descoped">
+                  <svg className="w-3.5 h-3.5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </div>
+              )}
+              {testCase.isScored && (
+                <div className="flex items-center justify-center w-6 h-6 bg-green-100 border border-green-300 rounded" title="Scored">
+                  <svg className="w-3.5 h-3.5 text-green-700" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              )}
               <div className={`px-2 py-1 rounded text-xs font-bold ${getScoreColor(testCase.scores.total, 100)}`}>
                 {testCase.scores.total}
               </div>
@@ -167,12 +224,12 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
 
     // Expanded mobile view
     return (
-      <div className="bg-white border border-slate-300 rounded-lg p-3 space-y-3 shadow-sm">
+      <div ref={rowRef as React.RefObject<HTMLDivElement>} className={`border border-slate-300 rounded-lg p-3 space-y-3 shadow-sm ${isHighlighted ? 'bg-blue-100' : testCase.isDescoped ? 'bg-gray-100 opacity-75' : 'bg-white'}`}>
         {/* Test Name with Collapse and Actions Menu */}
         <div className="flex justify-between items-start gap-2">
           <div className="flex items-start gap-2 flex-1">
             <button
-              onClick={() => setIsCollapsed(true)}
+              onClick={() => handleToggleCollapse(true)}
               className="p-1 mt-2 hover:bg-gray-200 rounded transition-colors flex-shrink-0"
               title="Collapse"
             >
@@ -180,12 +237,13 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
               </svg>
             </button>
-            <input
-              type="text"
+            <textarea
+              ref={textareaRefMobile}
               value={testCase.testName}
               onChange={handleTextChange('testName')}
-              className="flex-1 px-3 py-2 text-base border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white"
+              className="flex-1 px-3 py-2 text-base border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white resize-none overflow-hidden break-words"
               placeholder="Test name"
+              rows={1}
             />
           </div>
           <div className="relative">
@@ -425,8 +483,28 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
               (Base: {baseTechnicalScore}/100 + Legal: {testCase.scores.legal ?? 0}/20)
             </div>
           </div>
-          <div className={`px-4 py-2 rounded-md border font-bold text-sm ${getRecommendationColor(testCase.recommendation)}`}>
-            {getRecommendationLabel(testCase.recommendation)}
+          <div className="flex flex-col items-end gap-2">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={testCase.isScored ?? false}
+                onChange={handleCheckboxChange('isScored')}
+                className="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+              />
+              <span className="text-sm font-semibold text-gray-700">Scored</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={testCase.isDescoped ?? false}
+                onChange={handleCheckboxChange('isDescoped')}
+                className="w-5 h-5 text-gray-600 border-gray-300 rounded focus:ring-gray-500"
+              />
+              <span className="text-sm font-semibold text-gray-700">Descope</span>
+            </label>
+            <div className={`px-4 py-2 rounded-md border font-bold text-sm ${getRecommendationColor(testCase.recommendation)}`}>
+              {getRecommendationLabel(testCase.recommendation)}
+            </div>
           </div>
         </div>
 
@@ -490,12 +568,12 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
   if (isCollapsed) {
     return (
       <>
-        <tr className="bg-white hover:bg-gray-50 border-b transition-all">
+        <tr className={`border-b transition-all ${isHighlighted ? 'bg-blue-100' : testCase.isDescoped ? 'bg-gray-100 opacity-60 hover:bg-gray-200' : 'bg-white hover:bg-gray-50'}`}>
           {/* Test Name with Expand Button */}
           <td className="px-3 py-3 border-r border-slate-300" colSpan={2}>
             <div className="flex items-center gap-2">
               <button
-                onClick={() => setIsCollapsed(false)}
+                onClick={() => handleToggleCollapse(false)}
                 className="p-1 hover:bg-gray-200 rounded border transition-all"
                 title="Expand row"
               >
@@ -503,7 +581,21 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-              <span className="font-semibold text-gray-700 truncate">{testCase.testName || 'Untitled Test'}</span>
+              {testCase.isDescoped && (
+                <div className="flex items-center justify-center w-6 h-6 bg-gray-200 border border-gray-400 rounded" title="Descoped">
+                  <svg className="w-3.5 h-3.5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </div>
+              )}
+              {testCase.isScored && (
+                <div className="flex items-center justify-center w-6 h-6 bg-green-100 border border-green-300 rounded" title="Scored">
+                  <svg className="w-3.5 h-3.5 text-green-700" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              )}
+              <span className={`font-semibold text-gray-700 truncate ${testCase.isDescoped ? 'line-through' : ''}`}>{testCase.testName || 'Untitled Test'}</span>
             </div>
           </td>
 
@@ -589,12 +681,12 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
 
   return (
     <>
-      <tr className="bg-white hover:bg-gray-50 border-b border-slate-300 transition-all hover:shadow-sm">
+      <tr ref={rowRef as React.RefObject<HTMLTableRowElement>} className={`border-b border-slate-300 transition-all hover:shadow-sm ${isHighlighted ? 'bg-blue-100' : testCase.isDescoped ? 'bg-gray-100 opacity-75 hover:bg-gray-200' : 'bg-white hover:bg-gray-50'}`}>
         {/* Test Name with Collapse Button */}
         <td className="px-3 py-3 border-r border-slate-300">
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setIsCollapsed(true)}
+              onClick={() => handleToggleCollapse(true)}
               className="p-1 hover:bg-gray-200 rounded border transition-all flex-shrink-0"
               title="Collapse row"
             >
@@ -602,12 +694,13 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
               </svg>
             </button>
-            <input
-              type="text"
+            <textarea
+              ref={textareaRefDesktop}
               value={testCase.testName}
               onChange={handleTextChange('testName')}
-              className="flex-1 px-2 py-1.5 text-base border rounded-lg rounded focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm hover:shadow-md transition-all"
+              className={`flex-1 px-2 py-1.5 text-base border rounded-lg rounded focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm hover:shadow-md transition-all resize-none overflow-hidden break-words ${testCase.isDescoped ? 'line-through' : ''}`}
               placeholder="Test name"
+              rows={1}
             />
           </div>
         </td>
@@ -644,9 +737,9 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
               </div>
               <div className="space-y-2">
                 <div>
-                  <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
+                  <div className="grid grid-cols-[1fr_auto] gap-2 items-center">
                     <span className="text-base text-gray-700 font-semibold">Impact: {testCase.impact ?? 3}</span>
-                    <span className="text-base text-gray-500 italic text-right truncate">{getImpactLabel(testCase.impact ?? 3)}</span>
+                    <span className="text-xs text-gray-500 italic text-right max-w-[180px] break-words">{getImpactLabel(testCase.impact ?? 3)}</span>
                   </div>
                   <input
                     type="range"
@@ -658,9 +751,9 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
                   />
                 </div>
                 <div>
-                  <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
+                  <div className="grid grid-cols-[1fr_auto] gap-2 items-center">
                     <span className="text-base text-gray-700 font-semibold">Probability of Use: {testCase.probOfUse ?? 3}</span>
-                    <span className="text-base text-gray-500 italic text-right truncate">{getProbabilityLabel(testCase.probOfUse ?? 3)}</span>
+                    <span className="text-xs text-gray-500 italic text-right max-w-[180px] break-words">{getProbabilityLabel(testCase.probOfUse ?? 3)}</span>
                   </div>
                   <input
                     type="range"
@@ -684,9 +777,9 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
               </div>
               <div className="space-y-2">
                 <div>
-                  <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
+                  <div className="grid grid-cols-[1fr_auto] gap-2 items-center">
                     <span className="text-base text-gray-700 font-semibold">Distinctness: {testCase.distinctness ?? 3}</span>
-                    <span className="text-base text-gray-500 italic text-right truncate">{getDistinctnessLabel(testCase.distinctness ?? 3)}</span>
+                    <span className="text-xs text-gray-500 italic text-right max-w-[180px] break-words">{getDistinctnessLabel(testCase.distinctness ?? 3)}</span>
                   </div>
                   <input
                     type="range"
@@ -698,9 +791,9 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
                   />
                 </div>
                 <div>
-                  <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
+                  <div className="grid grid-cols-[1fr_auto] gap-2 items-center">
                     <span className="text-base text-gray-700 font-semibold">Induction to Action: {testCase.fixProbability ?? 3}</span>
-                    <span className="text-base text-gray-500 italic text-right truncate">{getFixProbabilityLabel(testCase.fixProbability ?? 3)}</span>
+                    <span className="text-xs text-gray-500 italic text-right max-w-[180px] break-words">{getFixProbabilityLabel(testCase.fixProbability ?? 3)}</span>
                   </div>
                   <input
                     type="range"
@@ -724,9 +817,9 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
               </div>
               <div className="space-y-2">
                 <div>
-                  <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
+                  <div className="grid grid-cols-[1fr_auto] gap-2 items-center">
                     <span className="text-base text-gray-700 font-semibold">Easy to write: {testCase.easyToWrite ?? 3}</span>
-                    <span className="text-base text-gray-500 italic text-right truncate">{getEaseLabel(testCase.easyToWrite ?? 3)}</span>
+                    <span className="text-xs text-gray-500 italic text-right max-w-[180px] break-words">{getEaseLabel(testCase.easyToWrite ?? 3)}</span>
                   </div>
                   <input
                     type="range"
@@ -738,9 +831,9 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
                   />
                 </div>
                 <div>
-                  <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
+                  <div className="grid grid-cols-[1fr_auto] gap-2 items-center">
                     <span className="text-base text-gray-700 font-semibold">Quick to write: {testCase.quickToWrite ?? 3}</span>
-                    <span className="text-base text-gray-500 italic text-right truncate">{getSpeedLabel(testCase.quickToWrite ?? 3)}</span>
+                    <span className="text-xs text-gray-500 italic text-right max-w-[180px] break-words">{getSpeedLabel(testCase.quickToWrite ?? 3)}</span>
                   </div>
                   <input
                     type="range"
@@ -764,9 +857,9 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
               </div>
               <div className="space-y-2">
                 <div>
-                  <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
+                  <div className="grid grid-cols-[1fr_auto] gap-2 items-center">
                     <span className="text-base text-gray-700 font-semibold">Bug count: {testCase.similarity ?? 1}</span>
-                    <span className="text-base text-gray-500 italic text-right truncate">{getSimilarityLabel(testCase.similarity ?? 1)}</span>
+                    <span className="text-xs text-gray-500 italic text-right max-w-[180px] break-words">{getSimilarityLabel(testCase.similarity ?? 1)}</span>
                   </div>
                   <input
                     type="range"
@@ -778,9 +871,9 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
                   />
                 </div>
                 <div>
-                  <div className="grid grid-cols-[1fr_220px] gap-2 items-center">
+                  <div className="grid grid-cols-[1fr_auto] gap-2 items-center">
                     <span className="text-base text-gray-700 font-semibold">Affected areas: {testCase.breakFreq ?? 1}</span>
-                    <span className="text-base text-gray-500 italic text-right truncate">{getBreakFrequencyLabel(testCase.breakFreq ?? 1)}</span>
+                    <span className="text-xs text-gray-500 italic text-right max-w-[180px] break-words">{getBreakFrequencyLabel(testCase.breakFreq ?? 1)}</span>
                   </div>
                   <input
                     type="range"
@@ -848,6 +941,24 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
             <span className="text-xs text-gray-600 font-semibold">
               ({baseTechnicalScore}/80 + {testCase.scores.legal ?? 0}/20)
             </span>
+            <label className="flex items-center justify-center gap-1 cursor-pointer mt-1">
+              <input
+                type="checkbox"
+                checked={testCase.isScored ?? false}
+                onChange={handleCheckboxChange('isScored')}
+                className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+              />
+              <span className="text-xs font-semibold text-gray-700">Scored</span>
+            </label>
+            <label className="flex items-center justify-center gap-1 cursor-pointer mt-1">
+              <input
+                type="checkbox"
+                checked={testCase.isDescoped ?? false}
+                onChange={handleCheckboxChange('isDescoped')}
+                className="w-4 h-4 text-gray-600 border-gray-300 rounded focus:ring-gray-500"
+              />
+              <span className="text-xs font-semibold text-gray-700">Descope</span>
+            </label>
           </div>
         </td>
 
