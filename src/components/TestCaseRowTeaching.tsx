@@ -241,7 +241,7 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
               ref={textareaRefMobile}
               value={testCase.testName}
               onChange={handleTextChange('testName')}
-              className="flex-1 px-3 py-2 text-base border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white resize-none overflow-hidden break-words"
+              className="flex-1 min-w-0 px-3 py-2 text-base border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white resize-none"
               placeholder="Test name"
               rows={1}
             />
@@ -698,7 +698,7 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
               ref={textareaRefDesktop}
               value={testCase.testName}
               onChange={handleTextChange('testName')}
-              className={`flex-1 px-2 py-1.5 text-base border rounded-lg rounded focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm hover:shadow-md transition-all resize-none overflow-hidden break-words ${testCase.isDescoped ? 'line-through' : ''}`}
+              className={`flex-1 px-2 py-1.5 text-base border rounded-lg rounded focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm hover:shadow-md transition-all resize-none break-words whitespace-pre-wrap ${testCase.isDescoped ? 'line-through' : ''}`}
               placeholder="Test name"
               rows={1}
             />
