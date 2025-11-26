@@ -503,12 +503,18 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
   // Collapsed view - just show test name and key scores
   if (isCollapsed) {
     return (
-      <tr className={`border-b border-slate-300 transition-all ${isHighlighted ? 'bg-blue-100' : testCase.isDescoped ? 'bg-gray-100 opacity-60 hover:bg-gray-200' : 'bg-white hover:bg-gray-50'}`}>
+      <tr 
+        onClick={() => handleToggleCollapse(false)}
+        className={`border-b border-slate-300 transition-all cursor-pointer ${isHighlighted ? 'bg-blue-100' : testCase.isDescoped ? 'bg-gray-100 opacity-60 hover:bg-gray-200' : 'bg-white hover:bg-gray-50'}`}
+      >
         {/* Test Name with Expand Button */}
         <td className="px-3 py-3 border-r border-slate-300" colSpan={2}>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => handleToggleCollapse(false)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleToggleCollapse(false);
+              }}
               className="p-1 hover:bg-gray-200 rounded border transition-all"
               title="Expand row"
             >
@@ -582,7 +588,10 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
         <td className="px-3 py-3 relative">
           <div className="flex gap-1 justify-center">
             <button
-              onClick={handleDuplicate}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDuplicate();
+              }}
               className="p-1 text-blue-500 hover:bg-blue-100 rounded border-2 border-blue-500 hover:shadow-sm transition-all"
               title="Duplicate"
             >
@@ -591,7 +600,10 @@ function TestCaseRowNormalComponent({ testCase, isMobile = false }: TestCaseRowN
               </svg>
             </button>
             <button
-              onClick={handleDelete}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDelete();
+              }}
               className="p-1 text-red-500 hover:bg-red-100 rounded border-2 border-red-500 hover:shadow-sm transition-all"
               title="Delete"
             >
