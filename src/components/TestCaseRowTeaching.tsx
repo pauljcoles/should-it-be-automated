@@ -43,7 +43,8 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
     const resizeTextarea = (textarea: HTMLTextAreaElement | null) => {
       if (textarea) {
         textarea.style.height = 'auto';
-        textarea.style.height = textarea.scrollHeight + 'px';
+        const minHeight = 128; // min-h-32 = 128px
+        textarea.style.height = Math.max(textarea.scrollHeight, minHeight) + 'px';
       }
     };
     resizeTextarea(textareaRefMobile.current);
@@ -181,10 +182,16 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
     // Collapsed mobile view
     if (isCollapsed) {
       return (
-        <div className={`border border-slate-300 rounded-lg p-3 shadow-sm ${isHighlighted ? 'bg-blue-100' : testCase.isDescoped ? 'bg-gray-100 opacity-60' : 'bg-white'}`}>
+        <div 
+          onClick={() => handleToggleCollapse(false)}
+          className={`border border-slate-300 rounded-lg p-3 shadow-sm cursor-pointer hover:shadow-md transition-shadow ${isHighlighted ? 'bg-blue-100' : testCase.isDescoped ? 'bg-gray-100 opacity-60' : 'bg-white'}`}
+        >
           <div className="flex items-center justify-between gap-2">
             <button
-              onClick={() => handleToggleCollapse(false)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleToggleCollapse(false);
+              }}
               className="p-1 hover:bg-gray-200 rounded transition-colors flex-shrink-0"
               title="Expand"
             >
@@ -595,7 +602,7 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
                   </svg>
                 </div>
               )}
-              <span className={`font-semibold text-gray-700 truncate ${testCase.isDescoped ? 'line-through' : ''}`}>{testCase.testName || 'Untitled Test'}</span>
+              <span className={`font-semibold text-gray-700 ${testCase.isDescoped ? 'line-through' : ''}`}>{testCase.testName || 'Untitled Test'}</span>
             </div>
           </td>
 
@@ -682,12 +689,12 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
   return (
     <>
       <tr ref={rowRef as React.RefObject<HTMLTableRowElement>} className={`border-b border-slate-300 transition-all hover:shadow-sm ${isHighlighted ? 'bg-blue-100' : testCase.isDescoped ? 'bg-gray-100 opacity-75 hover:bg-gray-200' : 'bg-white hover:bg-gray-50'}`}>
-        {/* Test Name with Collapse Button */}
-        <td className="px-3 py-3 border-r border-slate-300">
-          <div className="flex items-center gap-2">
+          {/* Test Name with Collapse Button */}
+        <td className="px-3 py-3 border-r border-slate-300 w-64">
+          <div className="flex items-start gap-2">
             <button
               onClick={() => handleToggleCollapse(true)}
-              className="p-1 hover:bg-gray-200 rounded border transition-all flex-shrink-0"
+              className="p-1 mt-1 hover:bg-gray-200 rounded border transition-all flex-shrink-0"
               title="Collapse row"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -698,26 +705,59 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
               ref={textareaRefDesktop}
               value={testCase.testName}
               onChange={handleTextChange('testName')}
-              className={`flex-1 px-2 py-1.5 text-base border rounded-lg rounded focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm hover:shadow-md transition-all resize-none break-words whitespace-pre-wrap ${testCase.isDescoped ? 'line-through' : ''}`}
+              className={`w-full max-w-[200px] min-h-32 px-2 py-1.5 text-base border rounded-lg rounded focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm hover:shadow-md transition-all resize-none ${testCase.isDescoped ? 'line-through' : ''}`}
               placeholder="Test name"
-              rows={1}
+              rows={6}
             />
           </div>
         </td>
 
+        {/* Toggle Buttons Column */}
+        <td className="px-3 py-3 border-r border-slate-300 w-32 max-w-[8rem]">
+          <div className="flex flex-col gap-2 items-center justify-center h-full">
+            {/* Scored Toggle */}
+            <button
+              onClick={() => handleFieldChange('isScored', !testCase.isScored)}
+              className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all border-2 shadow-sm hover:shadow-md ${
+                testCase.isScored 
+                  ? 'bg-green-500 text-white border-green-600 hover:bg-green-600' 
+                  : 'bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200'
+              }`}
+              title={testCase.isScored ? 'Mark as unscored' : 'Mark as scored'}
+            >
+              {testCase.isScored ? '✓ Scored' : 'Unscored'}
+            </button>
+
+            {/* Descoped Toggle */}
+            <button
+              onClick={() => handleFieldChange('isDescoped', !testCase.isDescoped)}
+              className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all border-2 shadow-sm hover:shadow-md ${
+                testCase.isDescoped 
+                  ? 'bg-gray-400 text-white border-gray-500 hover:bg-gray-500' 
+                  : 'bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200'
+              }`}
+              title={testCase.isDescoped ? 'Mark as in scope' : 'Mark as descoped'}
+            >
+              {testCase.isDescoped ? 'Descoped' : 'In Scope'}
+            </button>
+          </div>
+        </td>
+
         {/* Gut Feel */}
-        <td className="px-3 py-3 border-r border-slate-300">
-          <div className="flex flex-col gap-1">
-            <span className="text-base text-gray-600 text-center font-bold">Gut Feel</span>
+        <td className="px-3 py-3 border-r border-slate-300 w-40 max-w-[10rem]">
+          <div className="border-2 border-slate-200 rounded-lg p-2 bg-gradient-to-br from-slate-50 to-slate-100 shadow-sm hover:shadow-lg hover:border-slate-300 hover:-translate-y-0.5 transition-all h-full flex flex-col justify-center">
+            <div className="text-sm font-bold text-slate-700 mb-1 text-center border-b-2 border-slate-300 pb-0.5">
+              GUT FEEL
+            </div>
             <input
               type="range"
               min="1"
               max="5"
               value={testCase.gutFeel ?? 3}
               onChange={handleNumberChange('gutFeel', 1, 5)}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500 mb-1"
             />
-            <span className="text-base font-bold text-gray-700 text-center leading-tight">
+            <span className="text-xs font-bold text-gray-700 text-center">
               {testCase.gutFeel === 5 ? 'Definitely' :
                testCase.gutFeel === 4 ? 'Probably' :
                testCase.gutFeel === 3 ? 'Unsure' :
@@ -932,64 +972,48 @@ function TestCaseRowTeachingComponent({ testCase, isMobile = false }: TestCaseRo
 
         {/* Total Score */}
         <td className="px-3 py-3 text-center border-r border-slate-300">
-          <div className="flex flex-col gap-1">
-            <span className="text-base text-slate-700 font-bold">Total</span>
-            <div className={`px-3 py-2 rounded-lg border-2 shadow-lg font-bold text-2xl hover:scale-105 transition-transform ${getScoreColor(testCase.scores.total, 100)}`}>
-              {testCase.scores.total}
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-sm text-slate-600 font-semibold">Total</span>
+            <div className={`px-4 py-2 rounded-lg border-2 shadow-lg font-bold text-2xl ${getScoreColor(testCase.scores.total, 100)}`}>
+              {testCase.scores.total}/100
             </div>
-            <span className="text-sm text-gray-600 font-bold">/100</span>
-            <span className="text-xs text-gray-600 font-semibold">
+            <span className="text-xs text-gray-500">
               ({baseTechnicalScore}/80 + {testCase.scores.legal ?? 0}/20)
             </span>
-            <label className="flex items-center justify-center gap-1 cursor-pointer mt-1">
-              <input
-                type="checkbox"
-                checked={testCase.isScored ?? false}
-                onChange={handleCheckboxChange('isScored')}
-                className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-              />
-              <span className="text-xs font-semibold text-gray-700">Scored</span>
-            </label>
-            <label className="flex items-center justify-center gap-1 cursor-pointer mt-1">
-              <input
-                type="checkbox"
-                checked={testCase.isDescoped ?? false}
-                onChange={handleCheckboxChange('isDescoped')}
-                className="w-4 h-4 text-gray-600 border-gray-300 rounded focus:ring-gray-500"
-              />
-              <span className="text-xs font-semibold text-gray-700">Descope</span>
-            </label>
           </div>
         </td>
 
         {/* Recommendation */}
         <td className="px-3 py-3 text-center border-r border-slate-300">
-          <div className={`px-3 py-2 rounded-lg border-2 shadow-lg font-bold text-base hover:scale-105 transition-transform ${getRecommendationColor(testCase.recommendation)}`}>
-            {getRecommendationLabel(testCase.recommendation)}
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-sm text-slate-600 font-semibold">Recommendation</span>
+            <div className={`px-4 py-2 rounded-lg border-2 shadow-lg font-bold text-base ${getRecommendationColor(testCase.recommendation)}`}>
+              {getRecommendationLabel(testCase.recommendation)}
+            </div>
           </div>
         </td>
 
         {/* Actions */}
         <td className="px-3 py-3 relative">
           <div className="flex gap-1 justify-center">
-            <button
-              onClick={handleDuplicate}
-              className="p-1 text-blue-500 hover:bg-blue-100 rounded border-2 border-blue-500 hover:shadow-sm transition-all"
-              title="Duplicate"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-              </svg>
-            </button>
-            <button
-              onClick={handleDelete}
-              className="p-1 text-red-500 hover:bg-red-100 rounded border-2 border-red-500 hover:shadow-sm transition-all"
-              title="Delete"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </button>
+              <button
+                onClick={handleDuplicate}
+                className="p-1 text-blue-500 hover:bg-blue-100 rounded border-2 border-blue-500 hover:shadow-sm transition-all"
+                title="Duplicate"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </button>
+              <button
+                onClick={handleDelete}
+                className="p-1 text-red-500 hover:bg-red-100 rounded border-2 border-red-500 hover:shadow-sm transition-all"
+                title="Delete"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
           </div>
           {showDeleteConfirm && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">

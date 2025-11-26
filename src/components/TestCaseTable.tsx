@@ -114,6 +114,7 @@ export function TestCaseTable() {
                 // Normal Mode Headers - Grid layout
                 <tr>
                   <th className="px-3 py-3 text-left text-base font-bold text-slate-700 min-w-[150px] border-r border-slate-300">Test Name</th>
+                  <th className="px-3 py-3 text-center text-base font-bold text-slate-700 w-32 max-w-[8rem] border-r border-slate-300">Status</th>
                   <th className="px-3 py-3 text-center text-base font-bold text-slate-700 min-w-[100px] border-r border-slate-300">Gut Feel</th>
                   <th className="px-3 py-3 text-center text-base font-bold text-slate-700 border-r border-slate-300" colSpan={4}>Scoring Categories</th>
                   <th className="px-3 py-3 text-center text-base font-bold text-slate-700 min-w-[80px] border-r border-slate-300">Total Score</th>
@@ -124,6 +125,7 @@ export function TestCaseTable() {
                 // Teaching Mode Headers - Grid layout (same as Normal mode)
                 <tr>
                   <th className="px-3 py-3 text-left text-base font-bold text-slate-700 min-w-[150px] border-r border-slate-300">Test Name</th>
+                  <th className="px-3 py-3 text-center text-base font-bold text-slate-700 w-32 max-w-[8rem] border-r border-slate-300">Status</th>
                   <th className="px-3 py-3 text-center text-base font-bold text-slate-700 min-w-[100px] border-r border-slate-300">Gut Feel</th>
                   <th className="px-3 py-3 text-center text-base font-bold text-slate-700 border-r border-slate-300" colSpan={4}>Scoring Categories</th>
                   <th className="px-3 py-3 text-center text-base font-bold text-slate-700 min-w-[100px] border-r border-slate-300">Legal & Org Pressure</th>
