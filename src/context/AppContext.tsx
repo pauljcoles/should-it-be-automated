@@ -11,6 +11,7 @@ import type {
     TestCase,
     ExistingFunctionality,
     FilterState,
+    RiskItem,
     SortConfig,
     StateDiagram
 } from '../types/models';
@@ -95,6 +96,11 @@ interface AppContextActions {
     addExistingFunctionality: (functionality: Omit<ExistingFunctionality, 'id'>) => void;
     updateExistingFunctionality: (id: string, updates: Partial<ExistingFunctionality>) => void;
     deleteExistingFunctionality: (id: string) => void;
+
+    // Risk Item Actions
+    addRiskItem: () => void;
+    updateRiskItem: (id: string, updates: Partial<RiskItem>) => void;
+    deleteRiskItem: (id: string) => void;
     
     // Filter Actions
     setRecommendationFilter: (recommendation?: Recommendation) => void;
@@ -167,7 +173,25 @@ function createInitialAppState(): AppState {
         lastModified: new Date().toISOString(),
         existingFunctionality: [],
         testCases: [],
+        riskItems: [],
         metadata: {}
+    };
+}
+
+function createDefaultRiskItem(id: string): RiskItem {
+    return {
+        id,
+        failureMode: '',
+        causeOfFailure: '',
+        likelihood: 3,
+        effectOfFailure: '',
+        impact: 3,
+        riskScore: 9,
+        recommendedActions: '',
+        actionOwner: '',
+        actionDueDate: '',
+        percentComplete: 0,
+        notes: ''
     };
 }
 
@@ -233,7 +257,8 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
             try {
                 const loaded = StorageService.loadAppState();
                 if (loaded) {
-                    return loaded;
+                    // Migrate: add riskItems if not present in stored state
+                    return { ...loaded, riskItems: loaded.riskItems ?? [] };
                 }
             } catch (error) {
                 console.error('Failed to load state from localStorage:', error);
@@ -491,7 +516,41 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
             lastModified: new Date().toISOString()
         }));
     }, []);
-    
+
+    // ========================================================================
+    // Risk Item Actions
+    // ========================================================================
+
+    const addRiskItem = useCallback(() => {
+        const item = createDefaultRiskItem(generateUUID());
+        setAppState(prev => ({
+            ...prev,
+            riskItems: [...prev.riskItems, item],
+            lastModified: new Date().toISOString()
+        }));
+    }, []);
+
+    const updateRiskItem = useCallback((id: string, updates: Partial<RiskItem>) => {
+        setAppState(prev => ({
+            ...prev,
+            riskItems: prev.riskItems.map(item => {
+                if (item.id !== id) return item;
+                const updated = { ...item, ...updates };
+                updated.riskScore = updated.likelihood * updated.impact;
+                return updated;
+            }),
+            lastModified: new Date().toISOString()
+        }));
+    }, []);
+
+    const deleteRiskItem = useCallback((id: string) => {
+        setAppState(prev => ({
+            ...prev,
+            riskItems: prev.riskItems.filter(item => item.id !== id),
+            lastModified: new Date().toISOString()
+        }));
+    }, []);
+
     // ========================================================================
     // Filter Actions
     // ========================================================================
@@ -667,6 +726,11 @@ export function AppProvider({ children, initialState }: AppProviderProps) {
         addExistingFunctionality,
         updateExistingFunctionality,
         deleteExistingFunctionality,
+
+        // Risk Item Actions
+        addRiskItem,
+        updateRiskItem,
+        deleteRiskItem,
         
         // Filter Actions
         setRecommendationFilter,

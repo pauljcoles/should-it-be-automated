@@ -7,7 +7,8 @@ import { useRef, useState } from 'react';
 import { useAppContext } from '../context';
 import type { AppState, StateDiagram, StateDiff } from '../types/models';
 import { Button } from './ui/button';
-import { Upload, Download, Plus, HelpCircle, Clipboard, History, Filter, BarChart3, PanelLeftClose, PanelLeftOpen, Menu, X } from 'lucide-react';
+import { Upload, Download, Plus, HelpCircle, Clipboard, History, Filter, BarChart3, PanelLeftClose, PanelLeftOpen, Menu, X, Grid3X3 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { StateDiagramService } from '../services/StateDiagramService';
 import { StorageService } from '../services/StorageService';
 import { BERTIntegrationService } from '../services/BERTIntegrationService';
@@ -525,6 +526,19 @@ export function Header() {
                   ADD ROW
                 </Button>
 
+                {/* Risk Matrix Button */}
+                <Link to="/risk">
+                  <Button
+                    variant="outline"
+                    className="gap-2"
+                    size="sm"
+                    title="View 5×5 risk assessment matrix"
+                  >
+                    <Grid3X3 className="w-4 h-4" />
+                    RISK MATRIX
+                  </Button>
+                </Link>
+
                 {/* Help Button */}
                 <Button
                   onClick={handleHelp}
@@ -593,6 +607,17 @@ export function Header() {
                   <History className="w-4 h-4" />
                   View History
                 </Button>
+
+                <Link to="/risk" onClick={() => setIsMobileMenuOpen(false)} className="w-full">
+                  <Button
+                    variant="outline"
+                    className="gap-2 justify-start w-full"
+                    size="sm"
+                  >
+                    <Grid3X3 className="w-4 h-4" />
+                    Risk Matrix
+                  </Button>
+                </Link>
               </div>
             </div>
           )}

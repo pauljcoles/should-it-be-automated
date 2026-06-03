@@ -1,10 +1,12 @@
 import './App.css'
+import { Routes, Route } from 'react-router-dom'
 import { Header, TestCaseTable, ExistingFunctionalitySidebar, HelpModal, StateDiagramHistoryModal } from './components'
 import { Notification } from './components/Notification'
 import { StorageErrorModal } from './components/StorageErrorModal'
 import { useAppContext } from './context'
+import { RiskMatrixPage } from './pages/RiskMatrixPage'
 
-function App() {
+function MainApp() {
   const { appState, uiState, setStorageErrorModalOpen } = useAppContext();
 
   return (
@@ -22,12 +24,21 @@ function App() {
       </main>
       <HelpModal />
       <StateDiagramHistoryModal applicationName={appState.projectName} />
-      <StorageErrorModal 
-        isOpen={uiState.isStorageErrorModalOpen} 
-        onClose={() => setStorageErrorModalOpen(false)} 
+      <StorageErrorModal
+        isOpen={uiState.isStorageErrorModalOpen}
+        onClose={() => setStorageErrorModalOpen(false)}
       />
       <Notification />
     </div>
+  )
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<MainApp />} />
+      <Route path="/risk" element={<RiskMatrixPage />} />
+    </Routes>
   )
 }
 
