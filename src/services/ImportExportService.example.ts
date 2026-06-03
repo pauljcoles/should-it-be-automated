@@ -36,6 +36,7 @@ const sampleState: AppState = {
             recommendation: 'MAYBE'
         }
     ],
+    riskItems: [],
     metadata: {
         team: 'QA Team',
         sprint: 'Sprint 5',

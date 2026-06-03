@@ -335,6 +335,7 @@ describe('AppContext', () => {
                 lastModified: '2024-01-01T00:00:00.000Z',
                 existingFunctionality: [],
                 testCases: [],
+                riskItems: [],
                 metadata: { team: 'QA Team' }
             };
 

@@ -48,6 +48,7 @@ const createMockAppState = (): AppState => ({
             recommendation: 'MAYBE'
         }
     ],
+    riskItems: [],
     metadata: {
         team: 'QA Team',
         sprint: 'Sprint 1'

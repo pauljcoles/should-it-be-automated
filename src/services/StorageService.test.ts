@@ -23,6 +23,7 @@ function createTestAppState(overrides?: Partial<AppState>): AppState {
         lastModified: '2024-01-01T00:00:00.000Z',
         existingFunctionality: [],
         testCases: [],
+        riskItems: [],
         metadata: {},
         ...overrides
     };
