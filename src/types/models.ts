@@ -380,6 +380,62 @@ export interface StateDiff {
 }
 
 // ============================================================================
+// Risk Item Interface (FMEA-style standalone risk register)
+// ============================================================================
+
+/**
+ * A standalone risk or failure-mode item, independent of test cases.
+ * Based on the RiskTable / FMEA structure from the Vertex42 template.
+ */
+export interface RiskItem {
+    /** Unique identifier */
+    id: string;
+
+    /** What can go wrong */
+    failureMode: string;
+
+    /** Root cause of the failure */
+    causeOfFailure: string;
+
+    /** Likelihood of occurrence (1–5) */
+    likelihood: number;
+
+    /** Consequence if the failure occurs */
+    effectOfFailure: string;
+
+    /** Severity of the impact (1–5) */
+    impact: number;
+
+    /** Calculated: likelihood × impact */
+    riskScore: number;
+
+    /** Mitigation / corrective action */
+    recommendedActions: string;
+
+    /** Person responsible for the action */
+    actionOwner: string;
+
+    /** Target completion date (ISO date string or '') */
+    actionDueDate: string;
+
+    /** How far the action has progressed (0–100) */
+    percentComplete: number;
+
+    /** Free-text notes */
+    notes: string;
+
+    // Optional FMEA extras
+    /** The item or function being analysed */
+    itemFunction?: string;
+
+    /** Existing controls or safeguards */
+    currentControls?: string;
+
+    /** Detectability rating (1–10, FMEA) */
+    detection?: number;
+}
+
+// ============================================================================
 // Application State Interface
 // ============================================================================
 
@@ -404,6 +460,9 @@ export interface AppState {
 
     /** List of test cases */
     testCases: TestCase[];
+
+    /** List of standalone risk / FMEA items */
+    riskItems: RiskItem[];
 
     /** Additional project metadata */
     metadata: {
